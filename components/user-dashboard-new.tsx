@@ -162,45 +162,72 @@ export default function UserDashboardNew() {
       })
     }, 100)
 
-    await new Promise(resolve => setTimeout(resolve, 2500))
+    try {
+      const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
+      
+      // Try to use AI API for better image generation
+      let imageUrl: string
+      try {
+        const aiResponse = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pulses,
+            style: randomStyle.name,
+            emotionalState: randomStyle.emotion,
+          }),
+        })
 
-    const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
-    const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
-    const imageUrl = generateCanvasImage(pulses, randomStyle)
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json()
+          imageUrl = aiData.imageUrl
+        } else {
+          // Fallback to canvas generation
+          imageUrl = generateCanvasImage(pulses, randomStyle)
+        }
+      } catch {
+        // Fallback to canvas generation
+        imageUrl = generateCanvasImage(pulses, randomStyle)
+      }
 
-    const newArt: GeneratedArt = {
-      id: Date.now().toString(),
-      imageUrl,
-      title: randomStyle.name,
-      description: `Arte generado a partir de tus pulsos cardiacos (${pulses.join(", ")} BPM). Tu ritmo cardiaco unico ha sido transformado en esta pieza digital.`,
-      emotionalState: randomStyle.emotion,
-      energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
-      coherenceLevel: Math.round(70 + Math.random() * 25),
-      pulses: [...pulses],
-      createdAt: new Date(),
+      const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
+
+      const newArt: GeneratedArt = {
+        id: Date.now().toString(),
+        imageUrl,
+        title: randomStyle.name,
+        description: `Arte generado a partir de tus pulsos cardiacos (${pulses.join(", ")} BPM). Tu ritmo cardiaco unico ha sido transformado en esta pieza digital.`,
+        emotionalState: randomStyle.emotion,
+        energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
+        coherenceLevel: Math.round(70 + Math.random() * 25),
+        pulses: [...pulses],
+        createdAt: new Date(),
+      }
+
+      setCurrentResult(newArt)
+      
+      // Save to gallery
+      const newGallery = [newArt, ...gallery].slice(0, 20)
+      setGallery(newGallery)
+      localStorage.setItem(`noosfera_gallery_${user?.id}`, JSON.stringify(newGallery))
+      
+      const newCount = totalGenerations + 1
+      setTotalGenerations(newCount)
+      localStorage.setItem(`noosfera_count_${user?.id}`, newCount.toString())
+      
+      // Update daily usage
+      const newDailyUsed = dailyUsed + 1
+      saveDailyUsage(newDailyUsed)
+
+      if (newDailyUsed >= dailyLimit) {
+        setStep("exhausted")
+      } else {
+        setStep("result")
+      }
+    } finally {
+      clearInterval(progressInterval)
+      setIsGenerating(false)
     }
-
-    setCurrentResult(newArt)
-    
-    // Save to gallery
-    const newGallery = [newArt, ...gallery].slice(0, 20) // Keep last 20
-    setGallery(newGallery)
-    localStorage.setItem(`noosfera_gallery_${user?.id}`, JSON.stringify(newGallery))
-    
-    const newCount = totalGenerations + 1
-    setTotalGenerations(newCount)
-    localStorage.setItem(`noosfera_count_${user?.id}`, newCount.toString())
-    
-    // Update daily usage
-    const newDailyUsed = dailyUsed + 1
-    saveDailyUsage(newDailyUsed)
-
-    if (newDailyUsed >= dailyLimit) {
-      setStep("exhausted")
-    } else {
-      setStep("result")
-    }
-    setIsGenerating(false)
   }
 
   const generateCanvasImage = (pulseData: number[], style: typeof artStyles[0]): string => {

@@ -166,7 +166,7 @@ export default function ContentLibrary() {
           ctx.shadowOffsetX = 1
           ctx.shadowOffsetY = 1
           
-          const watermarkText = "made with noosfera"
+          const watermarkText = "built with noosfera"
           const textMetrics = ctx.measureText(watermarkText)
           const x = canvas.width - textMetrics.width - 15
           const y = canvas.height - 15

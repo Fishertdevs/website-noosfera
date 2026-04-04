@@ -137,35 +137,59 @@ export default function SimpleDemo() {
       })
     }, 100)
 
-    await new Promise(resolve => setTimeout(resolve, 2500))
+    try {
+      const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
+      
+      // Try to use AI API for better image generation
+      let imageUrl: string
+      try {
+        const aiResponse = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pulses,
+            style: randomStyle.name,
+            emotionalState: randomStyle.emotion,
+          }),
+        })
 
-    // Generate random result based on pulses
-    const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
-    const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
-    
-    // Create canvas-based image
-    const imageUrl = generateCanvasImage(pulses, randomStyle)
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json()
+          imageUrl = aiData.imageUrl
+        } else {
+          // Fallback to canvas generation
+          imageUrl = generateCanvasImage(pulses, randomStyle)
+        }
+      } catch {
+        // Fallback to canvas generation
+        imageUrl = generateCanvasImage(pulses, randomStyle)
+      }
 
-    const result: GeneratedResult = {
-      imageUrl,
-      title: randomStyle.name,
-      description: `Esta imagen representa la esencia de tus ${pulses.length} pulsos cardiacos (${pulses.join(", ")} BPM). Los patrones unicos de tu ritmo cardiaco han sido transformados en arte digital mediante nuestro algoritmo de interpretacion emocional.`,
-      emotionalState: randomStyle.emotion,
-      energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
-      coherenceLevel: Math.round(70 + Math.random() * 25),
-      pulses: [...pulses],
+      const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
+
+      const result: GeneratedResult = {
+        imageUrl,
+        title: randomStyle.name,
+        description: `Esta imagen representa la esencia de tus ${pulses.length} pulsos cardiacos (${pulses.join(", ")} BPM). Los patrones unicos de tu ritmo cardiaco han sido transformados en arte digital mediante nuestro algoritmo de interpretacion emocional.`,
+        emotionalState: randomStyle.emotion,
+        energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
+        coherenceLevel: Math.round(70 + Math.random() * 25),
+        pulses: [...pulses],
+      }
+
+      setGeneratedResult(result)
+      const newRemaining = attemptsRemaining - 1
+      saveTrialData(newRemaining)
+      
+      if (newRemaining <= 0) {
+        setStep("exhausted")
+      } else {
+        setStep("result")
+      }
+    } finally {
+      clearInterval(progressInterval)
+      setIsGenerating(false)
     }
-
-    setGeneratedResult(result)
-    const newRemaining = attemptsRemaining - 1
-    saveTrialData(newRemaining)
-    
-    if (newRemaining <= 0) {
-      setStep("exhausted")
-    } else {
-      setStep("result")
-    }
-    setIsGenerating(false)
   }
 
   const generateCanvasImage = (pulseData: number[], style: typeof artStyles[0]): string => {
