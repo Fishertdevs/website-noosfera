@@ -143,13 +143,58 @@ export default function ContentLibrary() {
       document.body.removeChild(element)
       toast.success("Texto descargado")
     } else if (content.type === "image") {
-      const link = document.createElement("a")
-      link.href = content.content
-      link.download = `pensamiento_${content.id}.png`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      toast.success("Imagen descargada")
+      // Download image with watermark
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+      const img = new Image()
+      img.crossOrigin = "anonymous"
+      
+      img.onload = () => {
+        canvas.width = img.width
+        canvas.height = img.height
+        
+        if (ctx) {
+          // Draw the original image
+          ctx.drawImage(img, 0, 0)
+          
+          // Add watermark
+          ctx.save()
+          ctx.font = "bold 16px Arial"
+          ctx.fillStyle = "rgba(255, 255, 255, 0.7)"
+          ctx.shadowColor = "rgba(0, 0, 0, 0.5)"
+          ctx.shadowBlur = 4
+          ctx.shadowOffsetX = 1
+          ctx.shadowOffsetY = 1
+          
+          const watermarkText = "made with noosfera"
+          const textMetrics = ctx.measureText(watermarkText)
+          const x = canvas.width - textMetrics.width - 15
+          const y = canvas.height - 15
+          
+          ctx.fillText(watermarkText, x, y)
+          ctx.restore()
+          
+          // Download
+          const link = document.createElement("a")
+          link.download = `noosfera_${content.id}.png`
+          link.href = canvas.toDataURL("image/png")
+          link.click()
+          toast.success("Imagen descargada")
+        }
+      }
+      
+      img.onerror = () => {
+        // Fallback to direct download if image loading fails
+        const link = document.createElement("a")
+        link.href = content.content
+        link.download = `noosfera_${content.id}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        toast.success("Imagen descargada")
+      }
+      
+      img.src = content.content
     }
   }
 
