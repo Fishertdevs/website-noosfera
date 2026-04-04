@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Sparkles, LogOut, User, RefreshCw, Download, X, Check } from "lucide-react"
+import { Heart, Sparkles, LogOut, User, RefreshCw, Download, X, Check, ImageIcon, Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,7 +18,16 @@ import {
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 
-type AppStep = "input" | "generating" | "result" | "gallery"
+type AppStep = "input" | "generating" | "result" | "gallery" | "exhausted"
+
+const DAILY_LIMIT_FREE = 15
+const DAILY_LIMIT_PREMIUM = 100
+const STORAGE_KEY_PREFIX = "noosfera_user_daily"
+
+interface DailyLimitData {
+  date: string
+  used: number
+}
 
 interface GeneratedArt {
   id: string
@@ -51,7 +60,11 @@ export default function UserDashboardNew() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationProgress, setGenerationProgress] = useState(0)
   const [totalGenerations, setTotalGenerations] = useState(0)
+  const [dailyUsed, setDailyUsed] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const dailyLimit = user?.plan === "premium" ? DAILY_LIMIT_PREMIUM : DAILY_LIMIT_FREE
+  const remainingToday = Math.max(0, dailyLimit - dailyUsed)
 
   useEffect(() => {
     // Load gallery from localStorage
@@ -63,7 +76,43 @@ export default function UserDashboardNew() {
     if (savedCount) {
       setTotalGenerations(parseInt(savedCount))
     }
-  }, [user?.id])
+    
+    // Load daily limit data
+    const today = new Date().toDateString()
+    const storageKey = `${STORAGE_KEY_PREFIX}_${user?.id}`
+    const storedData = localStorage.getItem(storageKey)
+    
+    if (storedData) {
+      try {
+        const data: DailyLimitData = JSON.parse(storedData)
+        if (data.date === today) {
+          setDailyUsed(data.used)
+          if (data.used >= dailyLimit) {
+            setStep("exhausted")
+          }
+        } else {
+          // New day, reset counter
+          const newData: DailyLimitData = { date: today, used: 0 }
+          localStorage.setItem(storageKey, JSON.stringify(newData))
+          setDailyUsed(0)
+        }
+      } catch {
+        const newData: DailyLimitData = { date: today, used: 0 }
+        localStorage.setItem(storageKey, JSON.stringify(newData))
+      }
+    } else {
+      const newData: DailyLimitData = { date: today, used: 0 }
+      localStorage.setItem(storageKey, JSON.stringify(newData))
+    }
+  }, [user?.id, dailyLimit])
+
+  const saveDailyUsage = (newUsed: number) => {
+    const today = new Date().toDateString()
+    const storageKey = `${STORAGE_KEY_PREFIX}_${user?.id}`
+    const data: DailyLimitData = { date: today, used: newUsed }
+    localStorage.setItem(storageKey, JSON.stringify(data))
+    setDailyUsed(newUsed)
+  }
 
   const handlePulseInputChange = (value: string) => {
     const numValue = value.replace(/[^0-9]/g, "")
@@ -97,7 +146,7 @@ export default function UserDashboardNew() {
   const canGenerate = pulses.length === 3
 
   const generateImage = async () => {
-    if (!canGenerate) return
+    if (!canGenerate || remainingToday <= 0) return
 
     setIsGenerating(true)
     setStep("generating")
@@ -141,8 +190,16 @@ export default function UserDashboardNew() {
     const newCount = totalGenerations + 1
     setTotalGenerations(newCount)
     localStorage.setItem(`noosfera_count_${user?.id}`, newCount.toString())
+    
+    // Update daily usage
+    const newDailyUsed = dailyUsed + 1
+    saveDailyUsage(newDailyUsed)
 
-    setStep("result")
+    if (newDailyUsed >= dailyLimit) {
+      setStep("exhausted")
+    } else {
+      setStep("result")
+    }
     setIsGenerating(false)
   }
 
@@ -245,7 +302,7 @@ export default function UserDashboardNew() {
         ctx.shadowOffsetX = 1
         ctx.shadowOffsetY = 1
         
-        const watermarkText = "made with noosfera"
+        const watermarkText = "built with noosfera"
         const textMetrics = ctx.measureText(watermarkText)
         const x = canvas.width - textMetrics.width - 15
         const y = canvas.height - 15
@@ -328,10 +385,23 @@ export default function UserDashboardNew() {
                     <span className="hidden sm:inline text-sm font-medium">{user?.name}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="text-gray-600">
-                    <User className="mr-2 h-4 w-4" />
-                    {user?.email}
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      {user?.plan === "premium" ? (
+                        <Crown className="h-3 w-3 text-amber-500" />
+                      ) : null}
+                      <span className={`text-xs font-medium ${user?.plan === "premium" ? "text-amber-600" : "text-emerald-600"}`}>
+                        Plan {user?.plan === "premium" ? "Premium" : "Free"}
+                      </span>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-gray-600 text-xs">
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    {remainingToday} imagenes restantes hoy
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-600">
@@ -348,16 +418,31 @@ export default function UserDashboardNew() {
       {/* Stats Bar */}
       <div className="bg-emerald-50/50 border-b border-emerald-100">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-center gap-8 text-sm">
+          <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-emerald-600" />
-              <span className="text-gray-600">Artes creados:</span>
+              <span className="text-gray-600">Total creados:</span>
               <span className="font-bold text-emerald-600">{totalGenerations}</span>
             </div>
             <div className="flex items-center gap-2">
               <Heart className="h-4 w-4 text-emerald-600" />
               <span className="text-gray-600">En galeria:</span>
               <span className="font-bold text-emerald-600">{gallery.length}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
+                {[...Array(dailyLimit > 15 ? 10 : dailyLimit)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      i < remainingToday ? "bg-emerald-500" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-gray-600 ml-1">
+                {remainingToday}/{dailyLimit} hoy
+              </span>
             </div>
           </div>
         </div>
@@ -581,6 +666,46 @@ export default function UserDashboardNew() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* EXHAUSTED STEP */}
+          {step === "exhausted" && (
+            <motion.div
+              key="exhausted"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="max-w-md mx-auto text-center"
+            >
+              <Card className="bg-white/90 backdrop-blur shadow-xl border-amber-200">
+                <CardContent className="py-12 px-6">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
+                    <ImageIcon className="h-8 w-8 text-amber-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    Limite diario alcanzado
+                  </h2>
+                  <p className="text-gray-600 mb-6">
+                    Has utilizado tus {dailyLimit} imagenes de hoy.
+                    {user?.plan === "free" && " Actualiza a Premium para obtener mas imagenes diarias."}
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <Button onClick={() => setStep("gallery")} variant="outline" className="w-full">
+                      Ver mi galeria
+                    </Button>
+                    {user?.plan === "free" && (
+                      <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white">
+                        <Crown className="mr-2 h-4 w-4" />
+                        Actualizar a Premium
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-4">
+                    Tu limite se restablecera manana
+                  </p>
+                </CardContent>
+              </Card>
             </motion.div>
           )}
 

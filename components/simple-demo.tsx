@@ -30,7 +30,7 @@ const artStyles = [
   { name: "Serenidad Azul", color: "from-blue-400 to-indigo-500", emotion: "Calma y profundidad" },
 ]
 
-const DAILY_LIMIT = 3
+const DAILY_LIMIT = 5
 const STORAGE_KEY = "noosfera_demo_trial"
 
 interface TrialData {
