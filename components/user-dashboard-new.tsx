@@ -1,12 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Sparkles, LogOut, User, Settings, RefreshCw, Download, Share2 } from "lucide-react"
+import { Heart, Sparkles, LogOut, User, RefreshCw, Download, X, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -46,12 +44,14 @@ export default function UserDashboardNew() {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [step, setStep] = useState<AppStep>("input")
-  const [pulses, setPulses] = useState<string[]>(["", "", ""])
+  const [pulses, setPulses] = useState<number[]>([])
+  const [currentPulseInput, setCurrentPulseInput] = useState("")
   const [currentResult, setCurrentResult] = useState<GeneratedArt | null>(null)
   const [gallery, setGallery] = useState<GeneratedArt[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationProgress, setGenerationProgress] = useState(0)
   const [totalGenerations, setTotalGenerations] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     // Load gallery from localStorage
@@ -65,19 +65,36 @@ export default function UserDashboardNew() {
     }
   }, [user?.id])
 
-  const handlePulseChange = (index: number, value: string) => {
+  const handlePulseInputChange = (value: string) => {
     const numValue = value.replace(/[^0-9]/g, "")
     if (numValue === "" || (parseInt(numValue) >= 0 && parseInt(numValue) <= 200)) {
-      const newPulses = [...pulses]
-      newPulses[index] = numValue
-      setPulses(newPulses)
+      setCurrentPulseInput(numValue)
     }
   }
 
-  const canGenerate = pulses.every(p => {
-    const num = parseInt(p)
-    return num >= 40 && num <= 200
-  })
+  const addPulse = useCallback(() => {
+    const num = parseInt(currentPulseInput)
+    if (num >= 40 && num <= 200 && pulses.length < 3) {
+      setPulses([...pulses, num])
+      setCurrentPulseInput("")
+      inputRef.current?.focus()
+    }
+  }, [currentPulseInput, pulses])
+
+  const removePulse = (index: number) => {
+    setPulses(pulses.filter((_, i) => i !== index))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
+      e.preventDefault()
+      addPulse()
+    } else if (e.key === "Backspace" && currentPulseInput === "" && pulses.length > 0) {
+      removePulse(pulses.length - 1)
+    }
+  }
+
+  const canGenerate = pulses.length === 3
 
   const generateImage = async () => {
     if (!canGenerate) return
@@ -98,9 +115,9 @@ export default function UserDashboardNew() {
 
     await new Promise(resolve => setTimeout(resolve, 2500))
 
-    const avgPulse = pulses.reduce((a, b) => a + parseInt(b), 0) / 3
+    const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
     const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
-    const imageUrl = generateCanvasImage(pulses.map(p => parseInt(p)), randomStyle)
+    const imageUrl = generateCanvasImage(pulses, randomStyle)
 
     const newArt: GeneratedArt = {
       id: Date.now().toString(),
@@ -110,7 +127,7 @@ export default function UserDashboardNew() {
       emotionalState: randomStyle.emotion,
       energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
       coherenceLevel: Math.round(70 + Math.random() * 25),
-      pulses: pulses.map(p => parseInt(p)),
+      pulses: [...pulses],
       createdAt: new Date(),
     }
 
@@ -198,9 +215,53 @@ export default function UserDashboardNew() {
   }
 
   const resetForm = () => {
-    setPulses(["", "", ""])
+    setPulses([])
+    setCurrentPulseInput("")
     setCurrentResult(null)
     setStep("input")
+  }
+
+  // Download image with watermark
+  const downloadWithWatermark = (art: GeneratedArt) => {
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    
+    img.onload = () => {
+      canvas.width = img.width
+      canvas.height = img.height
+      
+      if (ctx) {
+        // Draw the original image
+        ctx.drawImage(img, 0, 0)
+        
+        // Add watermark
+        ctx.save()
+        ctx.font = "bold 16px Arial"
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)"
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)"
+        ctx.shadowBlur = 4
+        ctx.shadowOffsetX = 1
+        ctx.shadowOffsetY = 1
+        
+        const watermarkText = "made with noosfera"
+        const textMetrics = ctx.measureText(watermarkText)
+        const x = canvas.width - textMetrics.width - 15
+        const y = canvas.height - 15
+        
+        ctx.fillText(watermarkText, x, y)
+        ctx.restore()
+        
+        // Download
+        const link = document.createElement("a")
+        link.download = `noosfera-${art.title.toLowerCase().replace(/\s+/g, "-")}-${art.id}.png`
+        link.href = canvas.toDataURL("image/png")
+        link.click()
+      }
+    }
+    
+    img.src = art.imageUrl
   }
 
   const CircularProgress = ({ value, label, color }: { value: number; label: string; color: string }) => {
@@ -321,33 +382,91 @@ export default function UserDashboardNew() {
               </div>
 
               <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100">
-                <CardHeader className="text-center pb-2">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-4">
-                    <Heart className="h-8 w-8 text-white" />
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-3">
+                    <Heart className="h-7 w-7 text-white" />
                   </div>
                   <CardTitle className="text-xl">Ingresa tus Pulsos</CardTitle>
-                  <CardDescription>3 valores entre 40-200 BPM</CardDescription>
+                  <CardDescription>Escribe un valor y presiona Enter o coma</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
-                  {[0, 1, 2].map((index) => (
-                    <div key={index} className="space-y-1">
-                      <Label htmlFor={`pulse-${index}`} className="text-gray-700 text-sm">
-                        Pulso {index + 1}
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id={`pulse-${index}`}
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="Ej: 72"
-                          value={pulses[index]}
-                          onChange={(e) => handlePulseChange(index, e.target.value)}
-                          className="pr-12 h-11 border-gray-200 focus:border-emerald-400 focus:ring-emerald-400"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">BPM</span>
-                      </div>
+                <CardContent className="space-y-4">
+                  {/* Inline Pulse Input */}
+                  <div 
+                    className="min-h-[56px] p-3 border-2 border-gray-200 rounded-xl bg-white focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all cursor-text"
+                    onClick={() => inputRef.current?.focus()}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      {pulses.map((pulse, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-medium"
+                        >
+                          <span>{pulse}</span>
+                          <span className="text-emerald-500 text-xs">BPM</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              removePulse(index)
+                            }}
+                            className="ml-0.5 hover:bg-emerald-200 rounded-full p-0.5 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </motion.div>
+                      ))}
+                      
+                      {pulses.length < 3 && (
+                        <div className="flex items-center gap-1 flex-1 min-w-[80px]">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            inputMode="numeric"
+                            placeholder={pulses.length === 0 ? "72, 65, 80..." : `Pulso ${pulses.length + 1}`}
+                            value={currentPulseInput}
+                            onChange={(e) => handlePulseInputChange(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onBlur={() => {
+                              if (currentPulseInput) addPulse()
+                            }}
+                            className="flex-1 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm min-w-0"
+                          />
+                          {currentPulseInput && parseInt(currentPulseInput) >= 40 && parseInt(currentPulseInput) <= 200 && (
+                            <button
+                              onClick={addPulse}
+                              className="text-emerald-500 hover:text-emerald-600 transition-colors"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Progress indicator */}
+                  <div className="flex items-center justify-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                          i < pulses.length ? "bg-emerald-500" : "bg-gray-200"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-2">
+                      {pulses.length}/3 pulsos
+                    </span>
+                  </div>
+
+                  {/* Validation message */}
+                  {currentPulseInput && (parseInt(currentPulseInput) < 40 || parseInt(currentPulseInput) > 200) && (
+                    <p className="text-sm text-amber-600 text-center">
+                      El valor debe estar entre 40 y 200 BPM
+                    </p>
+                  )}
 
                   <Button
                     className="w-full bg-emerald-600 hover:bg-emerald-700 h-11"
@@ -358,9 +477,9 @@ export default function UserDashboardNew() {
                     Generar Arte
                   </Button>
 
-                  {!canGenerate && pulses.some(p => p !== "") && (
-                    <p className="text-sm text-amber-600 text-center">
-                      Todos los valores deben estar entre 40 y 200 BPM
+                  {pulses.length > 0 && pulses.length < 3 && (
+                    <p className="text-xs text-gray-500 text-center">
+                      Agrega {3 - pulses.length} pulso{3 - pulses.length > 1 ? "s" : ""} mas para continuar
                     </p>
                   )}
                 </CardContent>
@@ -417,9 +536,20 @@ export default function UserDashboardNew() {
                     <div className="aspect-square relative">
                       <img src={currentResult.imageUrl} alt={currentResult.title} className="w-full h-full object-cover" />
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-900">{currentResult.title}</h3>
-                      <p className="text-sm text-emerald-600">{currentResult.emotionalState}</p>
+                    <div className="p-4 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">{currentResult.title}</h3>
+                        <p className="text-sm text-emerald-600">{currentResult.emotionalState}</p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => downloadWithWatermark(currentResult)}
+                        className="h-9"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Descargar
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -497,7 +627,12 @@ export default function UserDashboardNew() {
                         <div className="aspect-square relative">
                           <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                            <Button 
+                              size="sm" 
+                              variant="secondary" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => downloadWithWatermark(art)}
+                            >
                               <Download className="h-4 w-4" />
                             </Button>
                           </div>

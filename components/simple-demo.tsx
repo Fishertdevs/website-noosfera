@@ -1,17 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw } from "lucide-react"
+import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw, X, Check, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation"
 
-type DemoStep = "welcome" | "input" | "generating" | "result"
+type DemoStep = "welcome" | "input" | "generating" | "result" | "exhausted"
 
 interface GeneratedResult {
   imageUrl: string
@@ -20,6 +18,7 @@ interface GeneratedResult {
   emotionalState: string
   energyLevel: number
   coherenceLevel: number
+  pulses: number[]
 }
 
 // Art styles for random generation
@@ -31,29 +30,94 @@ const artStyles = [
   { name: "Serenidad Azul", color: "from-blue-400 to-indigo-500", emotion: "Calma y profundidad" },
 ]
 
+const DAILY_LIMIT = 3
+const STORAGE_KEY = "noosfera_demo_trial"
+
+interface TrialData {
+  date: string
+  remaining: number
+}
+
 export default function SimpleDemo() {
   const router = useRouter()
   const [step, setStep] = useState<DemoStep>("welcome")
-  const [pulses, setPulses] = useState<string[]>(["", "", ""])
-  const [attemptsRemaining, setAttemptsRemaining] = useState(2)
+  const [pulses, setPulses] = useState<number[]>([])
+  const [currentPulseInput, setCurrentPulseInput] = useState("")
+  const [attemptsRemaining, setAttemptsRemaining] = useState(DAILY_LIMIT)
   const [generatedResult, setGeneratedResult] = useState<GeneratedResult | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationProgress, setGenerationProgress] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handlePulseChange = (index: number, value: string) => {
-    // Only allow numbers between 40-200
+  // Load trial data from localStorage
+  useEffect(() => {
+    const today = new Date().toDateString()
+    const storedData = localStorage.getItem(STORAGE_KEY)
+    
+    if (storedData) {
+      try {
+        const data: TrialData = JSON.parse(storedData)
+        if (data.date === today) {
+          setAttemptsRemaining(data.remaining)
+          if (data.remaining <= 0) {
+            setStep("exhausted")
+          }
+        } else {
+          // New day, reset counter
+          const newData: TrialData = { date: today, remaining: DAILY_LIMIT }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+          setAttemptsRemaining(DAILY_LIMIT)
+        }
+      } catch {
+        const newData: TrialData = { date: today, remaining: DAILY_LIMIT }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+      }
+    } else {
+      const newData: TrialData = { date: today, remaining: DAILY_LIMIT }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+    }
+    setIsLoaded(true)
+  }, [])
+
+  // Save trial data when attempts change
+  const saveTrialData = (remaining: number) => {
+    const today = new Date().toDateString()
+    const data: TrialData = { date: today, remaining }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    setAttemptsRemaining(remaining)
+  }
+
+  const handlePulseInputChange = (value: string) => {
     const numValue = value.replace(/[^0-9]/g, "")
     if (numValue === "" || (parseInt(numValue) >= 0 && parseInt(numValue) <= 200)) {
-      const newPulses = [...pulses]
-      newPulses[index] = numValue
-      setPulses(newPulses)
+      setCurrentPulseInput(numValue)
     }
   }
 
-  const canGenerate = pulses.every(p => {
-    const num = parseInt(p)
-    return num >= 40 && num <= 200
-  })
+  const addPulse = useCallback(() => {
+    const num = parseInt(currentPulseInput)
+    if (num >= 40 && num <= 200 && pulses.length < 3) {
+      setPulses([...pulses, num])
+      setCurrentPulseInput("")
+      inputRef.current?.focus()
+    }
+  }, [currentPulseInput, pulses])
+
+  const removePulse = (index: number) => {
+    setPulses(pulses.filter((_, i) => i !== index))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
+      e.preventDefault()
+      addPulse()
+    } else if (e.key === "Backspace" && currentPulseInput === "" && pulses.length > 0) {
+      removePulse(pulses.length - 1)
+    }
+  }
+
+  const canGenerate = pulses.length === 3
 
   const generateImage = async () => {
     if (!canGenerate || attemptsRemaining <= 0) return
@@ -76,11 +140,11 @@ export default function SimpleDemo() {
     await new Promise(resolve => setTimeout(resolve, 2500))
 
     // Generate random result based on pulses
-    const avgPulse = pulses.reduce((a, b) => a + parseInt(b), 0) / 3
+    const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
     const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
     
     // Create canvas-based image
-    const imageUrl = generateCanvasImage(pulses.map(p => parseInt(p)), randomStyle)
+    const imageUrl = generateCanvasImage(pulses, randomStyle)
 
     const result: GeneratedResult = {
       imageUrl,
@@ -89,11 +153,18 @@ export default function SimpleDemo() {
       emotionalState: randomStyle.emotion,
       energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
       coherenceLevel: Math.round(70 + Math.random() * 25),
+      pulses: [...pulses],
     }
 
     setGeneratedResult(result)
-    setAttemptsRemaining(prev => prev - 1)
-    setStep("result")
+    const newRemaining = attemptsRemaining - 1
+    saveTrialData(newRemaining)
+    
+    if (newRemaining <= 0) {
+      setStep("exhausted")
+    } else {
+      setStep("result")
+    }
     setIsGenerating(false)
   }
 
@@ -173,9 +244,20 @@ export default function SimpleDemo() {
   }
 
   const resetDemo = () => {
-    setPulses(["", "", ""])
+    setPulses([])
+    setCurrentPulseInput("")
     setGeneratedResult(null)
     setStep("input")
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex items-center justify-center">
+        <div className="animate-pulse">
+          <Heart className="h-12 w-12 text-emerald-500" />
+        </div>
+      </div>
+    )
   }
 
   const CircularProgress = ({ value, label, color }: { value: number; label: string; color: string }) => {
@@ -250,16 +332,25 @@ export default function SimpleDemo() {
       </header>
 
       {/* Attempts remaining indicator */}
-      <div className="container mx-auto px-4 pt-4">
-        <div className="flex justify-end">
-          <Badge 
-            variant={attemptsRemaining > 0 ? "outline" : "destructive"} 
-            className={attemptsRemaining > 0 ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
-          >
-            {attemptsRemaining > 0 
-              ? `${attemptsRemaining} intento${attemptsRemaining > 1 ? 's' : ''} restante${attemptsRemaining > 1 ? 's' : ''}` 
-              : "Sin intentos disponibles"}
-          </Badge>
+      <div className="bg-emerald-50/50 border-b border-emerald-100">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {[...Array(DAILY_LIMIT)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    i < attemptsRemaining ? "bg-emerald-500" : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-600">
+              {attemptsRemaining > 0 
+                ? `${attemptsRemaining} imagen${attemptsRemaining > 1 ? "es" : ""} de prueba restante${attemptsRemaining > 1 ? "s" : ""}`
+                : "Sin imagenes de prueba disponibles"}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -336,7 +427,7 @@ export default function SimpleDemo() {
               </Button>
 
               <p className="text-sm text-gray-500 mt-4">
-                Tienes {attemptsRemaining} intentos gratuitos
+                Tienes {attemptsRemaining} imagen{attemptsRemaining > 1 ? "es" : ""} de prueba hoy
               </p>
             </motion.div>
           )}
@@ -351,65 +442,106 @@ export default function SimpleDemo() {
               className="max-w-md mx-auto"
             >
               <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100">
-                <CardHeader className="text-center pb-2">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-4">
-                    <Heart className="h-8 w-8 text-white" />
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-3">
+                    <Heart className="h-7 w-7 text-white" />
                   </div>
-                  <CardTitle className="text-2xl">Ingresa tus Pulsos</CardTitle>
+                  <CardTitle className="text-xl">Ingresa tus Pulsos</CardTitle>
                   <CardDescription>
-                    Introduce 3 valores de frecuencia cardiaca (40-200 BPM)
+                    Escribe un valor y presiona Enter o coma
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {[0, 1, 2].map((index) => (
-                    <div key={index} className="space-y-2">
-                      <Label htmlFor={`pulse-${index}`} className="text-gray-700">
-                        Pulso {index + 1}
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id={`pulse-${index}`}
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="Ej: 72"
-                          value={pulses[index]}
-                          onChange={(e) => handlePulseChange(index, e.target.value)}
-                          className="pr-12 text-lg h-12 border-gray-200 focus:border-emerald-400 focus:ring-emerald-400"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                          BPM
-                        </span>
-                      </div>
+                <CardContent className="space-y-4">
+                  {/* Inline Pulse Input */}
+                  <div 
+                    className="min-h-[56px] p-3 border-2 border-gray-200 rounded-xl bg-white focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all cursor-text"
+                    onClick={() => inputRef.current?.focus()}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      {pulses.map((pulse, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-medium"
+                        >
+                          <span>{pulse}</span>
+                          <span className="text-emerald-500 text-xs">BPM</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              removePulse(index)
+                            }}
+                            className="ml-0.5 hover:bg-emerald-200 rounded-full p-0.5 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </motion.div>
+                      ))}
+                      
+                      {pulses.length < 3 && (
+                        <div className="flex items-center gap-1 flex-1 min-w-[80px]">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            inputMode="numeric"
+                            placeholder={pulses.length === 0 ? "72, 65, 80..." : `Pulso ${pulses.length + 1}`}
+                            value={currentPulseInput}
+                            onChange={(e) => handlePulseInputChange(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onBlur={() => {
+                              if (currentPulseInput) addPulse()
+                            }}
+                            className="flex-1 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm min-w-0"
+                          />
+                          {currentPulseInput && parseInt(currentPulseInput) >= 40 && parseInt(currentPulseInput) <= 200 && (
+                            <button
+                              onClick={addPulse}
+                              className="text-emerald-500 hover:text-emerald-600 transition-colors"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
 
-                  {attemptsRemaining <= 0 ? (
-                    <div className="text-center space-y-4 pt-4">
-                      <p className="text-gray-600">
-                        Has agotado tus intentos gratuitos. Crea una cuenta para continuar explorando.
-                      </p>
-                      <Button 
-                        className="w-full bg-emerald-600 hover:bg-emerald-700"
-                        onClick={() => router.push("/auth/login")}
-                      >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Iniciar Sesion
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-lg"
-                      disabled={!canGenerate}
-                      onClick={generateImage}
-                    >
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Generar Mi Arte
-                    </Button>
+                  {/* Progress indicator */}
+                  <div className="flex items-center justify-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                          i < pulses.length ? "bg-emerald-500" : "bg-gray-200"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-2">
+                      {pulses.length}/3 pulsos
+                    </span>
+                  </div>
+
+                  {/* Validation message */}
+                  {currentPulseInput && (parseInt(currentPulseInput) < 40 || parseInt(currentPulseInput) > 200) && (
+                    <p className="text-sm text-amber-600 text-center">
+                      El valor debe estar entre 40 y 200 BPM
+                    </p>
                   )}
 
-                  {!canGenerate && pulses.some(p => p !== "") && (
-                    <p className="text-sm text-amber-600 text-center">
-                      Todos los valores deben estar entre 40 y 200 BPM
+                  <Button 
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 h-11"
+                    disabled={!canGenerate}
+                    onClick={generateImage}
+                  >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Generar Mi Arte
+                  </Button>
+
+                  {pulses.length > 0 && pulses.length < 3 && (
+                    <p className="text-xs text-gray-500 text-center">
+                      Agrega {3 - pulses.length} pulso{3 - pulses.length > 1 ? "s" : ""} mas para continuar
                     </p>
                   )}
                 </CardContent>
@@ -466,7 +598,7 @@ export default function SimpleDemo() {
                   Tu Arte Digital
                 </h2>
                 <p className="text-gray-600">
-                  Basado en tus pulsos: {pulses.join(", ")} BPM
+                  Basado en tus pulsos: {generatedResult.pulses.join(", ")} BPM
                 </p>
               </div>
 
@@ -512,13 +644,13 @@ export default function SimpleDemo() {
                       <div className="flex justify-around">
                         <CircularProgress 
                           value={generatedResult.energyLevel} 
-                          label="Nivel de Energia" 
+                          label="Energia" 
                           color="text-emerald-500"
                         />
                         <CircularProgress 
                           value={generatedResult.coherenceLevel} 
                           label="Coherencia" 
-                          color="text-blue-500"
+                          color="text-teal-500"
                         />
                       </div>
                     </CardContent>
@@ -526,32 +658,105 @@ export default function SimpleDemo() {
 
                   {/* Actions */}
                   <div className="flex gap-3">
-                    {attemptsRemaining > 0 ? (
+                    {attemptsRemaining > 0 && (
                       <Button 
                         variant="outline" 
                         className="flex-1"
                         onClick={resetDemo}
                       >
                         <RefreshCw className="mr-2 h-4 w-4" />
-                        Intentar de Nuevo
+                        Crear Otro
                       </Button>
-                    ) : null}
+                    )}
                     <Button 
                       className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                       onClick={() => router.push("/auth/login")}
                     >
                       <UserPlus className="mr-2 h-4 w-4" />
-                      Iniciar Sesion
+                      Crear Cuenta
                     </Button>
                   </div>
 
-                  {attemptsRemaining === 0 && (
-                    <p className="text-sm text-center text-gray-500">
-                      Crea una cuenta para generar arte ilimitado y acceder a todas las funciones.
-                    </p>
-                  )}
+                  <p className="text-sm text-center text-gray-500">
+                    {attemptsRemaining > 0 
+                      ? `Te quedan ${attemptsRemaining} imagen${attemptsRemaining > 1 ? "es" : ""} de prueba hoy`
+                      : "Crea una cuenta para generar arte ilimitado"}
+                  </p>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* EXHAUSTED STEP */}
+          {step === "exhausted" && (
+            <motion.div
+              key="exhausted"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-md mx-auto text-center"
+            >
+              <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100">
+                <CardContent className="py-10">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-6">
+                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    Limite de prueba alcanzado
+                  </h2>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    Has agotado tus {DAILY_LIMIT} imagenes de prueba por hoy. 
+                    Las imagenes de prueba se recargan diariamente.
+                  </p>
+
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 h-11"
+                      onClick={() => router.push("/auth/register")}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Crear una Cuenta Gratis
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full h-11"
+                      onClick={() => router.push("/auth/login")}
+                    >
+                      Ya tengo cuenta
+                    </Button>
+                  </div>
+
+                  <p className="text-xs text-gray-500 mt-6">
+                    Con una cuenta gratuita tendras acceso a mas funciones y podras guardar tu galeria
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Show last generated result if exists */}
+              {generatedResult && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-6"
+                >
+                  <p className="text-sm text-gray-500 mb-3">Tu ultima creacion:</p>
+                  <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100 overflow-hidden">
+                    <div className="aspect-video relative">
+                      <img
+                        src={generatedResult.imageUrl}
+                        alt={generatedResult.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-3 text-left">
+                      <h4 className="font-medium text-gray-900">{generatedResult.title}</h4>
+                      <p className="text-xs text-gray-500">{generatedResult.pulses.join(", ")} BPM</p>
+                    </div>
+                  </Card>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
