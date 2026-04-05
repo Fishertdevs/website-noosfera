@@ -37,10 +37,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30">
       {/* Header */}
-      <header
-        className="container mx-auto px-4 py-6 relative z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0"
-      >
-        <div className="flex justify-between items-center">
+      <header className="w-full px-4 py-6 z-50 bg-white border-b border-gray-100 sticky top-0">
+        <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <div className="bg-emerald-500/10 p-2 rounded-full border border-emerald-500/20">
               <Heart className="h-8 w-8 text-emerald-500" />

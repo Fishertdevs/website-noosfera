@@ -63,16 +63,11 @@ export default function CompanyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30">
-      <motion.header
-        className="container mx-auto px-4 py-6 relative z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30 isolate">
+      <header className="w-full px-4 py-6 z-50 bg-white border-b border-gray-100 sticky top-0">
+        <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
-            <div className="bg-emerald-500/10 p-2 rounded-full backdrop-blur-sm border border-emerald-500/20">
+            <div className="bg-emerald-500/10 p-2 rounded-full border border-emerald-500/20">
               <Heart className="h-8 w-8 text-emerald-500" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
@@ -95,42 +90,20 @@ export default function CompanyPage() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => router.push("/auth/login")}
-              className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/20 hover:border-emerald-500/40"
-            >
-              <LogIn className="mr-2 h-4 w-4" />
-              Iniciar Sesion
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/auth/login")}
+            className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/20 hover:border-emerald-500/40"
+          >
+            <LogIn className="mr-2 h-4 w-4" />
+            Iniciar Sesion
+          </Button>
         </div>
-      </motion.header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900">
-            Quienes Somos
-          </h1>
-
-          <p className="text-lg text-gray-600 mt-6 max-w-3xl mx-auto">
-            Somos un equipo apasionado por la innovacion tecnologica, dedicados a transformar 
-            los patrones cardiacos unicos de cada persona en obras de arte digital irrepetibles.
-          </p>
-        </motion.div>
-      </section>
+      </header>
 
       {/* Team Carousel */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white">
-        {/* Background decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-40" />
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl opacity-40" />
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+        <div className="container mx-auto px-4">
           {teamSlides[currentSlide].type === "intro" ? (
             /* Intro slide - centered text only, no image */
             <div className="max-w-3xl mx-auto text-center">
@@ -152,11 +125,8 @@ export default function CompanyPage() {
               {/* Text Content - Left Side */}
               <div className="order-2 lg:order-1">
                 <div className="space-y-6">
-                  <p className={`text-sm font-semibold uppercase tracking-wider bg-gradient-to-r ${teamSlides[currentSlide].gradient} bg-clip-text text-transparent`}>
-                    {teamSlides[currentSlide].role}
-                  </p>
                   <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                    {teamSlides[currentSlide].name}
+                    {teamSlides[currentSlide].role}
                   </h2>
                   <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
                     {teamSlides[currentSlide].description}
