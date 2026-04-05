@@ -276,10 +276,8 @@ export default function SimpleDemo() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex items-center justify-center">
-        <div className="animate-pulse">
-          <Heart className="h-12 w-12 text-emerald-500" />
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Cargando...</div>
       </div>
     )
   }
@@ -358,12 +356,15 @@ export default function SimpleDemo() {
       {/* Attempts remaining indicator */}
       <div className="bg-emerald-50/50 border-b border-emerald-100">
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-4">
+            <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
+              Plan de prueba
+            </Badge>
             <div className="flex items-center gap-1.5">
               {[...Array(DAILY_LIMIT)].map((_, i) => (
                 <div
                   key={i}
-                  className={`w-3 h-3 rounded-full transition-colors ${
+                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
                     i < attemptsRemaining ? "bg-emerald-500" : "bg-gray-200"
                   }`}
                 />
@@ -371,8 +372,8 @@ export default function SimpleDemo() {
             </div>
             <span className="text-sm text-gray-600">
               {attemptsRemaining > 0 
-                ? `${attemptsRemaining} imagen${attemptsRemaining > 1 ? "es" : ""} de prueba restante${attemptsRemaining > 1 ? "s" : ""}`
-                : "Sin imagenes de prueba disponibles"}
+                ? `${attemptsRemaining} imagenes restantes por hoy`
+                : "Sin imagenes disponibles hoy"}
             </span>
           </div>
         </div>
