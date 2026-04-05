@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart, Code2, Shield, Cpu, Zap, Database, Globe, Server, Lock, ArrowLeft, ChevronRight } from 'lucide-react'
+import { Heart, Code2, Database, Globe, Server, Github, Briefcase, DollarSign, Cpu, ArrowLeft } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import { Footer } from "@/components/footer"
@@ -11,116 +11,154 @@ export default function DocsPage() {
 
   const sections = [
     {
-      id: "api",
-      title: "API de Integracion",
+      id: "frontend",
+      title: "Frontend",
       icon: Code2,
       content: [
         {
-          subtitle: "Endpoint Base",
-          text: "Todas las peticiones se realizan a https://api.noosfera.com/v1/. La autenticacion se realiza mediante API Key que puedes obtener en tu panel de control."
+          subtitle: "Tecnologias Principales",
+          text: "Next.js 16 con React 19 y App Router. Tailwind CSS para estilos con sistema de diseno personalizado. Framer Motion para animaciones fluidas y transiciones."
         },
         {
-          subtitle: "Autenticacion",
-          text: "Incluye tu API Key en el header Authorization: Bearer YOUR_API_KEY en cada peticion. Las claves tienen permisos configurables segun tu plan."
+          subtitle: "Componentes UI",
+          text: "Biblioteca de componentes basada en shadcn/ui con personalizacion completa. Componentes accesibles siguiendo estandares WCAG 2.1."
         },
         {
-          subtitle: "Rate Limits",
-          text: "Plan Free: 100 requests/hora. Plan Estandar: 1,000 requests/hora. Plan Premium: Sin limites. Los limites se reinician cada hora UTC."
+          subtitle: "Rendimiento",
+          text: "Optimizacion automatica de imagenes, code splitting, lazy loading y prefetching para una experiencia rapida en cualquier dispositivo."
         }
       ]
     },
     {
-      id: "captura",
-      title: "Captura de Datos Cardiacos",
-      icon: Heart,
-      content: [
-        {
-          subtitle: "Dispositivos Compatibles",
-          text: "Noosfera es compatible con Apple Watch, Fitbit, Garmin, Samsung Galaxy Watch, y cualquier dispositivo que soporte HealthKit o Google Fit."
-        },
-        {
-          subtitle: "Sincronizacion",
-          text: "Los datos se sincronizan automaticamente cada 5 minutos cuando el dispositivo esta conectado. Tambien puedes forzar una sincronizacion manual."
-        },
-        {
-          subtitle: "Precision",
-          text: "Latencia menor a 10ms en la captura. Precision del 99.5% en la deteccion de patrones cardiacos unicos."
-        }
-      ]
-    },
-    {
-      id: "nft",
-      title: "Generacion de NFTs",
-      icon: Zap,
-      content: [
-        {
-          subtitle: "Proceso de Generacion",
-          text: "Los patrones cardiacos se transforman en arte digital unico mediante algoritmos propietarios. Cada NFT es matematicamente unico e irrepetible."
-        },
-        {
-          subtitle: "Blockchains Soportadas",
-          text: "Ethereum (Mainnet), Polygon, Solana, y Binance Smart Chain. Selecciona la blockchain segun tus preferencias de costo y velocidad."
-        },
-        {
-          subtitle: "Metadatos",
-          text: "Cada NFT incluye: timestamp de captura, hash del patron cardiaco, estilo artistico aplicado, y firma digital del creador."
-        }
-      ]
-    },
-    {
-      id: "seguridad",
-      title: "Seguridad y Privacidad",
-      icon: Shield,
-      content: [
-        {
-          subtitle: "Encriptacion",
-          text: "Todos los datos se encriptan con AES-256 en reposo y TLS 1.3 en transito. Las claves de encriptacion se rotan automaticamente."
-        },
-        {
-          subtitle: "Cumplimiento",
-          text: "Cumplimos con GDPR, CCPA, HIPAA, y regulaciones locales de proteccion de datos. Auditorias de seguridad trimestrales por terceros."
-        },
-        {
-          subtitle: "Control de Datos",
-          text: "Tienes control total sobre tus datos. Puedes exportarlos o eliminarlos permanentemente en cualquier momento desde tu panel."
-        }
-      ]
-    },
-    {
-      id: "arquitectura",
-      title: "Arquitectura Tecnica",
+      id: "backend",
+      title: "Backend",
       icon: Server,
       content: [
         {
-          subtitle: "Frontend",
-          text: "Next.js 16 con React 19, Tailwind CSS para estilos, y Framer Motion para animaciones. Desplegado en Vercel con Edge Functions."
+          subtitle: "API Routes",
+          text: "Endpoints serverless con Next.js API Routes. Validacion de datos, manejo de errores y rate limiting integrado."
         },
         {
-          subtitle: "Backend",
-          text: "API Routes serverless, Supabase como base de datos PostgreSQL con Row Level Security habilitado para cada usuario."
+          subtitle: "Autenticacion",
+          text: "Sistema de autenticacion seguro con Supabase Auth. Soporte para email/password, OAuth providers y sesiones persistentes."
         },
         {
-          subtitle: "Blockchain",
-          text: "Integracion con ethers.js y RainbowKit. Smart contracts auditados desplegados en multiples redes EVM y Solana."
+          subtitle: "Procesamiento",
+          text: "Algoritmos de generacion de arte en tiempo real. Procesamiento de pulsos cardiacos con conversion a patrones visuales unicos."
         }
       ]
     },
     {
-      id: "sdk",
-      title: "SDKs y Librerias",
+      id: "database",
+      title: "Base de Datos",
+      icon: Database,
+      content: [
+        {
+          subtitle: "Supabase PostgreSQL",
+          text: "Base de datos relacional con Row Level Security (RLS) habilitado. Cada usuario solo puede acceder a sus propios datos."
+        },
+        {
+          subtitle: "Esquema de Datos",
+          text: "Tablas optimizadas para usuarios, imagenes generadas, sesiones y configuraciones. Indices para consultas rapidas."
+        },
+        {
+          subtitle: "Respaldos",
+          text: "Backups automaticos diarios con retencion de 30 dias. Recuperacion point-in-time disponible en planes premium."
+        }
+      ]
+    },
+    {
+      id: "hosting",
+      title: "Hosting y Servidor",
+      icon: Globe,
+      content: [
+        {
+          subtitle: "Vercel Platform",
+          text: "Despliegue automatico en Vercel con preview deployments para cada PR. CDN global con mas de 100 puntos de presencia."
+        },
+        {
+          subtitle: "Edge Functions",
+          text: "Funciones serverless ejecutadas en el edge para latencia minima. Auto-scaling sin configuracion."
+        },
+        {
+          subtitle: "Dominio y SSL",
+          text: "Dominio personalizado noosfera.cloud con certificado SSL automatico. HTTPS forzado en todas las conexiones."
+        }
+      ]
+    },
+    {
+      id: "github",
+      title: "GitHub",
+      icon: Github,
+      content: [
+        {
+          subtitle: "Repositorio",
+          text: "Codigo fuente versionado en GitHub con flujo Git Flow. Ramas protegidas con requerimientos de revision."
+        },
+        {
+          subtitle: "CI/CD",
+          text: "GitHub Actions para integracion continua. Tests automaticos, linting y build verification en cada commit."
+        },
+        {
+          subtitle: "Colaboracion",
+          text: "Issues y Projects para gestion de tareas. Pull requests con templates y checklists de revision."
+        }
+      ]
+    },
+    {
+      id: "negocio",
+      title: "Modelo de Negocio",
+      icon: Briefcase,
+      content: [
+        {
+          subtitle: "Propuesta de Valor",
+          text: "Transformar datos biometricos unicos (pulsos cardiacos) en arte digital coleccionable. Cada imagen es matematicamente irrepetible."
+        },
+        {
+          subtitle: "Segmento de Clientes",
+          text: "Artistas digitales, coleccionistas de NFTs, entusiastas de la tecnologia wearable y usuarios interesados en la cuantificacion personal."
+        },
+        {
+          subtitle: "Canales",
+          text: "Plataforma web responsive, integraciones con dispositivos wearables (Apple Watch, Fitbit, Garmin), y marketplace de NFTs."
+        }
+      ]
+    },
+    {
+      id: "monetizacion",
+      title: "Monetizacion Colombia",
+      icon: DollarSign,
+      content: [
+        {
+          subtitle: "Planes de Suscripcion",
+          text: "Plan Free: $0 COP (10 capturas/mes). Plan Estandar: $39.900 COP/mes (50 NFTs). Plan Premium: $89.900 COP/mes (ilimitado)."
+        },
+        {
+          subtitle: "Pasarelas de Pago",
+          text: "Integracion con PSE para transferencias bancarias, tarjetas de credito/debito via Stripe, y Nequi/Daviplata para pagos moviles."
+        },
+        {
+          subtitle: "Facturacion",
+          text: "Facturacion electronica conforme a la normativa DIAN. Retencion de IVA del 19% incluida en todos los precios mostrados."
+        }
+      ]
+    },
+    {
+      id: "ia",
+      title: "Inteligencia Artificial",
       icon: Cpu,
       content: [
         {
-          subtitle: "JavaScript/TypeScript",
-          text: "npm install @noosfera/sdk - Soporte completo para Node.js y navegadores. Incluye tipos TypeScript."
+          subtitle: "Generacion de Imagenes",
+          text: "Algoritmo propietario de generacion de arte basado en patrones cardiacos. Cada imagen es completamente unica y nunca se repite."
         },
         {
-          subtitle: "Python",
-          text: "pip install noosfera-sdk - Compatible con Python 3.8+. Soporte async/await nativo."
+          subtitle: "Proceso Creativo",
+          text: "Los pulsos se convierten en parametros matematicos que definen colores, formas geometricas, ondas y patrones. Estilos artisticos variados aplicados aleatoriamente."
         },
         {
-          subtitle: "Go",
-          text: "go get github.com/noosfera/sdk - Cliente ligero y eficiente para aplicaciones de alto rendimiento."
+          subtitle: "Unicidad Garantizada",
+          text: "Combinacion de timestamp, pulsos, semillas aleatorias y parametros de estilo aseguran que ninguna imagen generada sea igual a otra."
         }
       ]
     }
@@ -165,50 +203,28 @@ export default function DocsPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Simple y limpio */}
       <section className="bg-gradient-to-b from-emerald-50 to-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Code2 className="h-4 w-4" />
-              Documentacion Tecnica
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Centro de Documentacion
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Guia completa para integrar y utilizar todas las funcionalidades de Noosfera. 
-              Encuentra informacion sobre APIs, SDKs, seguridad y mejores practicas.
+              Guia completa sobre la arquitectura tecnica, modelo de negocio y tecnologias 
+              utilizadas en la plataforma Noosfera.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Links */}
-      <section className="py-8 border-b border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-3">
-            {sections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 transition-colors text-sm font-medium"
-              >
-                <section.icon className="h-4 w-4" />
-                {section.title}
-              </a>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Documentation Content */}
       <main className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto space-y-16">
+        <div className="max-w-4xl mx-auto space-y-12">
           {sections.map((section, index) => (
             <section key={section.id} id={section.id} className="scroll-mt-24">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="bg-emerald-100 p-3 rounded-xl">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="bg-emerald-100 p-3 rounded-xl shrink-0">
                   <section.icon className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div>
@@ -217,11 +233,10 @@ export default function DocsPage() {
                 </div>
               </div>
 
-              <div className="space-y-6 pl-4 border-l-2 border-emerald-100">
+              <div className="space-y-4 ml-0 md:ml-16">
                 {section.content.map((item, idx) => (
-                  <div key={idx} className="pl-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-emerald-500" />
+                  <div key={idx} className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {item.subtitle}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">{item.text}</p>
@@ -230,54 +245,21 @@ export default function DocsPage() {
               </div>
 
               {index < sections.length - 1 && (
-                <div className="mt-12 pt-8 border-t border-gray-100" />
+                <div className="mt-8 border-t border-gray-100" />
               )}
             </section>
           ))}
 
-          {/* Additional Resources */}
-          <section className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-2xl p-8 mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Recursos Adicionales</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <Database className="h-8 w-8 text-emerald-600 mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Base de Datos</h3>
-                <p className="text-sm text-gray-600">Supabase con PostgreSQL y Row Level Security habilitado.</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <Globe className="h-8 w-8 text-blue-600 mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">CDN Global</h3>
-                <p className="text-sm text-gray-600">Vercel Edge Network con latencia menor a 50ms globalmente.</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <Lock className="h-8 w-8 text-purple-600 mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Autenticacion</h3>
-                <p className="text-sm text-gray-600">Supabase Auth con soporte para 2FA y OAuth providers.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Support */}
-          <section className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">¿Necesitas ayuda?</h2>
-            <p className="text-gray-600 mb-6">
-              Nuestro equipo de soporte esta disponible para resolver tus dudas tecnicas.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                className="bg-emerald-600 hover:bg-emerald-700"
-                onClick={() => router.push("/auth/login")}
-              >
-                Acceder al Soporte
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => router.push("/")}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Volver al Inicio
-              </Button>
-            </div>
+          {/* Back to Home */}
+          <section className="text-center py-8 mt-8 border-t border-gray-100">
+            <Button 
+              variant="outline"
+              onClick={() => router.push("/")}
+              className="border-emerald-500/20 hover:border-emerald-500/40"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver al Inicio
+            </Button>
           </section>
         </div>
       </main>
