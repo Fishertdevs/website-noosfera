@@ -64,6 +64,11 @@ export default function RegisterPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Registrate en Noosfera</h1>
+          <p className="text-gray-500 mt-2">Crea tu cuenta y comienza a generar arte</p>
+        </div>
+
         <Card>
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
@@ -72,7 +77,7 @@ export default function RegisterPage() {
               </div>
             </div>
             <CardTitle className="text-2xl">Crear Cuenta</CardTitle>
-            <CardDescription>Únete a la revolución de Noösfera</CardDescription>
+            <CardDescription>Completa tus datos para registrarte</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
