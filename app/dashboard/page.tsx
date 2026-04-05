@@ -12,11 +12,13 @@ export default function DashboardPage() {
   const { isAuthenticated, isLoading, user } = useAuth()
   const [isDemoMode, setIsDemoMode] = useState<boolean | null>(null)
 
-  // Detectar modo demo desde URL
+  // Detectar modo demo desde URL o usuario demo
   useEffect(() => {
     const mode = searchParams.get("mode")
-    setIsDemoMode(mode === "demo")
-  }, [searchParams])
+    // Es modo demo si: URL tiene mode=demo O el usuario logueado es demo@noosfera.com
+    const isDemoUser = user?.email === "demo@noosfera.com"
+    setIsDemoMode(mode === "demo" || isDemoUser)
+  }, [searchParams, user])
 
   // Redirigir admin al panel de administracion
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function DashboardPage() {
     )
   }
 
-  // PRIORIDAD 1: Si es modo demo, mostrar SimpleDemo
+  // PRIORIDAD 1: Si es modo demo (URL o usuario demo@noosfera.com), mostrar SimpleDemo
   if (isDemoMode) {
     return <SimpleDemo />
   }

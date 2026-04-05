@@ -2,12 +2,21 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw, X, Check, ImageIcon } from "lucide-react"
+import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw, X, Check, ImageIcon, LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type DemoStep = "welcome" | "input" | "generating" | "result" | "exhausted"
 
@@ -40,6 +49,7 @@ interface TrialData {
 
 export default function SimpleDemo() {
   const router = useRouter()
+  const { user, isAuthenticated, logout } = useAuth()
   const [step, setStep] = useState<DemoStep>("welcome")
   const [pulses, setPulses] = useState<number[]>([])
   const [currentPulseInput, setCurrentPulseInput] = useState("")
@@ -344,10 +354,45 @@ export default function SimpleDemo() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver
               </Button>
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/auth/login")}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Iniciar Sesion
-              </Button>
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.avatar} />
+                        <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                          {user?.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden sm:inline text-sm font-medium">{user?.name}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                      <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 text-xs">
+                        Plan de prueba
+                      </Badge>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-gray-600 text-xs">
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      {attemptsRemaining} imagenes restantes hoy
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Cerrar Sesion
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/auth/login")}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Iniciar Sesion
+                </Button>
+              )}
             </div>
           </div>
         </div>
