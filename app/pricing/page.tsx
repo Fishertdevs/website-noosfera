@@ -26,19 +26,19 @@ const plans: Plan[] = [
     id: 0,
     name: "Plan Free",
     price: "$0",
-    period: "Gratis para siempre",
-    features: ["10 capturas cardiacas/mes", "5 imagenes NFT/mes", "Resolucion estandar", "2 estilos de generacion"],
+    period: "Gratis",
+    features: ["10 capturas/mes", "5 NFTs/mes", "Resolucion estandar"],
     gradient: "from-gray-600 to-gray-700",
-    icon: <Heart className="h-12 w-12 text-white" />,
+    icon: <Heart className="h-8 w-8 text-white" />,
   },
   {
     id: 1,
     name: "Plan Estandar",
     price: "$39.900",
     period: "COP/mes",
-    features: ["Capturas ilimitadas", "50 imagenes NFT/mes", "Sin marca de agua", "Comision reducida 8%"],
+    features: ["Capturas ilimitadas", "50 NFTs/mes", "Sin marca de agua"],
     gradient: "from-blue-500 to-indigo-600",
-    icon: <Zap className="h-12 w-12 text-white" />,
+    icon: <Zap className="h-8 w-8 text-white" />,
     popular: true,
   },
   {
@@ -46,9 +46,9 @@ const plans: Plan[] = [
     name: "Plan Premium",
     price: "$89.900",
     period: "COP/mes",
-    features: ["NFTs ilimitados", "Resolucion ultra 4K", "API de integracion", "Soporte 24/7"],
+    features: ["NFTs ilimitados", "Ultra 4K", "API + Soporte 24/7"],
     gradient: "from-violet-500 to-purple-600",
-    icon: <Crown className="h-12 w-12 text-white" />,
+    icon: <Crown className="h-8 w-8 text-white" />,
   },
 ]
 
@@ -172,7 +172,7 @@ export default function PricingPage() {
       </motion.header>
 
       {/* Plans Section - Static text left, rotating plans right */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white">
+      <section className="relative py-16 flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white">
         {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-40" />
@@ -198,38 +198,39 @@ export default function PricingPage() {
 
             {/* Rotating Plan Cards - Right Side */}
             <div className="order-1 lg:order-2 flex justify-center">
-              <div className={`relative w-80 md:w-96 rounded-3xl bg-gradient-to-br ${plans[currentPlan].gradient} p-8 shadow-2xl transition-all duration-500`}>
+              <div className={`relative w-64 md:w-72 rounded-2xl bg-gradient-to-br ${plans[currentPlan].gradient} p-5 shadow-xl transition-all duration-500`}>
                 {plans[currentPlan].popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full">
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-amber-500 text-white text-xs font-bold px-3 py-0.5 rounded-full">
                     Popular
                   </div>
                 )}
                 
-                <div className="flex justify-center mb-6">
-                  <div className="bg-white/20 p-4 rounded-2xl">
+                <div className="flex justify-center mb-3">
+                  <div className="bg-white/20 p-2.5 rounded-xl">
                     {plans[currentPlan].icon}
                   </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold text-white text-center mb-2">
+                <h3 className="text-lg font-bold text-white text-center mb-1">
                   {plans[currentPlan].name}
                 </h3>
                 
-                <div className="text-center mb-6">
-                  <span className="text-4xl font-bold text-white">{plans[currentPlan].price}</span>
-                  <span className="text-white/80 ml-2">{plans[currentPlan].period}</span>
+                <div className="text-center mb-4">
+                  <span className="text-2xl font-bold text-white">{plans[currentPlan].price}</span>
+                  <span className="text-white/80 text-sm ml-1">{plans[currentPlan].period}</span>
                 </div>
                 
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-2 mb-4">
                   {plans[currentPlan].features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-white/90">
-                      <Check className="h-5 w-5 mr-3 text-white" />
+                    <li key={index} className="flex items-center text-white/90 text-sm">
+                      <Check className="h-4 w-4 mr-2 text-white flex-shrink-0" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 
                 <Button
+                  size="sm"
                   className="w-full bg-white text-gray-900 hover:bg-gray-100 font-semibold"
                   onClick={() => router.push("/auth/login")}
                 >
