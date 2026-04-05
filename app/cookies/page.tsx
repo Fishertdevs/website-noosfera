@@ -13,8 +13,8 @@ export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="flex justify-between items-center">
+      <header className="w-full px-4 py-6 border-b border-gray-100 bg-white sticky top-0 z-50">
+        <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <div className="bg-emerald-500/10 p-2 rounded-full border border-emerald-500/20">
               <Heart className="h-6 w-6 text-emerald-500" />
@@ -46,6 +46,7 @@ export default function CookiesPage() {
           >
             Iniciar Sesion
           </Button>
+        </div>
         </div>
       </header>
 

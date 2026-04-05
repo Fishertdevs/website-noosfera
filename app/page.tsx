@@ -8,7 +8,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import NeuralParticles from "@/components/animations/neural-particles"
 import { useAuth } from "@/contexts/auth-context"
 import { CookiesConsent } from "@/components/cookies-consent"
 import { HomepageKPIs } from "@/components/homepage-kpis"
@@ -37,40 +36,17 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30">
-      <NeuralParticles />
-
       {/* Header */}
-      <motion.header
-        className="container mx-auto px-4 py-6 relative z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="flex justify-between items-center">
-          <motion.div
-            className="flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <Link href="/" className="flex items-center gap-2">
-              <motion.div
-                whileHover={{
-                  rotate: 360,
-                  scale: 1.1,
-                }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                className="bg-emerald-500/10 p-2 rounded-full backdrop-blur-sm border border-emerald-500/20"
-              >
-                <Heart className="h-8 w-8 text-emerald-500" />
-              </motion.div>
-              <motion.h1
-                className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent"
-                whileHover={{ scale: 1.05 }}
-              >
-                Noosfera
-              </motion.h1>
-            </Link>
-          </motion.div>
+      <header className="w-full px-4 py-6 z-50 bg-white border-b border-gray-100 sticky top-0">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="bg-emerald-500/10 p-2 rounded-full border border-emerald-500/20">
+              <Heart className="h-8 w-8 text-emerald-500" />
+            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
+              Noosfera
+            </h1>
+          </Link>
 
           <nav>
             <ul className="flex items-center gap-2 md:gap-6">
@@ -107,21 +83,19 @@ export default function LandingPage() {
                 </Link>
               </li>
               <li>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="outline"
-                    onClick={() => router.push("/auth/login")}
-                    className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/20 hover:border-emerald-500/40 backdrop-blur-sm"
-                  >
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Iniciar Sesion
-                  </Button>
-                </motion.div>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/auth/login")}
+                  className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/20 hover:border-emerald-500/40"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Iniciar Sesion
+                </Button>
               </li>
             </ul>
           </nav>
         </div>
-      </motion.header>
+      </header>
 
       {/* Hero Carousel Section */}
       <HeroCarousel onStartDemo={startDemo} onShowAuth={showAuth} />
@@ -132,13 +106,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-emerald-50 to-blue-50">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto"
-          >
+          <div className="text-center max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Comienza a Crear tu Arte Digital
             </h2>
@@ -161,7 +129,7 @@ export default function LandingPage() {
                 Ver Planes
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 

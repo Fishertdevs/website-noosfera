@@ -12,6 +12,7 @@ export interface User {
   email: string
   avatar?: string
   role: "user" | "admin" | "researcher"
+  plan: "free" | "premium"
   createdAt: Date
   lastLogin: Date
   preferences: {
@@ -66,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: userData.email,
               avatar: userData.avatar,
               role: userData.role,
+              plan: userData.plan || "free",
               createdAt: new Date(userData.createdAt),
               lastLogin: new Date(userData.lastLogin),
               preferences: userData.preferences,
@@ -114,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: userData.email,
         avatar: userData.avatar,
         role: userData.role,
+        plan: userData.plan || "free",
         createdAt: new Date(userData.createdAt),
         lastLogin: new Date(),
         preferences: userData.preferences,
@@ -121,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(userObj)
       setIsAuthenticated(true)
-      toast.success("Inicio de sesión exitoso")
+      toast.success("Inicio de sesion exitoso")
       return true
     } catch (error) {
       console.error("Error during login:", error)

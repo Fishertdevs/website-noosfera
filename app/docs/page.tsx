@@ -86,14 +86,9 @@ export default function DocsPage() {
   const currentCategory = categories.find((cat) => cat.id === activeCategory)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30">
-      <motion.header
-        className="container mx-auto px-4 py-6 relative z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-emerald-50/30 isolate">
+      <header className="w-full px-4 py-6 z-50 bg-white border-b border-gray-100 sticky top-0">
+        <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <div className="bg-emerald-500/10 p-2 rounded-full backdrop-blur-sm border border-emerald-500/20">
               <Heart className="h-8 w-8 text-emerald-500" />
@@ -129,10 +124,10 @@ export default function DocsPage() {
             </Button>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Theoretical Framework */}
-      <section className="py-20">
+      <section className="py-20 overflow-hidden">
         <TheoreticalFramework />
       </section>
 

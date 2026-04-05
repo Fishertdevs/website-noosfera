@@ -2,12 +2,21 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw, X, Check, ImageIcon } from "lucide-react"
+import { Heart, Sparkles, ArrowRight, UserPlus, ArrowLeft, RefreshCw, X, Check, ImageIcon, LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type DemoStep = "welcome" | "input" | "generating" | "result" | "exhausted"
 
@@ -30,7 +39,7 @@ const artStyles = [
   { name: "Serenidad Azul", color: "from-blue-400 to-indigo-500", emotion: "Calma y profundidad" },
 ]
 
-const DAILY_LIMIT = 3
+const DAILY_LIMIT = 5
 const STORAGE_KEY = "noosfera_demo_trial"
 
 interface TrialData {
@@ -40,6 +49,7 @@ interface TrialData {
 
 export default function SimpleDemo() {
   const router = useRouter()
+  const { user, isAuthenticated, logout } = useAuth()
   const [step, setStep] = useState<DemoStep>("welcome")
   const [pulses, setPulses] = useState<number[]>([])
   const [currentPulseInput, setCurrentPulseInput] = useState("")
@@ -137,35 +147,59 @@ export default function SimpleDemo() {
       })
     }, 100)
 
-    await new Promise(resolve => setTimeout(resolve, 2500))
+    try {
+      const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
+      
+      // Try to use AI API for better image generation
+      let imageUrl: string
+      try {
+        const aiResponse = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pulses,
+            style: randomStyle.name,
+            emotionalState: randomStyle.emotion,
+          }),
+        })
 
-    // Generate random result based on pulses
-    const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
-    const randomStyle = artStyles[Math.floor(Math.random() * artStyles.length)]
-    
-    // Create canvas-based image
-    const imageUrl = generateCanvasImage(pulses, randomStyle)
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json()
+          imageUrl = aiData.imageUrl
+        } else {
+          // Fallback to canvas generation
+          imageUrl = generateCanvasImage(pulses, randomStyle)
+        }
+      } catch {
+        // Fallback to canvas generation
+        imageUrl = generateCanvasImage(pulses, randomStyle)
+      }
 
-    const result: GeneratedResult = {
-      imageUrl,
-      title: randomStyle.name,
-      description: `Esta imagen representa la esencia de tus ${pulses.length} pulsos cardiacos (${pulses.join(", ")} BPM). Los patrones unicos de tu ritmo cardiaco han sido transformados en arte digital mediante nuestro algoritmo de interpretacion emocional.`,
-      emotionalState: randomStyle.emotion,
-      energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
-      coherenceLevel: Math.round(70 + Math.random() * 25),
-      pulses: [...pulses],
+      const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
+
+      const result: GeneratedResult = {
+        imageUrl,
+        title: randomStyle.name,
+        description: `Esta imagen representa la esencia de tus ${pulses.length} pulsos cardiacos (${pulses.join(", ")} BPM). Los patrones unicos de tu ritmo cardiaco han sido transformados en arte digital mediante nuestro algoritmo de interpretacion emocional.`,
+        emotionalState: randomStyle.emotion,
+        energyLevel: Math.min(100, Math.round((avgPulse / 180) * 100)),
+        coherenceLevel: Math.round(70 + Math.random() * 25),
+        pulses: [...pulses],
+      }
+
+      setGeneratedResult(result)
+      const newRemaining = attemptsRemaining - 1
+      saveTrialData(newRemaining)
+      
+      if (newRemaining <= 0) {
+        setStep("exhausted")
+      } else {
+        setStep("result")
+      }
+    } finally {
+      clearInterval(progressInterval)
+      setIsGenerating(false)
     }
-
-    setGeneratedResult(result)
-    const newRemaining = attemptsRemaining - 1
-    saveTrialData(newRemaining)
-    
-    if (newRemaining <= 0) {
-      setStep("exhausted")
-    } else {
-      setStep("result")
-    }
-    setIsGenerating(false)
   }
 
   const generateCanvasImage = (pulseData: number[], style: typeof artStyles[0]): string => {
@@ -252,10 +286,8 @@ export default function SimpleDemo() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex items-center justify-center">
-        <div className="animate-pulse">
-          <Heart className="h-12 w-12 text-emerald-500" />
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Cargando...</div>
       </div>
     )
   }
@@ -322,10 +354,45 @@ export default function SimpleDemo() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver
               </Button>
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/auth/login")}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Iniciar Sesion
-              </Button>
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.avatar} />
+                        <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                          {user?.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden sm:inline text-sm font-medium">{user?.name}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                      <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 text-xs">
+                        Plan de prueba
+                      </Badge>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-gray-600 text-xs">
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      {attemptsRemaining} imagenes restantes hoy
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Cerrar Sesion
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/auth/login")}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Iniciar Sesion
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -334,12 +401,15 @@ export default function SimpleDemo() {
       {/* Attempts remaining indicator */}
       <div className="bg-emerald-50/50 border-b border-emerald-100">
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-4">
+            <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
+              Plan de prueba
+            </Badge>
             <div className="flex items-center gap-1.5">
               {[...Array(DAILY_LIMIT)].map((_, i) => (
                 <div
                   key={i}
-                  className={`w-3 h-3 rounded-full transition-colors ${
+                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
                     i < attemptsRemaining ? "bg-emerald-500" : "bg-gray-200"
                   }`}
                 />
@@ -347,8 +417,8 @@ export default function SimpleDemo() {
             </div>
             <span className="text-sm text-gray-600">
               {attemptsRemaining > 0 
-                ? `${attemptsRemaining} imagen${attemptsRemaining > 1 ? "es" : ""} de prueba restante${attemptsRemaining > 1 ? "s" : ""}`
-                : "Sin imagenes de prueba disponibles"}
+                ? `${attemptsRemaining} imagenes restantes por hoy`
+                : "Sin imagenes disponibles hoy"}
             </span>
           </div>
         </div>
