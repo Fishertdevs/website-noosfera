@@ -107,7 +107,7 @@ export default function SimpleDemo() {
 
   const addPulse = useCallback(() => {
     const num = parseInt(currentPulseInput)
-    if (num >= 40 && num <= 200 && pulses.length < 3) {
+    if (num >= 40 && num <= 200 && pulses.length < 8) {
       setPulses([...pulses, num])
       setCurrentPulseInput("")
       inputRef.current?.focus()
@@ -127,7 +127,7 @@ export default function SimpleDemo() {
     }
   }
 
-  const canGenerate = pulses.length === 3
+  const canGenerate = pulses.length >= 1 && pulses.length <= 8
 
   const generateImage = async () => {
     if (!canGenerate || attemptsRemaining <= 0) return
@@ -461,7 +461,7 @@ export default function SimpleDemo() {
                         1
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Ingresa 3 pulsos cardiacos</p>
+                        <p className="font-medium text-gray-900">Ingresa hasta 8 pulsos cardiacos</p>
                         <p className="text-sm text-gray-500">Valores entre 40-200 BPM</p>
                       </div>
                     </div>
@@ -550,7 +550,7 @@ export default function SimpleDemo() {
                         </motion.div>
                       ))}
                       
-                      {pulses.length < 3 && (
+                      {pulses.length < 8 && (
                         <div className="flex items-center gap-1 flex-1 min-w-[80px]">
                           <input
                             ref={inputRef}
@@ -589,7 +589,7 @@ export default function SimpleDemo() {
                       />
                     ))}
                     <span className="text-xs text-gray-500 ml-2">
-                      {pulses.length}/3 pulsos
+                      {pulses.length}/8 pulsos
                     </span>
                   </div>
 
@@ -609,7 +609,7 @@ export default function SimpleDemo() {
                     Generar Mi Arte
                   </Button>
 
-                  {pulses.length > 0 && pulses.length < 3 && (
+                  {pulses.length > 0 && pulses.length < 8 && (
                     <p className="text-xs text-gray-500 text-center">
                       Agrega {3 - pulses.length} pulso{3 - pulses.length > 1 ? "s" : ""} mas para continuar
                     </p>
