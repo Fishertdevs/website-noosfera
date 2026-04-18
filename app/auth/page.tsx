@@ -34,7 +34,6 @@ function AuthContent() {
 
   const [registerData, setRegisterData] = useState({
     name: "",
-    institution: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -161,7 +160,7 @@ function AuthContent() {
                   id="login-email"
                   name="email"
                   type="email"
-                  placeholder="usuario@correo.com"
+                  placeholder="correo@gmail.com"
                   value={loginData.email}
                   onChange={handleLoginInputChange}
                   disabled={isLoading}
@@ -267,24 +266,8 @@ function AuthContent() {
                   id="register-name"
                   name="name"
                   type="text"
-                  placeholder="Dr. Juan Pérez"
+                  placeholder="Juan"
                   value={registerData.name}
-                  onChange={handleRegisterInputChange}
-                  disabled={isLoading}
-                  className="h-12 bg-gray-50 border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="register-institution" className="text-sm font-medium text-gray-700">
-                  Institución Médica
-                </Label>
-                <Input
-                  id="register-institution"
-                  name="institution"
-                  type="text"
-                  placeholder="Hospital General"
-                  value={registerData.institution}
                   onChange={handleRegisterInputChange}
                   disabled={isLoading}
                   className="h-12 bg-gray-50 border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -299,7 +282,7 @@ function AuthContent() {
                   id="register-email"
                   name="email"
                   type="email"
-                  placeholder="doctor@hospital.com"
+                  placeholder="correo@gmail.com"
                   value={registerData.email}
                   onChange={handleRegisterInputChange}
                   disabled={isLoading}
