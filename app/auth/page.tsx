@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { motion } from "framer-motion"
 import { useSearchParams } from "next/navigation"
 import { Heart, Eye, EyeOff, ArrowRight, UserPlus, ArrowLeft } from "lucide-react"
@@ -12,12 +12,13 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "react-hot-toast"
 
-export default function AuthPage() {
+function AuthContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { login, register, isLoading } = useAuth()
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   useEffect(() => {
     const tab = searchParams.get("tab")
@@ -25,7 +26,6 @@ export default function AuthPage() {
       setActiveTab("register")
     }
   }, [searchParams])
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -418,5 +418,31 @@ export default function AuthPage() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+function AuthLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center mb-3">
+            <div className="bg-emerald-500/10 p-3 rounded-full">
+              <Heart className="h-8 w-8 text-emerald-500 animate-pulse" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Noosfera</h1>
+          <p className="text-gray-500 text-sm mt-1">Cargando...</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<AuthLoading />}>
+      <AuthContent />
+    </Suspense>
   )
 }
