@@ -47,7 +47,6 @@ export default function PrivacyPage() {
             Iniciar Sesion
           </Button>
         </div>
-        </div>
       </header>
 
       <main className="container mx-auto px-4 py-12">
