@@ -2,16 +2,9 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { GoogleGenAI } from "@google/genai";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
-
-function getGoogleAI() {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) throw new Error("No Google API key configured. Set GOOGLE_API_KEY in Replit Secrets.");
-  return new GoogleGenAI({ apiKey });
-}
 
 const NOOSFERA_THEMES = [
   "a majestic dragon soaring through storm clouds with lightning",
@@ -52,24 +45,47 @@ const STYLE_DESCRIPTORS: Record<string, string> = {
   fractal: "fractal recursive mandelbrot art style, infinitely detailed,",
 }
 
+// Algorithmic description generation — no API needed
+function generateDescription(avg: number, range: number, title: string): string {
+  const intensidades = [
+    "una quietud interior que se traduce en formas etéreas y difusas",
+    "un estado de conciencia suspendida entre la calma y la expectativa",
+    "una energía vital moderada que fluye en patrones armoniosos y controlados",
+    "una tensión creativa que impulsa la composición hacia lo dinámico",
+    "una intensidad emocional que fragmenta la forma en múltiples planos de fuerza",
+  ]
+  const variabilidades = [
+    "con un ritmo interno estable que unifica cada elemento en perfecta coherencia",
+    "donde la oscilación medida entre estados genera una tensión visual equilibrada",
+    "en un pulso irregular que convierte el caos en belleza compositiva",
+    "articulando contradicciones internas que enriquecen la profundidad de la obra",
+  ]
+  const estilos: Record<string, string> = {
+    abstract: "la abstracción geométrica como lenguaje del inconsciente",
+    realistic: "el hiperrealismo como espejo del estado psicofisiológico",
+    hyperrealistic: "el detalle extremo como manifestación de la hiperconciencia",
+    surreal: "el surrealismo onírico como territorio del subconsciente revelado",
+    minimalist: "la síntesis formal como expresión de la mente en reposo",
+    organic: "las formas orgánicas como eco del ritmo biológico interior",
+    geometric: "la geometría pura como arquitectura del pensamiento ordenado",
+    fractal: "la recursividad fractal como mapa de la complejidad emocional",
+  }
+
+  const iIdx = Math.min(Math.floor(avg / 25), intensidades.length - 1)
+  const vIdx = Math.min(Math.floor(range / 10), variabilidades.length - 1)
+  const estilo = estilos[title] || "el lenguaje visual como extensión del estado interno"
+
+  return `${intensidades[iIdx]}, ${variabilidades[vIdx]}, explorando ${estilo}`
+}
+
 router.post("/generate-description", async (req, res) => {
   const { pulses, emotionalState, title } = req.body
-  const avg = Math.round((pulses as number[]).reduce((a: number, b: number) => a + b, 0) / pulses.length)
-  const range = Math.max(...pulses) - Math.min(...pulses)
-
-  const intensity = avg > 100 ? "elevada tensión interna" : avg > 80 ? "energía moderada y consciente" : "calma profunda y meditativa"
-  const variability = range > 30 ? "ritmo irregular que sugiere emociones en conflicto" : range > 15 ? "oscilación controlada entre estados" : "ritmo estable y centrado"
-
-  const prompt = `Eres un analista de arte biométrico de nivel mundial. Completa la siguiente frase en español con 20-30 palabras que describan de forma precisa y profesional qué expresa visualmente esta obra y qué revela del estado interior de quien la creó: "La imagen generada representa ___". Datos clave: intensidad vital → ${intensity}; patrón de variabilidad → ${variability}; estilo visual → "${title}". El texto debe sonar como el catálogo de una galería de arte contemporáneo: concreto, evocador, sin clichés. No menciones BPM ni números. Responde SOLO con el texto que va después de "representa", sin comillas ni punto final.`
-
   try {
-    const ai = getGoogleAI();
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-lite",
-      contents: prompt,
-    });
-    const text = response.text?.trim() || "";
-    res.json({ description: text })
+    const arr = pulses as number[]
+    const avg = Math.round(arr.reduce((a: number, b: number) => a + b, 0) / arr.length)
+    const range = Math.max(...arr) - Math.min(...arr)
+    const description = generateDescription(avg, range, title || "abstract")
+    res.json({ description })
   } catch (err: any) {
     console.error("Description generation error:", err)
     res.status(500).json({ error: err.message })
@@ -93,32 +109,27 @@ router.post("/generate-image", async (req, res) => {
 
   const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors`
 
+  // Use Pollinations.AI — completely free, no API key required
+  const encodedPrompt = encodeURIComponent(prompt)
+  const imageSeed = Math.floor(Math.random() * 999999)
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${imageSeed}&nologo=true`
+
   try {
-    const ai = getGoogleAI();
-    const response = await ai.models.generateImages({
-      model: "imagen-4.0-generate-001",
-      prompt,
-      config: {
-        numberOfImages: 1,
-        outputMimeType: "image/png",
-        aspectRatio: "1:1",
-      },
-    });
-
-    const image = response.generatedImages?.[0]?.image;
-    const imageBytes = image?.imageBytes;
-
-    if (imageBytes) {
-      const b64str = typeof imageBytes === "string"
-        ? imageBytes
-        : Buffer.from(imageBytes as Uint8Array).toString("base64");
-      res.json({ imageUrl: `data:image/png;base64,${b64str}`, theme, prompt })
-    } else {
-      res.status(500).json({ error: "No image data returned from Imagen" })
+    // Fetch the image from Pollinations and return as base64 to avoid CORS issues
+    const fetchModule = await import("node-fetch")
+    const fetch = fetchModule.default
+    const response = await fetch(imageUrl, { timeout: 60000 } as any)
+    if (!response.ok) {
+      throw new Error(`Pollinations returned ${response.status}`)
     }
+    const buffer = await response.buffer()
+    const b64 = buffer.toString("base64")
+    const mimeType = response.headers.get("content-type") || "image/jpeg"
+    res.json({ imageUrl: `data:${mimeType};base64,${b64}`, theme, prompt })
   } catch (err: any) {
-    console.error("Google Imagen generation error:", err)
-    res.status(500).json({ error: err.message || "Failed to generate image" })
+    console.error("Pollinations image generation error:", err)
+    // Fallback: return the direct URL so the frontend can use it
+    res.json({ imageUrl, theme, prompt })
   }
 })
 
