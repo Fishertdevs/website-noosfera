@@ -364,7 +364,7 @@ export default function SimpleDemo() {
         body: JSON.stringify({ pulses, style: style.name, prompt }),
         signal: controller.signal,
       }).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch("/api/noosfera/generate-description", {
+      fetch("/api/generate-description", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pulses, emotionalState: style.emotion, title: style.name }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),

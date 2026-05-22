@@ -402,7 +402,7 @@ export function NoosferaProvider({ children }: { children: ReactNode }) {
         if (options?.imageUrl) {
           contentValue = options.imageUrl
         } else {
-          const res = await fetch("/api/noosfera/generate-image", {
+          const res = await fetch("/api/generate-image", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -422,7 +422,7 @@ export function NoosferaProvider({ children }: { children: ReactNode }) {
         }
       } else {
         const pulses = pattern.patternData.slice(0, 20).map((v: number) => Math.round(60 + v * 0.4))
-        const res = await fetch("/api/noosfera/generate-description", {
+        const res = await fetch("/api/generate-description", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
