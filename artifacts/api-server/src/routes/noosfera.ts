@@ -2,16 +2,15 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-function getOpenAI() {
-  const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-  const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-  if (!apiKey) throw new Error("No OpenAI API key configured. Set OPENAI_API_KEY in Replit Secrets.");
-  return new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
+function getGoogleAI() {
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) throw new Error("No Google API key configured. Set GOOGLE_API_KEY in Replit Secrets.");
+  return new GoogleGenAI({ apiKey });
 }
 
 const NOOSFERA_THEMES = [
@@ -64,12 +63,13 @@ router.post("/generate-description", async (req, res) => {
   const prompt = `Eres un analista de arte biométrico de nivel mundial. Completa la siguiente frase en español con 20-30 palabras que describan de forma precisa y profesional qué expresa visualmente esta obra y qué revela del estado interior de quien la creó: "La imagen generada representa ___". Datos clave: intensidad vital → ${intensity}; patrón de variabilidad → ${variability}; estilo visual → "${title}". El texto debe sonar como el catálogo de una galería de arte contemporáneo: concreto, evocador, sin clichés. No menciones BPM ni números. Responde SOLO con el texto que va después de "representa", sin comillas ni punto final.`
 
   try {
-    const response = await getOpenAI().chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 120,
-    })
-    res.json({ description: response.choices[0]?.message?.content?.trim() || "" })
+    const ai = getGoogleAI();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-lite",
+      contents: prompt,
+    });
+    const text = response.text?.trim() || "";
+    res.json({ description: text })
   } catch (err: any) {
     console.error("Description generation error:", err)
     res.status(500).json({ error: err.message })
@@ -94,20 +94,30 @@ router.post("/generate-image", async (req, res) => {
   const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors`
 
   try {
-    const response = await getOpenAI().images.generate({
-      model: "gpt-image-1",
+    const ai = getGoogleAI();
+    const response = await ai.models.generateImages({
+      model: "imagen-4.0-generate-001",
       prompt,
-      size: "1024x1024",
-    })
+      config: {
+        numberOfImages: 1,
+        outputMimeType: "image/png",
+        aspectRatio: "1:1",
+      },
+    });
 
-    const b64 = response.data?.[0]?.b64_json
-    if (b64) {
-      res.json({ imageUrl: `data:image/png;base64,${b64}`, theme, prompt })
+    const image = response.generatedImages?.[0]?.image;
+    const imageBytes = image?.imageBytes;
+
+    if (imageBytes) {
+      const b64str = typeof imageBytes === "string"
+        ? imageBytes
+        : Buffer.from(imageBytes as Uint8Array).toString("base64");
+      res.json({ imageUrl: `data:image/png;base64,${b64str}`, theme, prompt })
     } else {
-      res.status(500).json({ error: "No image data returned" })
+      res.status(500).json({ error: "No image data returned from Imagen" })
     }
   } catch (err: any) {
-    console.error("OpenAI image generation error:", err)
+    console.error("Google Imagen generation error:", err)
     res.status(500).json({ error: err.message || "Failed to generate image" })
   }
 })
