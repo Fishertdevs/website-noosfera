@@ -380,28 +380,28 @@ export function NoosferaProvider({ children }: { children: ReactNode }) {
     if (!currentCardiacPattern && !isDemoMode) return
 
     const loadingMessage = isDemoMode
-      ? `Simulando creación de ${type === "text" ? "análisis" : "gráfico"}...`
-      : `Creando ${type === "text" ? "análisis" : "gráfico"} basado en datos cardíacos...`
+      ? `Simulando creación de ${type === "text" ? "análisis" : "imagen"}...`
+      : `Creando ${type === "text" ? "análisis" : "imagen"} basado en datos cardíacos...`
 
     toast.loading(loadingMessage, { id: "generate-content" })
 
-    const pattern = currentCardiacPattern || {
-      id: `cardiac-${Date.now()}`,
-      timestamp: Date.now(),
-      stressLevel: 35,
-      heartHealthScore: 75,
-      emotionalState: "normal",
-      variabilityTrend: 45,
-      patternData: Array.from({ length: 128 }, () => Math.random() * 100),
-    }
+    try {
+      const pattern = currentCardiacPattern || {
+        id: `cardiac-${Date.now()}`,
+        timestamp: Date.now(),
+        stressLevel: 35,
+        heartHealthScore: 75,
+        emotionalState: "normal",
+        variabilityTrend: 45,
+        patternData: Array.from({ length: 128 }, () => Math.random() * 100),
+      }
 
-    let contentValue: string
+      let contentValue: string
 
-    if (type === "image") {
-      if (options?.imageUrl) {
-        contentValue = options.imageUrl
-      } else {
-        try {
+      if (type === "image") {
+        if (options?.imageUrl) {
+          contentValue = options.imageUrl
+        } else {
           const res = await fetch("/api/noosfera/generate-image", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -412,41 +412,61 @@ export function NoosferaProvider({ children }: { children: ReactNode }) {
               heartHealthScore: pattern.heartHealthScore,
             }),
           })
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}))
+            throw new Error(errData.error || `Error ${res.status} al generar imagen`)
+          }
           const data = await res.json()
-          contentValue = data.imageUrl || generateImageUrlFromPattern(pattern)
-        } catch {
-          contentValue = generateImageUrlFromPattern(pattern)
+          if (!data.imageUrl) throw new Error("La API no devolvió ninguna imagen")
+          contentValue = data.imageUrl
         }
+      } else {
+        const pulses = pattern.patternData.slice(0, 20).map((v: number) => Math.round(60 + v * 0.4))
+        const res = await fetch("/api/noosfera/generate-description", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pulses,
+            emotionalState: pattern.emotionalState,
+            title: options?.style || "abstract",
+          }),
+        })
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error(errData.error || `Error ${res.status} al generar descripción`)
+        }
+        const data = await res.json()
+        contentValue = data.description || generateTextFromPattern(pattern)
       }
-    } else {
-      await new Promise((r) => setTimeout(r, isDemoMode ? 1500 : 2500))
-      contentValue = generateTextFromPattern(pattern)
+
+      const newContent: GeneratedContent = {
+        id: `content-${Date.now()}`,
+        timestamp: Date.now(),
+        type: type,
+        patternId: pattern.id,
+        cardiacPattern: pattern,
+        content: contentValue,
+        metadata: {
+          heartRate: Math.floor(Math.random() * 40) + 60,
+          stress: pattern.stressLevel,
+          health: pattern.heartHealthScore,
+          ...(isDemoMode && { demoMode: true }),
+        },
+      }
+
+      setGeneratedContent((prev) => [newContent, ...prev])
+
+      const successMessage = isDemoMode
+        ? `${type === "text" ? "Análisis" : "Imagen"} generado correctamente (Demo)`
+        : `${type === "text" ? "Análisis" : "Imagen"} creado correctamente`
+
+      toast.success(successMessage, { id: "generate-content" })
+
+      return newContent
+    } catch (err: any) {
+      toast.error(err?.message || "Error al generar contenido", { id: "generate-content" })
+      return undefined
     }
-
-    const newContent: GeneratedContent = {
-      id: `content-${Date.now()}`,
-      timestamp: Date.now(),
-      type: type,
-      patternId: pattern.id,
-      cardiacPattern: pattern,
-      content: contentValue,
-      metadata: {
-        heartRate: Math.floor(Math.random() * 40) + 60,
-        stress: pattern.stressLevel,
-        health: pattern.heartHealthScore,
-        ...(isDemoMode && { demoMode: true }),
-      },
-    }
-
-    setGeneratedContent((prev) => [newContent, ...prev])
-
-    const successMessage = isDemoMode
-      ? `${type === "text" ? "Análisis" : "Imagen"} generado correctamente (Demo)`
-      : `${type === "text" ? "Análisis" : "Imagen"} creado correctamente`
-
-    toast.success(successMessage, { id: "generate-content" })
-
-    return newContent
   }
 
   const generateTextFromPattern = (pattern: CardiacPattern) => {
