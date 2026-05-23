@@ -95,8 +95,11 @@ router.post("/generate-description", async (req, res) => {
 router.post("/generate-image", async (req, res) => {
   const { style, emotionalState, stressLevel, heartHealthScore } = req.body
 
-  const seed = Math.floor(((stressLevel || 50) + (heartHealthScore || 75)) * 0.37 + Date.now() % 100)
-  const theme = NOOSFERA_THEMES[seed % NOOSFERA_THEMES.length]
+  // Use full timestamp + crypto random for guaranteed uniqueness on every request
+  const { randomInt } = await import("crypto")
+  const uniqueSeed = randomInt(0, 2_147_483_647) // full 32-bit range
+  const themeIndex = (Date.now() + uniqueSeed) % NOOSFERA_THEMES.length
+  const theme = NOOSFERA_THEMES[themeIndex]
 
   const artisticStyle = STYLE_DESCRIPTORS[style] || "vibrant digital art,"
   const moodMap: Record<string, string> = {
@@ -107,13 +110,13 @@ router.post("/generate-image", async (req, res) => {
   }
   const mood = moodMap[emotionalState] || "epic and dramatic atmosphere, dynamic lighting"
 
+  // Add unique timestamp + seed suffix to prompt so identical biometrics never produce the same image
   const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors`
 
   // Use Pollinations.AI — completely free, no API key, scales to any number of users
   // The URL is returned directly so each browser fetches its image in parallel
   const encodedPrompt = encodeURIComponent(prompt)
-  const imageSeed = Math.floor(Math.random() * 999999)
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${imageSeed}&nologo=true`
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${uniqueSeed}&nologo=true`
 
   res.json({ imageUrl, theme, prompt })
 })
