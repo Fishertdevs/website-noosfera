@@ -307,7 +307,7 @@ export default function UserDashboard() {
 
       const newImage: GeneratedImage = {
         id: `img_${Date.now()}`,
-        url: generateImageFromPulses(pulses),
+        url: await generateImageFromPulses(pulses),
         timestamp: Date.now(),
         pulses: [...pulses],
         description: `Imagen generada a partir de ${pulses.length} pulsos cardíacos`,
@@ -335,94 +335,21 @@ export default function UserDashboard() {
     }
   }
 
-  const generateImageFromPulses = (pulseData: number[], style: "realistic" | "geometric" = "geometric"): string => {
-    const canvas = document.createElement("canvas")
-    canvas.width = 800
-    canvas.height = 600
-    const ctx = canvas.getContext("2d")
-
-    if (ctx) {
-      if (style === "realistic") {
-        // Realistic style - more organic, heart-like patterns
-        const hue = (pulseData[0] * 3.6) % 360
-        const gradient = ctx.createRadialGradient(400, 300, 0, 400, 300, 400)
-        gradient.addColorStop(0, `hsl(${hue}, 60%, 15%)`)
-        gradient.addColorStop(0.5, `hsl(${(hue + 30) % 360}, 50%, 25%)`)
-        gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 40%, 35%)`)
-        ctx.fillStyle = gradient
-        ctx.fillRect(0, 0, 800, 600)
-
-        // Create cardiac network-like connections
-        pulseData.forEach((pulse, index) => {
-          const x = (pulse * 8) % 800
-          const y = (pulse * 6) % 600
-          const size = (pulse % 30) + 10
-          const nodeHue = (pulse * 2.4) % 360
-
-          // Draw cardiac nodes
-          ctx.fillStyle = `hsla(${nodeHue}, 70%, 70%, 0.8)`
-          ctx.beginPath()
-          ctx.arc(x, y, size, 0, Math.PI * 2)
-          ctx.fill()
-
-          // Draw connections between nodes
-          if (index > 0) {
-            const prevX = (pulseData[index - 1] * 8) % 800
-            const prevY = (pulseData[index - 1] * 6) % 600
-            ctx.strokeStyle = `hsla(${nodeHue}, 60%, 60%, 0.4)`
-            ctx.lineWidth = 2
-            ctx.beginPath()
-            ctx.moveTo(prevX, prevY)
-            ctx.lineTo(x, y)
-            ctx.stroke()
-          }
-
-          // Add pulse sparks
-          for (let i = 0; i < 3; i++) {
-            const sparkX = x + (Math.random() - 0.5) * 40
-            const sparkY = y + (Math.random() - 0.5) * 40
-            ctx.fillStyle = `hsla(${(nodeHue + 120) % 360}, 90%, 80%, 0.6)`
-            ctx.beginPath()
-            ctx.arc(sparkX, sparkY, 2, 0, Math.PI * 2)
-            ctx.fill()
-          }
-        })
-      } else {
-        // Geometric style - original implementation
-        const hue = (pulseData[0] * 3.6) % 360
-        const gradient = ctx.createLinearGradient(0, 0, 800, 600)
-        gradient.addColorStop(0, `hsl(${hue}, 70%, 20%)`)
-        gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 70%, 30%)`)
-        ctx.fillStyle = gradient
-        ctx.fillRect(0, 0, 800, 600)
-
-        pulseData.forEach((pulse, index) => {
-          const x = (pulse * 8) % 800
-          const y = (pulse * 6) % 600
-          const size = (pulse % 50) + 20
-          const shapeHue = (pulse * 3.6) % 360
-
-          ctx.fillStyle = `hsla(${shapeHue}, 80%, 60%, 0.7)`
-          ctx.beginPath()
-
-          if (index % 3 === 0) {
-            ctx.arc(x, y, size, 0, Math.PI * 2)
-          } else if (index % 3 === 1) {
-            ctx.rect(x - size / 2, y - size / 2, size, size)
-          } else {
-            ctx.moveTo(x, y - size / 2)
-            ctx.lineTo(x - size / 2, y + size / 2)
-            ctx.lineTo(x + size / 2, y + size / 2)
-            ctx.closePath()
-          }
-          ctx.fill()
-        })
-      }
-
-      return canvas.toDataURL("image/png")
-    }
-
-    return "/placeholder-xfyhp.png"
+  const generateImageFromPulses = async (pulseData: number[], style: "realistic" | "geometric" = "geometric"): Promise<string> => {
+    const response = await fetch("/api/generate-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pulses: pulseData,
+        style,
+        emotionalState: "normal",
+        stressLevel: 50,
+        heartHealthScore: 75,
+      }),
+    })
+    if (!response.ok) throw new Error("Error generando imagen con IA. Intenta de nuevo.")
+    const data = await response.json()
+    return data.imageUrl
   }
 
   const completeTutorial = () => {
@@ -506,7 +433,7 @@ export default function UserDashboard() {
 
       const newImage: GeneratedImage = {
         id: `img_${Date.now()}`,
-        url: generateImageFromPulses(pulses, style),
+        url: await generateImageFromPulses(pulses, style),
         timestamp: Date.now(),
         pulses: [...pulses],
         description: `Imagen ${style === "realistic" ? "realista" : "geométrica"} generada a partir de ${pulses.length} pulsos cardíacos`,

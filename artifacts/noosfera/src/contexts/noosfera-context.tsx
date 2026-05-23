@@ -482,55 +482,22 @@ export function NoosferaProvider({ children }: { children: ReactNode }) {
     return texts[Math.min(index, texts.length - 1)]
   }
 
-  const generateImageUrlFromPattern = (pattern: CardiacPattern) => {
-    const width = 800
-    const height = 600
-    const canvas = document.createElement("canvas")
-    canvas.width = width
-    canvas.height = height
-    const ctx = canvas.getContext("2d")
-
-    if (ctx && pattern.patternData) {
-      const gradient = ctx.createLinearGradient(0, 0, width, height)
-      const hue1 = Math.floor(((pattern.patternData[0] || 50) / 100) * 360)
-      const hue2 = Math.floor(((pattern.patternData[1] || 120) / 100) * 360)
-      gradient.addColorStop(0, `hsl(${hue1}, 70%, 20%)`)
-      gradient.addColorStop(1, `hsl(${hue2}, 70%, 30%)`)
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, width, height)
-
-      ctx.strokeStyle = `hsl(0, 100%, ${50 + Math.random() * 30}%)`
-      ctx.lineWidth = 3
-      ctx.beginPath()
-
-      const pointsPerSecond = 60
-      const secondsDisplayed = 8
-      const totalPoints = pointsPerSecond * secondsDisplayed
-
-      for (let i = 0; i < totalPoints; i++) {
-        const x = (i / totalPoints) * width
-        const baseY = height / 2
-        const amplitude = (pattern.heartHealthScore / 100) * 100
-        const frequency = (pattern.variabilityTrend / 50) * 2
-
-        const y =
-          baseY -
-          Math.sin((i / pointsPerSecond) * frequency * Math.PI) * amplitude -
-          Math.sin((i / (pointsPerSecond * 2)) * Math.PI) * 30
-
-        if (i === 0) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-
-      ctx.stroke()
-
-      return canvas.toDataURL("image/png")
-    }
-
-    return `/placeholder.svg?height=${height}&width=${width}&query=cardiac+rhythm`
+  const generateImageUrlFromPattern = async (pattern: CardiacPattern): Promise<string> => {
+    const pulses = pattern.patternData?.slice(0, 20).map(v => Math.round(60 + v * 0.6)) || [72, 75, 78, 74, 71]
+    const response = await fetch("/api/generate-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pulses,
+        style: "abstract",
+        emotionalState: pattern.heartHealthScore > 70 ? "calm" : "normal",
+        stressLevel: Math.round(100 - pattern.heartHealthScore),
+        heartHealthScore: pattern.heartHealthScore,
+      }),
+    })
+    if (!response.ok) throw new Error("Error generando imagen con IA.")
+    const data = await response.json()
+    return data.imageUrl
   }
 
   const deleteContent = (id: string) => {

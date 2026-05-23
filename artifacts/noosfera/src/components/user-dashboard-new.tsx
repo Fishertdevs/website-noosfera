@@ -183,12 +183,10 @@ export default function UserDashboardNew() {
           const aiData = await aiResponse.json()
           imageUrl = aiData.imageUrl
         } else {
-          // Fallback to canvas generation
-          imageUrl = generateCanvasImage(pulses, randomStyle)
+          throw new Error("Error generando imagen con IA. Intenta de nuevo.")
         }
-      } catch {
-        // Fallback to canvas generation
-        imageUrl = generateCanvasImage(pulses, randomStyle)
+      } catch (apiError: any) {
+        throw new Error(apiError?.message || "Error generando imagen. Intenta de nuevo.")
       }
 
       const avgPulse = pulses.reduce((a, b) => a + b, 0) / 3
@@ -231,62 +229,6 @@ export default function UserDashboardNew() {
     }
   }
 
-  const generateCanvasImage = (pulseData: number[], style: typeof artStyles[0]): string => {
-    const canvas = document.createElement("canvas")
-    canvas.width = 400
-    canvas.height = 400
-    const ctx = canvas.getContext("2d")
-
-    if (ctx) {
-      const gradient = ctx.createRadialGradient(200, 200, 0, 200, 200, 250)
-      const colors = getGradientColors(style.color)
-      gradient.addColorStop(0, colors.from)
-      gradient.addColorStop(1, colors.to)
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, 400, 400)
-
-      pulseData.forEach((pulse, index) => {
-        const angle = (index / pulseData.length) * Math.PI * 2
-        const radius = 80 + (pulse % 40)
-        const x = 200 + Math.cos(angle) * radius * 0.5
-        const y = 200 + Math.sin(angle) * radius * 0.5
-        const size = 20 + (pulse % 30)
-
-        ctx.beginPath()
-        ctx.arc(x, y, size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + (index * 0.2)})`
-        ctx.fill()
-
-        ctx.beginPath()
-        ctx.arc(x, y, size * 0.5, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, 0.5)`
-        ctx.fill()
-      })
-
-      const heartSize = 40
-      ctx.save()
-      ctx.translate(200, 200)
-      ctx.beginPath()
-      ctx.moveTo(0, heartSize * 0.3)
-      ctx.bezierCurveTo(-heartSize, -heartSize * 0.3, -heartSize, -heartSize, 0, -heartSize * 0.5)
-      ctx.bezierCurveTo(heartSize, -heartSize, heartSize, -heartSize * 0.3, 0, heartSize * 0.3)
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)"
-      ctx.fill()
-      ctx.restore()
-
-      for (let i = 0; i < 30; i++) {
-        const px = Math.random() * 400
-        const py = Math.random() * 400
-        const ps = Math.random() * 3 + 1
-        ctx.beginPath()
-        ctx.arc(px, py, ps, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5})`
-        ctx.fill()
-      }
-    }
-
-    return canvas.toDataURL("image/png")
-  }
 
   const getGradientColors = (gradientClass: string) => {
     const colorMap: Record<string, { from: string; to: string }> = {

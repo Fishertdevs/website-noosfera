@@ -150,32 +150,6 @@ function addWatermark(src: string, _tokenId: string): Promise<string> {
   })
 }
 
-function generateCanvasArt(pulses: number[]): string {
-  const c = document.createElement("canvas"); c.width = 600; c.height = 600
-  const ctx = c.getContext("2d")!
-  const g = ctx.createRadialGradient(300, 300, 0, 300, 300, 340)
-  const palette = [["#a78bfa","#7c3aed","#1e1b4b"],["#f472b6","#ec4899","#4a044e"],["#34d399","#059669","#022c22"],["#fbbf24","#f59e0b","#451a03"],["#60a5fa","#2563eb","#1e3a8a"]]
-  const p = palette[Math.floor(Math.random() * palette.length)]
-  g.addColorStop(0, p[0]); g.addColorStop(0.5, p[1]); g.addColorStop(1, p[2])
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 600, 600)
-  for (let i = 0; i < 6; i++) {
-    ctx.beginPath(); ctx.arc(300 + (Math.random() - 0.5) * 200, 300 + (Math.random() - 0.5) * 200, 20 + Math.random() * 80, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(255,255,255,${0.05 + Math.random() * 0.12})`; ctx.fill()
-  }
-  pulses.forEach((pulse, i) => {
-    const angle = (i / pulses.length) * Math.PI * 2
-    const r = 80 + (pulse % 60)
-    const x = 300 + Math.cos(angle) * r * 0.75, y = 300 + Math.sin(angle) * r * 0.75
-    const size = 18 + (pulse % 30)
-    ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,255,255,${0.2 + i * 0.15})`; ctx.fill()
-    ctx.beginPath(); ctx.arc(x, y, size * 0.45, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.fill()
-  })
-  for (let i = 0; i < 50; i++) {
-    ctx.beginPath(); ctx.arc(Math.random() * 600, Math.random() * 600, Math.random() * 2 + 0.5, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.35})`; ctx.fill()
-  }
-  return c.toDataURL("image/png")
-}
 
 /* ── Hero side panel — collage style, 4 images, no gaps ── */
 function HeroSidePanel({ side }: { side: "left" | "right" }) {
@@ -373,8 +347,10 @@ export default function SimpleDemo() {
     clearTimeout(timeoutId)
     clearInterval(iv); setGenerationProgress(100)
 
-    const imageUrl = (imageData.status === "fulfilled" && imageData.value?.imageUrl)
-      ? imageData.value.imageUrl : generateCanvasArt(pulses)
+    if (!(imageData.status === "fulfilled" && imageData.value?.imageUrl)) {
+      throw new Error("No se pudo generar la imagen. Verifica tu conexión e intenta de nuevo.")
+    }
+    const imageUrl = imageData.value.imageUrl
     const description = (descData.status === "fulfilled" && descData.value?.description)
       ? descData.value.description : ""
 
