@@ -117,16 +117,17 @@ export default function CompanyPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex justify-center">
             {founders.map((f, i) => (
               <motion.div
                 key={f.name}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: i * 0.12 }}
+                initial={{ opacity: 0, y: 32, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                whileHover={{ y: -8, scale: 1.03, boxShadow: "0 32px 80px rgba(124,58,237,0.22)" }}
+                transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 200, damping: 18 }}
                 viewport={{ once: true }}
-                className="overflow-hidden rounded-2xl border border-gray-100 hover:border-purple-200 hover:shadow-2xl transition-all duration-300"
-                style={{ background: "#ffffff" }}
+                className="overflow-hidden rounded-3xl border border-gray-100 cursor-pointer w-full max-w-sm"
+                style={{ background: "#ffffff", boxShadow: "0 8px 40px rgba(124,58,237,0.10)" }}
               >
                 {/* Top banner */}
                 <div

@@ -639,6 +639,18 @@ const timelineSections = [
       { subtitle: "Q4 2025 & 2026: Escala & API", text: "API pública documentada para integración de terceros. App móvil nativa (React Native). Modelos de IA propios (fine-tuning). Expansión a México, Argentina y Chile. Alianzas con plataformas de salud digital." },
     ],
   },
+  {
+    id: "script-ia", icon: Cpu, tag: "🧠 Script IA — Proceso Oficial", title: "Cómo Noosfera Genera Imágenes con IA",
+    special: "script-ia",
+    items: [
+      { subtitle: "Paso 1 — Captura de datos biométricos", text: "El usuario ingresa entre 3 y 5 pulsos cardíacos (BPM). El sistema calcula: promedio de BPM (intensidad vital), rango de variabilidad (máximo − mínimo), estado emocional derivado (calm / normal / stressed / alert) y puntuación de salud cardíaca (heartHealthScore 0–100). Estos 4 valores son los parámetros de entrada al motor de IA." },
+      { subtitle: "Paso 2 — Seed criptográfico único", text: "Se genera un entero criptográficamente aleatorio de 32 bits usando crypto.randomInt(0, 2_147_483_647) de Node.js. Esto garantiza que dos usuarios con exactamente los mismos datos biométricos nunca reciban la misma imagen. Con más de 2.147 millones de valores posibles, la probabilidad de colisión es matemáticamente despreciable." },
+      { subtitle: "Paso 3 — Selección del tema narrativo", text: "Noosfera tiene 25 temas narrativos de alta calidad artística: dragones en tormentas, ciudades ciberpunk, fondos marinos, galaxias, junglas bioluminiscentes y más. El tema se selecciona combinando el timestamp exacto del momento + el seed criptográfico: themeIndex = (Date.now() + seed) % 25. Así, dos peticiones simultáneas con mismos biométricos reciben temas distintos." },
+      { subtitle: "Paso 4 — Construcción del prompt artístico", text: "El prompt final combina: (1) descriptor de estilo artístico según elección del usuario (abstract, surreal, realistic, hyperrealistic, minimalist, organic, geometric, fractal), (2) el tema narrativo seleccionado, (3) el ambiente emocional derivado de los biométricos, y (4) el seed único embebido en el texto (unique:SEED) para prevenir que la CDN sirva imágenes cacheadas." },
+      { subtitle: "Paso 5 — Generación con FLUX vía Pollinations.AI", text: "La URL final se construye así: https://image.pollinations.ai/prompt/{encodedPrompt}?width=1024&height=1024&model=flux&seed={uniqueSeed}&nologo=true&cache=false. El servidor retorna esta URL en menos de 5ms — no descarga la imagen. El navegador del usuario la carga directamente desde Pollinations.AI, lo que permite miles de usuarios concurrentes sin carga extra en los servidores de Noosfera." },
+      { subtitle: "Paso 6 — Descripción artística algorítmica", text: "En paralelo a la imagen, se genera una descripción literaria en español 100% local (sin API externa) basada en los datos biométricos reales: la intensidad del BPM define el vocabulario emocional; la variabilidad del ritmo define el vocabulario compositivo; el estilo elegido define el marco artístico. El resultado suena como un texto de catálogo de galería contemporánea. Latencia: 0ms (sin red)." },
+    ],
+  },
 ]
 
 /* ─── Timeline Entry ─────────────────────────────────────────── */

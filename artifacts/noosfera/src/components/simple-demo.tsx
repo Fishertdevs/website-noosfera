@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Brain, Sparkles, RefreshCw, X, Check,
+  Brain, Sparkles, RefreshCw, X, Check, ArrowLeft,
   Home, Users, ChevronLeft, ChevronRight, Download,
   ImageIcon, Settings, Crown, Share2, Heart, MessageCircle,
   CreditCard, Bell, Lock, Globe, Palette, Eye, EyeOff,
@@ -1040,6 +1040,13 @@ export default function SimpleDemo() {
                 </div>
               </>
             )}
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:bg-purple-50"
+              style={{ color: "#7c3aed", border: "1.5px solid #e9d5ff", ...font }}>
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Regresar al inicio
+            </button>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs text-white"
             style={{ backgroundColor: attemptsRemaining > 0 ? "#7c3aed" : "#991b1b" }}>
