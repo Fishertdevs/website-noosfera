@@ -109,28 +109,13 @@ router.post("/generate-image", async (req, res) => {
 
   const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors`
 
-  // Use Pollinations.AI — completely free, no API key required
+  // Use Pollinations.AI — completely free, no API key, scales to any number of users
+  // The URL is returned directly so each browser fetches its image in parallel
   const encodedPrompt = encodeURIComponent(prompt)
   const imageSeed = Math.floor(Math.random() * 999999)
   const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${imageSeed}&nologo=true`
 
-  try {
-    // Fetch the image from Pollinations and return as base64 to avoid CORS issues
-    const fetchModule = await import("node-fetch")
-    const fetch = fetchModule.default
-    const response = await fetch(imageUrl, { timeout: 60000 } as any)
-    if (!response.ok) {
-      throw new Error(`Pollinations returned ${response.status}`)
-    }
-    const buffer = await response.buffer()
-    const b64 = buffer.toString("base64")
-    const mimeType = response.headers.get("content-type") || "image/jpeg"
-    res.json({ imageUrl: `data:${mimeType};base64,${b64}`, theme, prompt })
-  } catch (err: any) {
-    console.error("Pollinations image generation error:", err)
-    // Fallback: return the direct URL so the frontend can use it
-    res.json({ imageUrl, theme, prompt })
-  }
+  res.json({ imageUrl, theme, prompt })
 })
 
 const uploadsDir = path.resolve(process.cwd(), "uploads")
