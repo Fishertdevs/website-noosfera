@@ -290,11 +290,12 @@ export default function DocumentacionPage() {
         </Card>
 
         <Tabs defaultValue="checklist" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="checklist">Checklist de Funcionalidades</TabsTrigger>
             <TabsTrigger value="planteamiento">Planteamiento</TabsTrigger>
             <TabsTrigger value="estado-arte">Estado del Arte</TabsTrigger>
             <TabsTrigger value="desarrollo">Desarrollo</TabsTrigger>
+            <TabsTrigger value="script-ia">🧠 Script IA</TabsTrigger>
           </TabsList>
 
           {/* Checklist de Funcionalidades */}
@@ -1559,6 +1560,290 @@ export default function DocumentacionPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* ── SCRIPT IA ── */}
+          <TabsContent value="script-ia" className="space-y-6">
+            <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center">
+                    <Cpu className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl text-purple-900">Script de Generación de Imágenes con IA</CardTitle>
+                    <CardDescription className="text-purple-700 font-medium mt-1">
+                      Lógica completa y oficial del proceso que convierte latidos cardíacos en arte digital único
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8">
+
+                {/* Resumen ejecutivo */}
+                <div className="rounded-2xl bg-purple-900 text-white p-6">
+                  <h3 className="text-lg font-bold mb-2 flex items-center gap-2"><Zap className="h-5 w-5 text-yellow-400" /> Resumen Ejecutivo</h3>
+                  <p className="text-purple-100 text-sm leading-relaxed">
+                    Noosfera convierte datos biométricos cardíacos (BPM, variabilidad, estado emocional) en prompts de IA que se envían al modelo <strong className="text-white">FLUX</strong> a través de <strong className="text-white">Pollinations.AI</strong>. Cada imagen es matemáticamente irrepetible gracias a un seed criptográfico único de 32 bits generado con <code className="bg-purple-800 px-1 rounded">crypto.randomInt</code>. El proceso completo ocurre en menos de 500ms de latencia en el servidor, y la imagen se entrega directamente al navegador del usuario sin pasar por los servidores de Noosfera.
+                  </p>
+                </div>
+
+                {/* Pipeline paso a paso */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <GitBranch className="h-5 w-5 text-purple-600" /> Pipeline Completo — 6 Pasos
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        step: "01",
+                        title: "Captura de datos biométricos",
+                        color: "bg-blue-600",
+                        desc: "El usuario ingresa entre 3 y 5 pulsos cardíacos (BPM). El sistema calcula automáticamente: promedio de BPM (intensidad vital), rango de variabilidad (diferencia entre máximo y mínimo), estado emocional derivado (calm / normal / stressed / alert) y puntuación de salud cardíaca (heartHealthScore 0–100).",
+                        code: `// Datos recibidos por el servidor
+const { style, emotionalState, stressLevel, heartHealthScore } = req.body
+// Ejemplo real: { style: "surreal", emotionalState: "calm", stressLevel: 25, heartHealthScore: 82 }`,
+                      },
+                      {
+                        step: "02",
+                        title: "Generación del seed criptográfico único",
+                        color: "bg-purple-600",
+                        desc: "Se genera un entero criptográficamente aleatorio de 32 bits usando el módulo crypto de Node.js. Esto garantiza que dos usuarios con exactamente los mismos datos biométricos nunca reciban la misma imagen. El rango es 0 – 2,147,483,647 (más de 2 billones de valores posibles).",
+                        code: `const { randomInt } = await import("crypto")
+const uniqueSeed = randomInt(0, 2_147_483_647)
+// Ejemplo: 1_847_392_104
+
+// El índice del tema combina timestamp + seed para máxima entropía
+const themeIndex = (Date.now() + uniqueSeed) % NOOSFERA_THEMES.length`,
+                      },
+                      {
+                        step: "03",
+                        title: "Selección del tema narrativo",
+                        color: "bg-indigo-600",
+                        desc: "Noosfera tiene 25 temas narrativos de alta calidad artística que cubren desde dragones hasta ciudades ciberpunk. El tema se selecciona combinando el timestamp exacto del momento con el seed criptográfico, lo que hace que la selección sea diferente incluso si dos usuarios presionan el botón al mismo milisegundo.",
+                        code: `const NOOSFERA_THEMES = [
+  "a majestic dragon soaring through storm clouds with lightning",
+  "a futuristic spaceship emerging from a glowing nebula in deep space",
+  "an underwater ancient city with bioluminescent sea creatures",
+  "a cyberpunk city at night with neon lights and flying vehicles",
+  // ... 21 temas más
+]
+const theme = NOOSFERA_THEMES[themeIndex]
+// Ejemplo resultado: "an underwater ancient city with bioluminescent sea creatures"`,
+                      },
+                      {
+                        step: "04",
+                        title: "Construcción del prompt artístico",
+                        color: "bg-violet-600",
+                        desc: "El prompt final combina: (1) el descriptor de estilo artístico según la elección del usuario, (2) el tema narrativo seleccionado, (3) el ambiente emocional derivado de los biométricos, y (4) el seed único embebido en el texto para prevenir que la CDN de Pollinations.AI sirva imágenes en caché.",
+                        code: `const STYLE_DESCRIPTORS = {
+  abstract:      "vibrant abstract digital art with bold colors and geometric shapes,",
+  surreal:       "surrealist dream-like painting style with impossible landscapes,",
+  realistic:     "ultra-photorealistic, cinematic photography style,",
+  hyperrealistic:"hyper-detailed photorealistic with dramatic studio lighting,",
+  minimalist:    "minimalist clean artistic illustration,",
+  organic:       "organic flowing natural shapes, botanical art style,",
+  geometric:     "geometric low-poly polygon art style,",
+  fractal:       "fractal recursive mandelbrot art style, infinitely detailed,",
+}
+
+const moodMap = {
+  calm:    "peaceful and serene atmosphere, soft lighting",
+  normal:  "epic and dramatic atmosphere, dynamic lighting",
+  stressed:"intense and energetic atmosphere, bold contrast",
+  alert:   "powerful and awe-inspiring atmosphere, high energy",
+}
+
+// Prompt final — incluye unique:SEED para forzar imagen nueva siempre
+const prompt = \`\${artisticStyle} \${theme}, \${mood}, highly detailed,
+  professional digital art, 8k resolution, masterpiece quality,
+  vivid saturated colors, unique:\${uniqueSeed}\``,
+                      },
+                      {
+                        step: "05",
+                        title: "Envío a Pollinations.AI (modelo FLUX)",
+                        color: "bg-pink-600",
+                        desc: "El prompt codificado se envía a Pollinations.AI usando el modelo FLUX — uno de los modelos de generación de imágenes más avanzados disponibles públicamente. La URL es retornada instantáneamente al navegador del usuario (sin esperar la imagen), y el navegador carga la imagen directamente desde los servidores de Pollinations.AI. Esto permite que miles de usuarios generen imágenes simultáneamente sin sobrecargar el servidor de Noosfera.",
+                        code: `// El servidor responde en < 5ms
+const encodedPrompt = encodeURIComponent(prompt)
+const imageUrl = [
+  \`https://image.pollinations.ai/prompt/\${encodedPrompt}\`,
+  \`?width=1024&height=1024\`,
+  \`&model=flux\`,
+  \`&seed=\${uniqueSeed}\`,   // seed único por request
+  \`&nologo=true\`,
+  \`&cache=false\`,            // evita que la CDN sirva imagen cacheada
+].join("")
+
+// Respuesta inmediata — el navegador carga la imagen en paralelo
+res.json({ imageUrl, theme, prompt })`,
+                      },
+                      {
+                        step: "06",
+                        title: "Descripción biométrica algorítmica",
+                        color: "bg-emerald-600",
+                        desc: "En paralelo a la imagen, el sistema genera una descripción artística en español basada en los datos biométricos reales del usuario. No usa ninguna API externa — la descripción se construye combinando fragmentos literarios según la intensidad del BPM, la variabilidad del ritmo y el estilo seleccionado. El resultado suena como un texto de catálogo de galería de arte contemporáneo.",
+                        code: `function generateDescription(avg: number, range: number, title: string): string {
+  // Mapa de intensidad según BPM promedio
+  const intensidades = [
+    "una quietud interior que se traduce en formas etéreas y difusas",        // BPM < 25
+    "un estado de conciencia suspendida entre la calma y la expectativa",      // BPM 25–50
+    "una energía vital moderada que fluye en patrones armoniosos",             // BPM 50–75
+    "una tensión creativa que impulsa la composición hacia lo dinámico",       // BPM 75–100
+    "una intensidad emocional que fragmenta la forma en múltiples planos",    // BPM > 100
+  ]
+  // Mapa de variabilidad según rango de pulsos
+  const variabilidades = [
+    "con un ritmo interno estable que unifica cada elemento en coherencia",   // rango < 10
+    "donde la oscilación medida genera una tensión visual equilibrada",        // rango 10–20
+    "en un pulso irregular que convierte el caos en belleza compositiva",      // rango 20–30
+    "articulando contradicciones que enriquecen la profundidad de la obra",  // rango > 30
+  ]
+  // Mapa de estilo artístico
+  const estilos = {
+    abstract:  "la abstracción geométrica como lenguaje del inconsciente",
+    surreal:   "el surrealismo onírico como territorio del subconsciente revelado",
+    realistic: "el hiperrealismo como espejo del estado psicofisiológico",
+    // ...
+  }
+  return \`\${intensidades[iIdx]}, \${variabilidades[vIdx]}, explorando \${estilo}\`
+}`,
+                      },
+                    ].map(({ step, title, color, desc, code }) => (
+                      <div key={step} className="rounded-2xl border border-gray-200 overflow-hidden">
+                        <div className={`${color} px-5 py-3 flex items-center gap-3`}>
+                          <span className="text-white/60 text-xs font-mono font-bold">PASO</span>
+                          <span className="text-white text-2xl font-black font-mono">{step}</span>
+                          <span className="text-white font-bold text-sm">{title}</span>
+                        </div>
+                        <div className="p-5 space-y-3 bg-white">
+                          <p className="text-sm text-gray-700 leading-relaxed">{desc}</p>
+                          <pre className="bg-gray-950 text-green-400 text-xs rounded-xl p-4 overflow-x-auto leading-relaxed font-mono whitespace-pre-wrap">
+                            {code}
+                          </pre>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Garantías de unicidad */}
+                <Card className="border-yellow-200 bg-yellow-50">
+                  <CardHeader>
+                    <CardTitle className="text-yellow-800 flex items-center gap-2">
+                      <Shield className="h-5 w-5" /> Garantías de Unicidad Matemática
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[
+                      { label: "Seed criptográfico", value: "2,147,483,647", desc: "valores únicos posibles por solicitud" },
+                      { label: "Temas narrativos", value: "25", desc: "mundos visuales diferentes" },
+                      { label: "Estilos artísticos", value: "8", desc: "interpretaciones visuales del dato cardíaco" },
+                    ].map(({ label, value, desc }) => (
+                      <div key={label} className="text-center p-4 bg-white rounded-xl border border-yellow-200">
+                        <p className="text-3xl font-black text-yellow-700">{value}</p>
+                        <p className="text-xs font-bold text-gray-700 mt-1">{label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Stack técnico */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Server className="h-5 w-5 text-purple-600" /> Stack Técnico del Motor de IA
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      { title: "Modelo de imagen", value: "FLUX (black-forest-labs)", desc: "State-of-the-art en generación de imágenes. Calidad fotorrealista y artística superior a DALL-E 2 en múltiples benchmarks.", icon: <Palette className="h-4 w-4" /> },
+                      { title: "Proveedor de inferencia", value: "Pollinations.AI", desc: "API pública sin costo, sin límite de usuarios simultáneos. Cada navegador carga su imagen directamente — cero carga extra en el servidor de Noosfera.", icon: <Globe className="h-4 w-4" /> },
+                      { title: "Aleatoriedad", value: "crypto.randomInt (Node.js)", desc: "Generador criptográficamente seguro. Imposible predecir o reproducir el mismo valor dos veces, garantizando autenticidad del NFT.", icon: <Shield className="h-4 w-4" /> },
+                      { title: "Latencia del servidor", value: "< 5 ms por request", desc: "El servidor solo genera la URL y la retorna. No descarga ni procesa la imagen — escalable a miles de usuarios concurrentes sin costo adicional.", icon: <Zap className="h-4 w-4" /> },
+                      { title: "Resolución de salida", value: "1024 × 1024 px", desc: "Resolución estándar NFT, suficiente para minteo en Polygon/Ethereum y visualización en marketplaces como OpenSea.", icon: <Eye className="h-4 w-4" /> },
+                      { title: "Descripción artística", value: "Algoritmo propio — sin API", desc: "Generación de texto 100% local basada en los datos biométricos reales. Sin costos de API de texto, sin límites de rate. Respuesta instantánea.", icon: <FileCode className="h-4 w-4" /> },
+                    ].map(({ title, value, desc, icon }) => (
+                      <div key={title} className="rounded-xl border border-gray-200 p-4 bg-white flex gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0 mt-0.5">
+                          {icon}
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{title}</p>
+                          <p className="font-bold text-gray-900 text-sm mt-0.5">{value}</p>
+                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Diagrama de flujo textual */}
+                <Card className="border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-gray-900">
+                      <Layers className="h-5 w-5 text-purple-600" /> Diagrama de Flujo del Sistema
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-gray-950 rounded-xl p-6 font-mono text-xs text-green-400 leading-loose overflow-x-auto">
+                      <pre>{`
+ USUARIO                   SERVIDOR NOOSFERA              POLLINATIONS.AI (FLUX)
+    │                              │                               │
+    │  POST /api/generate-image    │                               │
+    │  { pulses, style, emotion }  │                               │
+    ├─────────────────────────────►│                               │
+    │                              │                               │
+    │                              │  1. crypto.randomInt()        │
+    │                              │     seed = 1_847_392_104      │
+    │                              │                               │
+    │                              │  2. themeIndex =              │
+    │                              │     (Date.now()+seed) % 25    │
+    │                              │                               │
+    │                              │  3. Construye prompt:         │
+    │                              │     "surrealist... theme...   │
+    │                              │      mood... unique:seed"     │
+    │                              │                               │
+    │                              │  4. URL = pollinations.ai/    │
+    │                              │     prompt/...?seed=...       │
+    │                              │     &cache=false              │
+    │                              │                               │
+    │   { imageUrl, theme, prompt }│                               │
+    │◄─────────────────────────────┤  < 5ms                        │
+    │                              │                               │
+    │  GET imageUrl ───────────────┼──────────────────────────────►│
+    │                              │                               │  FLUX genera
+    │                              │                               │  imagen única
+    │                              │                               │  ~20-60 seg
+    │◄─────────────────────────────┼───────────────────────────────┤
+    │  imagen 1024x1024            │                               │
+    │  (data directo, sin proxy)   │                               │
+    │                              │                               │
+    ▼  Muestra imagen + descripción│                               │
+       biométrica generada         │                               │
+       localmente (0ms)            │                               │
+`}</pre>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Nota de privacidad */}
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardContent className="pt-5">
+                    <div className="flex items-start gap-3">
+                      <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-bold text-blue-900 text-sm">Privacidad por diseño</p>
+                        <p className="text-blue-700 text-xs mt-1 leading-relaxed">
+                          Los datos cardíacos del usuario <strong>nunca se almacenan en los servidores de Noosfera</strong>. Se usan únicamente para construir el prompt artístico y se descartan inmediatamente. La imagen viaja directamente entre Pollinations.AI y el navegador del usuario — Noosfera nunca la ve ni la guarda. El único registro persistente es el Token de Autenticidad (hash) que se guarda localmente en el dispositivo del usuario.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>

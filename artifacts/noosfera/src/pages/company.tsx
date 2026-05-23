@@ -7,17 +7,10 @@ import { ArrowRight } from "lucide-react"
 const founders = [
   {
     name: "Miguel Molina",
-    role: "CEO & Cofounder",
-    description: "QA Tester con amplia experiencia en aseguramiento de calidad y pruebas de software. Apasionado por garantizar la excelencia en cada detalle del producto Noosfera.",
+    role: "CEO & Founder",
+    description: "Fundador de Noosfera y líder de producto con profunda visión en la intersección entre biometría, arte digital e inteligencia artificial. Apasionado por crear experiencias únicas que conviertan datos del cuerpo humano en obra de arte irrepetible.",
     image: "/team/miguel-molina.jpg",
     accent: "#7c3aed",
-  },
-  {
-    name: "Harry Fishert",
-    role: "Dev Full Stack & Founder",
-    description: "Desarrollador Full Stack y fundador con experiencia en arquitectura de software y desarrollo de aplicaciones innovadoras. Líder técnico del proyecto Noosfera.",
-    image: "/team/harry-fishert.jpg",
-    accent: "#5b21b6",
   },
 ]
 

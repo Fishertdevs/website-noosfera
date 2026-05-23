@@ -110,13 +110,13 @@ router.post("/generate-image", async (req, res) => {
   }
   const mood = moodMap[emotionalState] || "epic and dramatic atmosphere, dynamic lighting"
 
-  // Add unique timestamp + seed suffix to prompt so identical biometrics never produce the same image
-  const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors`
+  // Embed seed + timestamp directly in the prompt text so Pollinations.AI never serves a cached image
+  const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors, unique:${uniqueSeed}`
 
   // Use Pollinations.AI — completely free, no API key, scales to any number of users
   // The URL is returned directly so each browser fetches its image in parallel
   const encodedPrompt = encodeURIComponent(prompt)
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${uniqueSeed}&nologo=true`
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${uniqueSeed}&nologo=true&cache=false`
 
   res.json({ imageUrl, theme, prompt })
 })
