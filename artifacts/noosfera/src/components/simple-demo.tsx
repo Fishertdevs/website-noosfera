@@ -195,6 +195,7 @@ export default function SimpleDemo() {
   const [generationProgress, setGenerationProgress] = useState(0)
   const [tokenFirstView, setTokenFirstView] = useState(false)
   const [copiedToken, setCopiedToken] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [showMintModal, setShowMintModal] = useState(false)
   const [showTokenModal, setShowTokenModal] = useState(false)
   const [resetAt, setResetAt] = useState<number | null>(null)
@@ -361,7 +362,7 @@ export default function SimpleDemo() {
       coherenceLevel: Math.round(70 + Math.random() * 25),
       pulses: [...pulses], tokenId, description,
     }
-    setGeneratedResult(result); setMyCreations(p => [result, ...p.slice(0, 7)])
+    setImageLoaded(false); setGeneratedResult(result); setMyCreations(p => [result, ...p.slice(0, 7)])
     setTokenFirstView(true); setCopiedToken(false)
     setShowModal(newRemaining <= 0 ? "exhausted" : "result")
   }
@@ -674,9 +675,28 @@ export default function SimpleDemo() {
               {(showModal === "result" || (showModal === "exhausted" && generatedResult)) && generatedResult && (
                 <div>
                   {/* Image — heart watermark, no circle */}
-                  <div className="relative overflow-hidden" style={{ borderRadius: "22px 22px 0 0" }}>
+                  <div className="relative overflow-hidden" style={{ borderRadius: "22px 22px 0 0", minHeight: "270px" }}>
+                    {/* Skeleton shown while Pollinations.AI generates the image */}
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                        style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #1e1b4b 100%)" }}>
+                        <div className="w-10 h-10 rounded-full border-4 border-purple-300/30 border-t-purple-400 animate-spin" />
+                        <p className="text-purple-200 text-xs font-medium tracking-wide animate-pulse" style={font}>
+                          Generando tu obra única…
+                        </p>
+                        <div className="flex gap-1 mt-1">
+                          {[0,1,2,3,4].map(i => (
+                            <div key={i} className="w-1.5 h-1.5 rounded-full bg-purple-400/60 animate-bounce"
+                              style={{ animationDelay: `${i * 0.15}s` }} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <img src={generatedResult.imageUrl} alt="Arte generado"
-                      className="w-full object-cover block" style={{ maxHeight: "270px" }} />
+                      className="w-full object-cover block transition-opacity duration-500"
+                      style={{ maxHeight: "270px", opacity: imageLoaded ? 1 : 0 }}
+                      onLoad={() => setImageLoaded(true)}
+                      onError={() => setImageLoaded(true)} />
                     <div className="absolute bottom-2.5 right-3" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)", fontSize: 20, lineHeight: 1 }}>
                       🤍
                     </div>
