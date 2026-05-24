@@ -991,8 +991,8 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
         )}
 
         {section.special === "script-ia-code" && (
-          <div className="space-y-8">
-            {(section.items as Array<{ subtitle: string; text: string; code?: string }>).map((item, idx) => (
+          <div>
+            {(section.items as Array<{ subtitle: string; text: string; code?: string }>).map((item, idx, arr) => (
               <motion.div key={idx}
                 initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.06 }}>
@@ -1007,6 +1007,13 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
                     style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace" }}>
                     <code>{item.code}</code>
                   </pre>
+                )}
+                {idx < arr.length - 1 && (
+                  <div className="flex items-center gap-3 my-8">
+                    <div className="flex-1 h-px bg-gradient-to-r from-purple-100 to-transparent" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-purple-300" style={{ fontFamily: "'DM Sans', sans-serif" }}>siguiente paso</span>
+                    <div className="flex-1 h-px bg-gradient-to-l from-purple-100 to-transparent" />
+                  </div>
                 )}
               </motion.div>
             ))}
