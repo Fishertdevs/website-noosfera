@@ -181,23 +181,23 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] text-gray-900 dark:text-white transition-colors duration-300">
       <DarkNav activeLink="pricing" />
 
       {/* Hero */}
-      <section className="pt-20 pb-10 text-center bg-white">
+      <section className="pt-20 pb-10 text-center bg-white dark:bg-[#08000f]">
         <div className="container mx-auto px-6">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-4">
             Planes y Precios
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-5"
+            className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-5"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Elige el plan perfecto
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-gray-500 text-lg max-w-xl mx-auto leading-relaxed">
+            className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
             Elige el acceso que necesitas para transformar tus pulsos cardíacos en arte digital único, certificado y listo para el mercado.
           </motion.p>
         </div>
@@ -258,7 +258,7 @@ export default function PricingPage() {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <div className="relative flex items-center bg-gray-100 rounded-full p-1 gap-1">
+              <div className="relative flex items-center bg-gray-100 dark:bg-purple-950 rounded-full p-1 gap-1">
                 {(["monthly", "annual"] as const).map(b => (
                   <button key={b} onClick={() => { setBilling(b); setCurrentIndex(1) }}
                     className="relative px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300"
@@ -283,14 +283,15 @@ export default function PricingPage() {
                   className="w-full"
                 >
                   <div
-                    className="relative flex flex-col w-full p-7"
+                    className="relative flex flex-col w-full p-7 bg-white dark:bg-[#0d0118]"
                     style={{
-                      background: "white",
-                      border: "2px solid #111827",
+                      border: "2px solid",
+                      borderColor: "var(--plan-border, #111827)",
                       borderRadius: "20px",
                       boxShadow: "0 4px 24px rgba(0,0,0,0.09)",
                       minHeight: 360,
-                    }}>
+                    }}
+                    data-pricing-card>
 
                     {plan.tag && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-bold px-5 py-1.5 rounded-full"
@@ -300,10 +301,10 @@ export default function PricingPage() {
                     )}
 
                     <div className="mb-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400 mb-2">{plan.label}</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500 mb-2">{plan.label}</p>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-black text-gray-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{plan.price}</span>
-                        <span className="text-sm text-gray-400">{plan.sub}</span>
+                        <span className="text-4xl font-black text-gray-900 dark:text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>{plan.price}</span>
+                        <span className="text-sm text-gray-400 dark:text-gray-500">{plan.sub}</span>
                       </div>
                       <AnimatePresence>
                         {plan.annualSaving && (
@@ -317,11 +318,11 @@ export default function PricingPage() {
                       </AnimatePresence>
                     </div>
 
-                    <div className="border-t border-gray-100 mb-4" />
+                    <div className="border-t border-gray-100 dark:border-purple-950 mb-4" />
 
                     <ul className="space-y-2.5 flex-1">
                       {plan.features.map((f, fi) => (
-                        <li key={fi} className="flex items-start gap-2.5 text-sm text-gray-700">
+                        <li key={fi} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
                           <Check className="h-4 w-4 mt-0.5 flex-shrink-0 text-purple-500" />
                           {f}
                         </li>
@@ -392,7 +393,7 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ — text/carousel LEFT, image RIGHT — mirrors reviews layout */}
-      <section className="overflow-hidden border-t border-gray-100 bg-white">
+      <section className="overflow-hidden border-t border-gray-100 dark:border-purple-950 bg-white dark:bg-[#08000f] transition-colors duration-300">
         <div className="flex flex-col lg:flex-row min-h-[480px]">
 
           {/* Left — FAQ title + carousel */}
@@ -403,11 +404,11 @@ export default function PricingPage() {
           >
             <div className="text-center w-full">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-3">Preguntas</p>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight mb-3"
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Preguntas Frecuentes
               </h2>
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                 Todo lo que necesitas saber antes de empezar tu viaje en Noosfera.
               </p>
             </div>
@@ -425,8 +426,8 @@ export default function PricingPage() {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="text-center"
                 >
-                  <p className="text-sm font-bold text-gray-900 mb-3 leading-snug">{faqs[faqIndex].q}</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">{faqs[faqIndex].a}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-3 leading-snug">{faqs[faqIndex].q}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{faqs[faqIndex].a}</p>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -437,7 +438,7 @@ export default function PricingPage() {
                 <button key={i} onClick={() => goToFaq(i, i > faqIndex ? 1 : -1)}
                   aria-label={`Pregunta ${i + 1}`}
                   className="h-2 rounded-full transition-all duration-300"
-                  style={{ width: i === faqIndex ? 24 : 8, backgroundColor: i === faqIndex ? "#7c3aed" : "#d1d5db" }} />
+                  style={{ width: i === faqIndex ? 24 : 8, backgroundColor: i === faqIndex ? "#7c3aed" : "var(--dot-inactive, #d1d5db)" }} />
               ))}
             </div>
           </motion.div>
@@ -467,7 +468,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <div className="border-t max-w-5xl mx-auto border-gray-100" />
+      <div className="border-t max-w-5xl mx-auto border-gray-100 dark:border-purple-950" />
 
       {/* CTA — purple background with rounded top corners like home */}
       <section className="py-20"

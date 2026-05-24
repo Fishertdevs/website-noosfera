@@ -33,11 +33,11 @@ export default function CompanyPage() {
   const [, navigate] = useLocation()
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] text-gray-900 dark:text-white transition-colors duration-300">
       <DarkNav activeLink="company" />
 
       {/* Hero — clean, no background image */}
-      <section className="pt-28 pb-20 flex items-center justify-center bg-white border-b border-gray-100">
+      <section className="pt-28 pb-20 flex items-center justify-center bg-white dark:bg-[#08000f] border-b border-gray-100 dark:border-purple-950">
         <div className="text-center px-6 max-w-4xl mx-auto">
           <motion.p
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -46,7 +46,7 @@ export default function CompanyPage() {
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-5"
+            className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-5"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Noosfera es la primera plataforma que transforma tus pulsos cardíacos en obras digitales únicas, certificadas y listas para el mercado.
           </motion.h1>
@@ -54,7 +54,7 @@ export default function CompanyPage() {
       </section>
 
       {/* What is Noosfera — centered text, mission image */}
-      <section className="overflow-hidden border-b border-gray-100">
+      <section className="overflow-hidden border-b border-gray-100 dark:border-purple-950">
         <div className="flex flex-col lg:flex-row min-h-[480px]">
           <motion.div
             className="lg:w-1/2 flex flex-col items-center justify-center text-center px-10 lg:px-20 py-16"
@@ -62,14 +62,14 @@ export default function CompanyPage() {
             transition={{ duration: 0.7 }} viewport={{ once: true }}
           >
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-4">Nuestra misión</p>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight mb-6"
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-6"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
               ¿Qué es <span className="text-purple-600">Noosfera?</span>
             </h2>
-            <p className="text-gray-500 text-sm leading-relaxed mb-4 max-w-md">
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 max-w-md">
               Noosfera es una plataforma de arte biométrico que captura los pulsos cardíacos de sus usuarios y los convierte — a través de inteligencia artificial — en obras de arte digital únicas, certificadas y listas para el mercado NFT.
             </p>
-            <p className="text-gray-500 text-sm leading-relaxed mb-8 max-w-md">
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 max-w-md">
               Creemos que cada latido cuenta una historia. Nuestra tecnología lee esa historia y la transforma en algo visible, bello e irrepetible. No hay dos obras iguales porque no hay dos personas iguales.
             </p>
             <button
@@ -107,11 +107,11 @@ export default function CompanyPage() {
       </section>
 
       {/* Founders */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-[#08000f] transition-colors duration-300">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-14">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-3">El equipo</p>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900"
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Las personas detrás de Noosfera
             </h2>
@@ -126,8 +126,8 @@ export default function CompanyPage() {
                 whileHover={{ y: -8, scale: 1.03, boxShadow: "0 32px 80px rgba(124,58,237,0.22)" }}
                 transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 200, damping: 18 }}
                 viewport={{ once: true }}
-                className="overflow-hidden rounded-3xl border border-gray-100 cursor-pointer w-full max-w-sm"
-                style={{ background: "#ffffff", boxShadow: "0 8px 40px rgba(124,58,237,0.10)" }}
+                className="overflow-hidden rounded-3xl border border-gray-100 dark:border-purple-950 bg-white dark:bg-[#0d0118] cursor-pointer w-full max-w-sm"
+                style={{ boxShadow: "0 8px 40px rgba(124,58,237,0.10)" }}
               >
                 {/* Top banner */}
                 <div
@@ -151,12 +151,12 @@ export default function CompanyPage() {
                 {/* Body */}
                 <div className="pt-14 pb-8 px-8 text-center">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-600 mb-1">{f.name}</p>
-                  <h3 className="text-lg font-black text-gray-900 mb-3"
+                  <h3 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {f.role}
                   </h3>
                   <div className="w-8 h-0.5 bg-purple-200 mx-auto mb-4 rounded-full" />
-                  <p className="text-sm text-gray-500 leading-relaxed">{f.description}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{f.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -165,7 +165,7 @@ export default function CompanyPage() {
       </section>
 
       {/* Vision — image LEFT, pillars RIGHT (all centered) */}
-      <section className="overflow-hidden border-t border-gray-100">
+      <section className="overflow-hidden border-t border-gray-100 dark:border-purple-950">
         <div className="flex flex-col lg:flex-row min-h-[480px]">
           <motion.div
             className="lg:w-1/2 flex items-center justify-center pl-4 lg:pl-6 pr-0 py-6"
@@ -206,7 +206,7 @@ export default function CompanyPage() {
               <motion.h2
                 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }} viewport={{ once: true }}
-                className="text-3xl md:text-4xl font-black text-gray-900 leading-tight"
+                className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Lo que nos mueve
               </motion.h2>
@@ -221,7 +221,7 @@ export default function CompanyPage() {
                   viewport={{ once: true }}
                   className="text-center"
                 >
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <span className="font-black text-purple-600">{p.num}.</span>{" "}{p.desc}
                   </p>
                 </motion.div>

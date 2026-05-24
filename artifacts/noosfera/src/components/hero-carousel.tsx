@@ -7,7 +7,7 @@ interface HeroCarouselProps {
 
 export function HeroCarousel({ onStartDemo, onShowAuth }: HeroCarouselProps) {
   return (
-    <section className="bg-white py-10 md:py-20 overflow-hidden">
+    <section className="bg-white dark:bg-[#08000f] py-10 md:py-20 overflow-hidden transition-colors duration-300">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-10 items-center max-w-6xl mx-auto">
 
@@ -59,7 +59,7 @@ export function HeroCarousel({ onStartDemo, onShowAuth }: HeroCarouselProps) {
             </p>
 
             <h1
-              className="text-4xl md:text-5xl lg:text-[3.75rem] xl:text-[4.25rem] font-black text-gray-900 leading-[1.1] tracking-tight"
+              className="text-4xl md:text-5xl lg:text-[3.75rem] xl:text-[4.25rem] font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               La forma más<br />
@@ -67,7 +67,7 @@ export function HeroCarousel({ onStartDemo, onShowAuth }: HeroCarouselProps) {
               <span className="text-purple-600">NFTs únicos.</span>
             </h1>
 
-            <p className="text-gray-500 text-base md:text-lg leading-relaxed mx-auto lg:mx-0 max-w-md">
+            <p className="text-gray-500 dark:text-gray-300 text-base md:text-lg leading-relaxed mx-auto lg:mx-0 max-w-md">
               Transforma tus latidos en obras de arte digital irrepetibles. Impulsado por nuestra
               comunidad de arte cardíaco con IA.
             </p>

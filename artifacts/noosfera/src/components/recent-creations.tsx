@@ -150,7 +150,7 @@ function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r:
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 24 }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden">
+        className="w-full max-w-sm bg-white dark:bg-[#0d0118] rounded-3xl shadow-2xl overflow-hidden border border-transparent dark:border-purple-950">
 
         <div className="relative px-6 pt-6 pb-4 text-center"
           style={{ background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)" }}>
@@ -310,11 +310,11 @@ function TestimonialsCarousel({ reviews }: { reviews: Review[] }) {
                 key={review.id + "-name"}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.28 }}
-                className="font-semibold text-gray-900 text-sm leading-tight">
+                className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
                 {review.name}
               </motion.p>
             </AnimatePresence>
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Usuario verificado</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Usuario verificado</p>
           </div>
         </div>
         <div className="flex gap-0.5">
@@ -332,7 +332,7 @@ function TestimonialsCarousel({ reviews }: { reviews: Review[] }) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.35 }}
-            className="text-gray-700 leading-relaxed text-center">
+            className="text-gray-700 dark:text-gray-300 leading-relaxed text-center">
             {highlightText(review.text)}
           </motion.blockquote>
         </AnimatePresence>
@@ -372,14 +372,14 @@ export function RecentCreations() {
   return (
     <>
       {/* ── 3D Cube Carousel ── */}
-      <section className="py-20 bg-white overflow-hidden select-none">
+      <section className="py-20 bg-white dark:bg-[#08000f] overflow-hidden select-none transition-colors duration-300">
         <div className="container mx-auto px-6 mb-12 text-center">
           <motion.p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500 mb-3"
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }} viewport={{ once: true }}>
             Comunidad
           </motion.p>
-          <motion.h2 className="text-3xl md:text-4xl font-black text-gray-900"
+          <motion.h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.08 }} viewport={{ once: true }}>
@@ -464,16 +464,16 @@ export function RecentCreations() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="py-16 border-t border-gray-100">
+      <section className="py-16 border-t border-gray-100 dark:border-purple-950 dark:bg-[#08000f] transition-colors duration-300">
         <div className="container mx-auto px-6 text-center max-w-3xl">
           <motion.h2 className="text-2xl md:text-3xl font-black mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }} viewport={{ once: true }}>
             <span className="text-purple-600">Únete a millones de personas</span>{" "}
-            <span className="text-gray-900">en la creación de imágenes con IA.</span>
+            <span className="text-gray-900 dark:text-white">en la creación de imágenes con IA.</span>
           </motion.h2>
-          <motion.p className="text-gray-500 mb-10"
+          <motion.p className="text-gray-500 dark:text-gray-400 mb-10"
             initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.08 }} viewport={{ once: true }}>
             Comienza tu propio viaje creativo con Noosfera.
@@ -482,7 +482,7 @@ export function RecentCreations() {
             initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.14 }} viewport={{ once: true }}>
             {BENEFITS.map(label => (
-              <span key={label} className="flex items-center gap-2 text-sm font-medium text-gray-600">
+              <span key={label} className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
                 <span className="text-purple-600 font-black text-base">✓</span>
                 {label}
               </span>
@@ -492,7 +492,7 @@ export function RecentCreations() {
       </section>
 
       {/* ── Testimonial / Feature Section ── */}
-      <section className="overflow-hidden border-t border-gray-100 bg-white">
+      <section className="overflow-hidden border-t border-gray-100 dark:border-purple-950 bg-white dark:bg-[#08000f] transition-colors duration-300">
         <div className="flex flex-col lg:flex-row min-h-[480px]">
 
           <motion.div
@@ -524,12 +524,12 @@ export function RecentCreations() {
             initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }} viewport={{ once: true }}>
 
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight text-center"
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight text-center"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Crea Arte Digital con IA
             </h2>
 
-            <p className="text-gray-500 leading-relaxed text-center">
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-center">
               Conecta tus latidos y observa cómo nuestra IA transforma tus patrones cardíacos
               en obras visuales únicas e irrepetibles.
             </p>

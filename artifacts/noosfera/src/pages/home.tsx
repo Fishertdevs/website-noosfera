@@ -18,7 +18,7 @@ export default function LandingPage() {
   const showAuth = () => navigate("/auth/login")
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#08000f]">
       <DarkNav activeLink="home" />
 
       <HeroCarousel onStartDemo={startDemo} onShowAuth={showAuth} />
