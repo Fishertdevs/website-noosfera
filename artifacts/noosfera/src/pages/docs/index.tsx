@@ -650,62 +650,62 @@ const timelineSections = [
     ],
   },
   {
-    id: "script-ia-biometrics",
+    id: "script-ia-step1",
     icon: Cpu,
-    tag: "Script IA — Pasos 1 y 2",
-    title: "Captura Biométrica + Seed Criptográfico",
+    tag: "Script IA — Paso 1",
+    title: "Captura Biométrica",
     special: "script-ia-code",
     items: [
       {
-        subtitle: "Paso 1 — Recepción del payload en Express",
-        text: "El servidor recibe cuatro parámetros vía POST /api/noosfera/generate-image. El style define el estilo visual elegido por el usuario (uno de 8). El emotionalState es derivado matemáticamente de los BPM: calm (<70 BPM), normal (70–90), stressed (90–110), alert (>110). El stressLevel y heartHealthScore son métricas calculadas por el frontend a partir del vector de pulsos.",
+        subtitle: "Recepción del payload en Express",
+        text: "El servidor recibe cuatro parámetros vía POST /api/noosfera/generate-image. El style define el estilo visual (uno de 8). El emotionalState se deriva de los BPM: calm (<70), normal (70–90), stressed (90–110), alert (>110). El stressLevel y heartHealthScore los calcula el frontend a partir del vector de pulsos.",
         code: `// artifacts/api-server/src/routes/noosfera.ts
-// Endpoint principal de generación de imagen
 router.post("/generate-image", async (req, res) => {
   const { style, emotionalState, stressLevel, heartHealthScore } = req.body
-
-  // Payload de ejemplo real recibido desde el frontend:
+  // Payload de ejemplo:
   // {
-  //   style: "surreal",           → estilo elegido por el usuario
+  //   style: "surreal",           → estilo elegido
   //   emotionalState: "calm",     → derivado de BPM promedio
-  //   stressLevel: 25,            → 0-100, calculado en frontend
-  //   heartHealthScore: 82        → puntuación de salud cardíaca
+  //   stressLevel: 25,            → 0-100
+  //   heartHealthScore: 82        → puntuación cardíaca
   // }`,
       },
+    ],
+  },
+  {
+    id: "script-ia-step2",
+    icon: Cpu,
+    tag: "Script IA — Paso 2",
+    title: "Seed Criptográfico de 32 bits",
+    special: "script-ia-code",
+    items: [
       {
-        subtitle: "Paso 2 — Seed criptográfico de 32 bits (Node.js crypto)",
-        text: "Se usa crypto.randomInt() de Node.js, que genera números aleatorios criptográficamente seguros usando la fuente de entropía del sistema operativo (/dev/urandom en Linux). El rango es el máximo de un entero con signo de 32 bits: 2.147.483.647 valores posibles. La combinación con Date.now() (milisegundos Unix) produce un índice de tema con entropía combinada de 64 bits efectivos — hace que incluso dos peticiones al mismo milisegundo con los mismos biométricos reciban temas distintos.",
-        code: `  // Módulo nativo de Node.js — sin dependencias externas
-  // crypto.randomInt usa /dev/urandom del sistema operativo
+        subtitle: "Node.js crypto.randomInt — irrepetibilidad matemática",
+        text: "Se usa crypto.randomInt() de Node.js, que genera enteros criptográficamente seguros desde /dev/urandom del sistema operativo. Con 2.147.483.647 valores posibles combinados con Date.now(), incluso dos peticiones al mismo milisegundo con los mismos biométricos producen índices distintos.",
+        code: `  // Sin dependencias externas — módulo nativo de Node.js
   const { randomInt } = await import("crypto")
 
-  // Rango: 0 a 2_147_483_647 (máximo int32 con signo)
-  // Ejemplo generado: 1_847_392_104
+  // Rango: 0 a 2_147_483_647 (máximo int32)
   const uniqueSeed = randomInt(0, 2_147_483_647)
+  // Ejemplo: 1_847_392_104
 
-  // El índice del tema combina timestamp + seed:
-  // - Date.now(): ms desde epoch Unix (ej: 1_716_500_000_000)
-  // - uniqueSeed: entero criptográfico (ej: 1_847_392_104)
-  // - Suma → módulo 25 → índice 0-24
-  // Dos peticiones simultáneas nunca producen el mismo índice
+  // Timestamp + seed → índice de tema con 64-bit de entropía
   const themeIndex = (Date.now() + uniqueSeed) % NOOSFERA_THEMES.length`,
       },
     ],
   },
   {
-    id: "script-ia-themes",
+    id: "script-ia-step3",
     icon: Cpu,
-    tag: "Script IA — Pasos 3 y 4",
-    title: "25 Temas Narrativos + 8 Estilos Artísticos",
+    tag: "Script IA — Paso 3",
+    title: "25 Temas Narrativos",
     special: "script-ia-code",
     items: [
       {
-        subtitle: "Paso 3 — Array completo de los 25 temas narrativos",
-        text: "Los temas cubren 5 categorías: fantasía épica (dragones, magos, batallas), naturaleza salvaje (leones, lobos, ballenas), ciencia ficción (naves, estaciones espaciales, mundos alienígenas), mitología (fénix, serpientes marinas, templos) y arte urbano (ciudades ciberpunk). La selección es determinista dado el mismo seed y timestamp, lo que hace cada obra técnicamente reproducible bajo condiciones idénticas.",
-        code: `// 25 temas narrativos de alta calidad artística
-// Seleccionados para maximizar el impacto visual del modelo FLUX
-const NOOSFERA_THEMES = [
-  // ── Fantasía épica ──────────────────────────────────────────
+        subtitle: "Array completo categorizado por tipo narrativo",
+        text: "Los temas cubren 5 categorías: fantasía épica, naturaleza salvaje, ciencia ficción, mitología y épica naval. La selección es determinista dado el mismo seed y timestamp, haciendo cada obra técnicamente reproducible bajo condiciones idénticas.",
+        code: `const NOOSFERA_THEMES = [
+  // ── Fantasía épica ──────────────────────────────────
   "a majestic dragon soaring through storm clouds with lightning",
   "an epic medieval battle with knights and sorcerers on horseback",
   "a warrior mage casting brilliant spells in an ancient stone temple",
@@ -715,37 +715,42 @@ const NOOSFERA_THEMES = [
   "a medieval castle on a cliff surrounded by a magical aurora",
   "an ancient temple guarded by stone golems in a jungle",
   "an armada of pirate ships in an epic naval battle at night",
-  // ── Naturaleza salvaje ──────────────────────────────────────
+  // ── Naturaleza salvaje ──────────────────────────────
   "a pride of lions in an African savanna at golden hour",
   "a pack of wolves running through a snow-covered pine forest at dusk",
   "a family of elephants in a lush green jungle landscape",
   "a fierce tiger stalking through dense tropical jungle foliage",
   "a herd of wild horses galloping across an open plain at sunrise",
   "a polar bear and her cubs on an ice floe under northern lights",
-  // ── Ciencia ficción ─────────────────────────────────────────
+  // ── Ciencia ficción ─────────────────────────────────
   "a futuristic spaceship emerging from a glowing nebula in deep space",
   "space explorers discovering an alien world with towering crystal formations",
   "a deep space station orbiting a ringed gas giant planet",
   "a cyberpunk city at night with neon lights and flying vehicles",
-  // ── Mitología & misterio ────────────────────────────────────
+  // ── Mitología & misterio ────────────────────────────
   "an enchanted ancient forest with glowing magical creatures and fireflies",
   "an underwater ancient city with bioluminescent sea creatures",
   "a crystal cave with mythical creatures and glowing gems",
   "a mystical forest with fairies and ancient tree spirits at night",
   "a giant sea serpent emerging from stormy ocean depths near a lighthouse",
-  // ── Épica naval ─────────────────────────────────────────────
+  // ── Épica naval ─────────────────────────────────────
   "a massive sailing ship on stormy seas at sunset with dramatic waves",
 ]
-
-const theme = NOOSFERA_THEMES[themeIndex]
-// Ejemplo resultado con seed 1_847_392_104 a las 12:00:00:
-// → "an underwater ancient city with bioluminescent sea creatures"`,
+const theme = NOOSFERA_THEMES[themeIndex]`,
       },
+    ],
+  },
+  {
+    id: "script-ia-step4",
+    icon: Cpu,
+    tag: "Script IA — Paso 4",
+    title: "8 Estilos + Mapa Emocional",
+    special: "script-ia-code",
+    items: [
       {
-        subtitle: "Paso 4 — 8 estilos + mapa de estado emocional a atmósfera visual",
-        text: "Cada estilo tiene un descriptor de prompt cuidadosamente diseñado para guiar al modelo FLUX. El estado emocional se traduce en descriptores de atmósfera que afectan iluminación, contraste y energía de la obra — no son palabras genéricas, sino términos que el modelo FLUX interpreta directamente para ajustar la paleta y composición.",
-        code: `// 8 descriptores de estilo — cada uno es un prompt prefix específico para FLUX
-const STYLE_DESCRIPTORS: Record<string, string> = {
+        subtitle: "Descriptores de estilo y traducción de BPM a atmósfera visual",
+        text: "Cada estilo tiene un descriptor de prompt específico para FLUX. El estado emocional derivado de los biométricos se traduce en un descriptor de atmósfera que ajusta iluminación, contraste y energía — términos que FLUX interpreta directamente en su proceso de difusión.",
+        code: `const STYLE_DESCRIPTORS: Record<string, string> = {
   abstract:      "vibrant abstract digital art with bold colors and geometric shapes,",
   realistic:     "ultra-photorealistic, cinematic photography style,",
   hyperrealistic:"hyper-detailed photorealistic with dramatic studio lighting,",
@@ -756,8 +761,6 @@ const STYLE_DESCRIPTORS: Record<string, string> = {
   fractal:       "fractal recursive mandelbrot art style, infinitely detailed,",
 }
 
-// Estado emocional → descriptor de atmósfera visual
-// Los valores están afinados para el modelo FLUX específicamente
 const moodMap: Record<string, string> = {
   calm:    "peaceful and serene atmosphere, soft lighting",      // <70 BPM
   normal:  "epic and dramatic atmosphere, dynamic lighting",    // 70-90 BPM
@@ -771,73 +774,66 @@ const mood = moodMap[emotionalState] ?? "epic and dramatic atmosphere, dynamic l
     ],
   },
   {
-    id: "script-ia-prompt",
+    id: "script-ia-step5",
     icon: Cpu,
-    tag: "Script IA — Pasos 5 y 6",
-    title: "Ensamblado del Prompt + Descripción Algorítmica",
+    tag: "Script IA — Paso 5",
+    title: "Prompt Final + URL de Pollinations.AI",
     special: "script-ia-code",
     items: [
       {
-        subtitle: "Paso 5 — Construcción del prompt final y URL de Pollinations.AI",
-        text: "El prompt se ensambla en un orden específico: primero el descriptor de estilo (afecta la técnica), luego el tema narrativo (el sujeto), luego la atmósfera emocional (la iluminación y energía), luego modificadores de calidad fijos, y finalmente el token único (unique:SEED). Este último es crítico: la CDN de Pollinations.AI cachea imágenes por el texto del prompt, y embeber el seed en el texto fuerza un cache-miss garantizado en cada petición. El servidor retorna solo la URL — nunca descarga la imagen — lo que permite escalar a miles de usuarios simultáneos sin incrementar el costo de infraestructura.",
-        code: `  // Ensamblado del prompt en orden específico:
-  // [ESTILO] + [TEMA] + [ATMÓSFERA] + [CALIDAD] + [SEED_ÚNICO]
-  const prompt =
+        subtitle: "Ensamblado del prompt y construcción de la URL de generación",
+        text: "El prompt sigue el orden: [ESTILO] + [TEMA] + [ATMÓSFERA] + [CALIDAD] + [unique:SEED]. El token unique:SEED es crítico — fuerza cache-miss en la CDN de Pollinations.AI garantizando una imagen nueva en cada petición. El servidor retorna solo la URL en menos de 5ms, el navegador carga la imagen directamente desde la CDN.",
+        code: `  const prompt =
     \`\${artisticStyle} \${theme}, \${mood}, \` +
     \`highly detailed, professional digital art, \` +
     \`8k resolution, masterpiece quality, vivid saturated colors, \` +
     \`unique:\${uniqueSeed}\`
-  // Ejemplo de prompt completo generado:
+  // Prompt real generado (surreal + calm + seed 1847392104):
   // "surrealist dream-like painting style with impossible landscapes,
   //  an underwater ancient city with bioluminescent sea creatures,
-  //  peaceful and serene atmosphere, soft lighting,
-  //  highly detailed, professional digital art, 8k resolution,
-  //  masterpiece quality, vivid saturated colors, unique:1847392104"
+  //  peaceful and serene atmosphere, soft lighting, highly detailed,
+  //  professional digital art, 8k resolution, masterpiece quality,
+  //  vivid saturated colors, unique:1847392104"
 
-  // URL final para Pollinations.AI (modelo FLUX)
-  // Parámetros críticos:
-  //   model=flux       → modelo de mayor calidad disponible
-  //   seed=SEED        → reproducibilidad del resultado en FLUX
-  //   nologo=true      → elimina watermark de Pollinations
-  //   cache=false      → bypass de caché HTTP de la CDN
+  // URL final → modelo FLUX · 1024×1024 · sin caché · sin logo
   const encodedPrompt = encodeURIComponent(prompt)
   const imageUrl =
     \`https://image.pollinations.ai/prompt/\${encodedPrompt}\` +
     \`?width=1024&height=1024&model=flux\` +
     \`&seed=\${uniqueSeed}&nologo=true&cache=false\`
 
-  // El servidor retorna la URL en <5ms — nunca descarga la imagen
-  // El navegador del usuario carga la imagen directamente desde la CDN
-  res.json({ imageUrl, theme, prompt })
+  res.json({ imageUrl, theme, prompt }) // respuesta en <5ms
 })`,
       },
+    ],
+  },
+  {
+    id: "script-ia-step6",
+    icon: Cpu,
+    tag: "Script IA — Paso 6",
+    title: "Descripción Algorítmica (0ms, sin API)",
+    special: "script-ia-code",
+    items: [
       {
-        subtitle: "Paso 6 — Algoritmo completo de descripción artística (sin API externa)",
-        text: "En paralelo a la generación de imagen, el endpoint POST /generate-description produce texto literario en español sin llamadas a APIs externas. El algoritmo usa tres tablas de vocabulario indexadas por los biométricos: la tabla de intensidades (5 entradas) indexada por BPM promedio dividido entre 25, la tabla de variabilidades (4 entradas) indexada por el rango de pulsos dividido entre 10, y la tabla de estilos (8 entradas) indexada por el estilo elegido. La concatenación produce frases que suenan a catálogo de galería contemporánea. Latencia: 0ms de red, <1ms de CPU.",
-        code: `// POST /api/noosfera/generate-description
-// 100% algorítmico — sin API externa, sin costo de red
-
-function generateDescription(avg: number, range: number, title: string): string {
-  // Tabla 1: vocabulario de INTENSIDAD VITAL (indexado por BPM promedio)
-  // avg ÷ 25 → índice 0-4  (avg 0-24→0, 25-49→1, 50-74→2, 75-99→3, 100+→4)
+        subtitle: "Algoritmo completo — texto literario en español sin costo de red",
+        text: "El endpoint POST /generate-description genera texto literario con tres tablas de vocabulario indexadas por los biométricos. BPM promedio ÷ 25 → índice de intensidad (0-4). Rango de pulsos ÷ 10 → índice de variabilidad (0-3). Estilo elegido → marco artístico (8 entradas). Latencia: <1ms de CPU, 0ms de red.",
+        code: `function generateDescription(avg: number, range: number, title: string): string {
+  // Tabla 1 — INTENSIDAD VITAL (avg ÷ 25 → índice 0-4)
   const intensidades = [
-    "una quietud interior que se traduce en formas etéreas y difusas",          // 0-24 BPM (reposo)
+    "una quietud interior que se traduce en formas etéreas y difusas",          // 0-24 BPM
     "un estado de conciencia suspendida entre la calma y la expectativa",       // 25-49 BPM
-    "una energía vital moderada que fluye en patrones armoniosos y controlados",// 50-74 BPM (normal)
-    "una tensión creativa que impulsa la composición hacia lo dinámico",        // 75-99 BPM (activo)
-    "una intensidad emocional que fragmenta la forma en múltiples planos",      // 100+ BPM (alerta)
+    "una energía vital moderada que fluye en patrones armoniosos y controlados",// 50-74 BPM
+    "una tensión creativa que impulsa la composición hacia lo dinámico",        // 75-99 BPM
+    "una intensidad emocional que fragmenta la forma en múltiples planos",      // 100+ BPM
   ]
-
-  // Tabla 2: vocabulario de VARIABILIDAD RÍTMICA (indexado por rango de pulsos)
-  // range ÷ 10 → índice 0-3  (range 0-9→0, 10-19→1, 20-29→2, 30+→3)
+  // Tabla 2 — VARIABILIDAD RÍTMICA (range ÷ 10 → índice 0-3)
   const variabilidades = [
     "con un ritmo interno estable que unifica cada elemento en perfecta coherencia",
     "donde la oscilación medida entre estados genera una tensión visual equilibrada",
     "en un pulso irregular que convierte el caos en belleza compositiva",
     "articulando contradicciones internas que enriquecen la profundidad de la obra",
   ]
-
-  // Tabla 3: MARCO ARTÍSTICO por estilo — 8 entradas directas
+  // Tabla 3 — MARCO ARTÍSTICO (8 entradas por estilo)
   const estilos: Record<string, string> = {
     abstract:      "la abstracción geométrica como lenguaje del inconsciente",
     realistic:     "el hiperrealismo como espejo del estado psicofisiológico",
@@ -848,20 +844,14 @@ function generateDescription(avg: number, range: number, title: string): string 
     geometric:     "la geometría pura como arquitectura del pensamiento ordenado",
     fractal:       "la recursividad fractal como mapa de la complejidad emocional",
   }
-
   const iIdx  = Math.min(Math.floor(avg / 25),   intensidades.length - 1)
   const vIdx  = Math.min(Math.floor(range / 10), variabilidades.length - 1)
   const estilo = estilos[title] ?? "el lenguaje visual como extensión del estado interno"
-
-  // Resultado ejemplo (avg=65, range=12, style="surreal"):
-  // "una energía vital moderada que fluye en patrones armoniosos y controlados,
-  //  donde la oscilación medida entre estados genera una tensión visual equilibrada,
-  //  explorando el surrealismo onírico como territorio del subconsciente revelado"
   return \`\${intensidades[iIdx]}, \${variabilidades[vIdx]}, explorando \${estilo}\`
 }
 
 router.post("/generate-description", async (req, res) => {
-  const { pulses, emotionalState, title } = req.body
+  const { pulses, title } = req.body
   const arr   = pulses as number[]
   const avg   = Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
   const range = Math.max(...arr) - Math.min(...arr)
@@ -1003,10 +993,20 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
                 )}
                 <p className="text-sm text-gray-500 leading-relaxed mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
                 {item.code && (
-                  <pre className="text-xs leading-relaxed overflow-x-auto rounded-lg p-4"
-                    style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace" }}>
-                    <code>{item.code}</code>
-                  </pre>
+                  <div className="mt-3 mb-1">
+                    <div className="rounded-xl overflow-hidden" style={{ boxShadow: "0 0 0 1px #4c1d95, 0 4px 24px rgba(109,40,217,0.18)" }}>
+                      <div className="flex items-center gap-1.5 px-4 py-2" style={{ backgroundColor: "#1a0533" }}>
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#ff5f57" }} />
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#febc2e" }} />
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#28c840" }} />
+                        <span className="ml-3 text-[10px] text-purple-400" style={{ fontFamily: "'Fira Code', monospace" }}>noosfera.ts</span>
+                      </div>
+                      <pre className="text-xs leading-relaxed overflow-x-auto p-4"
+                        style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace", margin: 0 }}>
+                        <code>{item.code}</code>
+                      </pre>
+                    </div>
+                  </div>
                 )}
                 {idx < arr.length - 1 && (
                   <div className="flex items-center gap-3 my-8">
