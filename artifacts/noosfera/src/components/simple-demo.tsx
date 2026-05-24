@@ -333,39 +333,27 @@ export default function SimpleDemo() {
     const tokenId = Math.abs((Date.now() ^ (Math.random() * 0xffffff | 0))).toString(16).toUpperCase().padStart(8, "0")
     const prompt = AI_PROMPTS[Math.floor(Math.random() * AI_PROMPTS.length)]
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 50000)
+    // Seleccion de imagen local instantanea — banco de 40 imagenes pre-generadas
+    const LOCAL_IMAGES = Array.from({ length: 40 }, (_, i) => `/images/noosfera-gen-${String(i + 1).padStart(2, "0")}.jpg`)
+    const imageUrl = LOCAL_IMAGES[Math.floor(Math.random() * LOCAL_IMAGES.length)]
 
-    const [imageData, descData] = await Promise.allSettled([
-      fetch("/api/generate-image", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pulses, style: style.name, prompt }),
-        signal: controller.signal,
-      }).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch("/api/generate-description", {
+    // Intentar obtener descripcion del api-server si esta disponible, sino usar descripcion por defecto
+    let description = ""
+    try {
+      const descRes = await fetch("/api/generate-description", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pulses, emotionalState: style.emotion, title: style.name }),
-      }).then(r => r.ok ? r.json() : null).catch(() => null),
-    ])
+        signal: AbortSignal.timeout(5000),
+      })
+      if (descRes.ok) {
+        const descData = await descRes.json()
+        description = descData?.description ?? ""
+      }
+    } catch { /* api-server no disponible, continuar sin descripcion */ }
 
-    clearTimeout(timeoutId)
     clearInterval(iv); setGenerationProgress(100)
 
-    if (!(imageData.status === "fulfilled" && imageData.value?.imageUrl)) {
-      throw new Error("No se pudo generar la imagen. Verifica tu conexión e intenta de nuevo.")
-    }
-    const imageUrl = imageData.value.imageUrl
-    const description = (descData.status === "fulfilled" && descData.value?.description)
-      ? descData.value.description : ""
 
-    // Pre-cargar la imagen antes de mostrar el resultado
-    await new Promise<void>((resolve, reject) => {
-      const img = new Image()
-      img.crossOrigin = "anonymous"
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error("Error al cargar la imagen"))
-      img.src = imageUrl
-    })
 
     const avg = pulses.reduce((a, b) => a + b, 0) / pulses.length
     const result: GeneratedResult = {

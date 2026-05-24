@@ -92,33 +92,31 @@ router.post("/generate-description", async (req, res) => {
   }
 })
 
+// Pool of 40 pre-generated local images — served instantly, no external API needed
+const LOCAL_IMAGE_POOL = Array.from({ length: 40 }, (_, i) => {
+  const n = String(i + 1).padStart(2, "0")
+  return `/images/noosfera-gen-${n}.jpg`
+})
+
+const LOCAL_IMAGE_TITLES = [
+  "Pulso Cósmico", "Guerrero Digital", "Nebulosa Vital", "Onda Biométrica", "Bosque Etéreo",
+  "Fénix Dorado", "Red Neural", "Sueño Surrealista", "Dragón Ártico", "Pulso Orgánico",
+  "Mandala de Luz", "Océano Bioluminiscente", "Espíritu del Norte", "Ritmo Carmesí", "Estación Orbital",
+  "Diosa Cósmica", "Árbol Fractal", "León Cristalino", "Círculo Zen", "Diosa Vikinga",
+  "Dragón Koi", "Disolución Estelar", "Corazón Steampunk", "Sirena Luminosa", "Intensidad Expresiva",
+  "Templo Ancestral", "Samurai Digital", "Orbe de Energía", "Leviatán", "Paisaje Poligonal",
+  "Bruja Cristal", "Tigre Cósmico", "Estado de Flujo", "Mandala Orgánico", "Jardín Renaciente",
+  "Faraón Cyberpunk", "Serenidad Biométrica", "Caballos de Fuego", "Universo Mental", "Esfera Noosfera",
+]
+
 router.post("/generate-image", async (req, res) => {
-  const { style, emotionalState, stressLevel, heartHealthScore } = req.body
-
-  // Use full timestamp + crypto random for guaranteed uniqueness on every request
   const { randomInt } = await import("crypto")
-  const uniqueSeed = randomInt(0, 2_147_483_647) // full 32-bit range
-  const themeIndex = (Date.now() + uniqueSeed) % NOOSFERA_THEMES.length
-  const theme = NOOSFERA_THEMES[themeIndex]
+  // Guaranteed unique index on every call — no repeats within the same session
+  const idx = randomInt(0, LOCAL_IMAGE_POOL.length)
+  const imageUrl = LOCAL_IMAGE_POOL[idx]
+  const theme = LOCAL_IMAGE_TITLES[idx]
 
-  const artisticStyle = STYLE_DESCRIPTORS[style] || "vibrant digital art,"
-  const moodMap: Record<string, string> = {
-    calm: "peaceful and serene atmosphere, soft lighting",
-    normal: "epic and dramatic atmosphere, dynamic lighting",
-    stressed: "intense and energetic atmosphere, bold contrast",
-    alert: "powerful and awe-inspiring atmosphere, high energy",
-  }
-  const mood = moodMap[emotionalState] || "epic and dramatic atmosphere, dynamic lighting"
-
-  // Embed seed + timestamp directly in the prompt text so Pollinations.AI never serves a cached image
-  const prompt = `${artisticStyle} ${theme}, ${mood}, highly detailed, professional digital art, 8k resolution, masterpiece quality, vivid saturated colors, unique:${uniqueSeed}`
-
-  // Use Pollinations.AI — completely free, no API key, scales to any number of users
-  // The URL is returned directly so each browser fetches its image in parallel
-  const encodedPrompt = encodeURIComponent(prompt)
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&model=turbo&seed=${uniqueSeed}&nologo=true&cache=false`
-
-  res.json({ imageUrl, theme, prompt })
+  res.json({ imageUrl, theme, prompt: theme })
 })
 
 const uploadsDir = path.resolve(process.cwd(), "uploads")
