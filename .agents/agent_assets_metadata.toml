@@ -1,0 +1,422 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "AK8av7WXKprCqYJH8PBGL"
+uri = "file://artifacts/noosfera/public/images/nft-castle-ai.png"
+type = "image"
+title = "ai fantasy castle purple night"
+
+[[generated]]
+id = "p6K-anhCqDzn_XDUJBdAe"
+uri = "file://artifacts/noosfera/public/images/auth-hero.png"
+type = "image"
+title = "abandoned castle twilight landscape"
+
+[[generated]]
+id = "-YMGlkzpshIybwQqKH1Mz"
+uri = "file://artifacts/noosfera/public/images/collage-1.png"
+type = "image"
+title = "bioluminescent jellyfish"
+
+[[generated]]
+id = "f4JwrsooC3K9eoEiSeYxG"
+uri = "file://artifacts/noosfera/public/images/collage-2.png"
+type = "image"
+title = "neon data human silhouette"
+
+[[generated]]
+id = "IfxfYGVbOKSYHBOd5ty3M"
+uri = "file://artifacts/noosfera/public/images/collage-3.png"
+type = "image"
+title = "aurora mountains night"
+
+[[generated]]
+id = "E-8fDiFQMy2gshnYJqlyF"
+uri = "file://artifacts/noosfera/public/images/collage-4.png"
+type = "image"
+title = "mystical glowing forest"
+
+[[generated]]
+id = "Va03uflQSVJglYbX65tiZ"
+uri = "file://artifacts/noosfera/public/images/collage-5.png"
+type = "image"
+title = "chromatic liquid metal"
+
+[[generated]]
+id = "YzSLvd4vv-AZODDuu4Y_0"
+uri = "file://artifacts/noosfera/public/images/collage-6.png"
+type = "image"
+title = "cyberpunk tokyo night"
+
+[[generated]]
+id = "YWe0F-DGbHW-GUmPQJJVb"
+uri = "file://artifacts/noosfera/public/images/collage-7.png"
+type = "image"
+title = "fantasy dragon mountains"
+
+[[generated]]
+id = "fHMmO8ZfffTB19ESay7oN"
+uri = "file://artifacts/noosfera/public/images/collage-8.png"
+type = "image"
+title = "wolf moonlight forest"
+
+[[generated]]
+id = "kwPpIYkyV_hxZ0NNAFk5Y"
+uri = "file://artifacts/noosfera/public/images/collage-9.png"
+type = "image"
+title = "ancient castle ruins ivy"
+
+[[generated]]
+id = "qsi8ZPEP47kMlhJXz2L6U"
+uri = "file://artifacts/noosfera/public/images/collage-10.png"
+type = "image"
+title = "female warrior celestial armor"
+
+[[generated]]
+id = "JB_X_ED_g3KXFTHmGJiJk"
+uri = "file://artifacts/noosfera/public/images/collage-11.png"
+type = "image"
+title = "bioluminescent tropical jungle"
+
+[[generated]]
+id = "wPg7tcw1ZldWTuuSwj8g5"
+uri = "file://artifacts/noosfera/public/images/collage-12.png"
+type = "image"
+title = "coral reef magical underwater"
+
+[[generated]]
+id = "u1ilfv8WYedzf2IjD8bxk"
+uri = "file://artifacts/noosfera/public/images/collage-13.png"
+type = "image"
+title = "cherry blossom lanterns night"
+
+[[generated]]
+id = "4p88pPqJABbOdtzlrshnH"
+uri = "file://artifacts/noosfera/public/images/collage-14.png"
+type = "image"
+title = "magical oak tree fairy lights"
+
+[[generated]]
+id = "29klXm1xhLpRJ5wD_nRHC"
+uri = "file://artifacts/noosfera/public/images/collage-15.png"
+type = "image"
+title = "cosmic lion galaxy portrait"
+
+[[generated]]
+id = "OWT6PTrr_cawfGvx_zE_r"
+uri = "file://artifacts/noosfera/public/images/collage-16.png"
+type = "image"
+title = "samurai moonlit bamboo"
+
+[[generated]]
+id = "-jgoUDXCOjVWOtMKmSUkH"
+uri = "file://artifacts/noosfera/public/images/collage-17.png"
+type = "image"
+title = "egyptian pharaoh golden aura"
+
+[[generated]]
+id = "cTPuUk2saKNY_CUIPbavU"
+uri = "file://artifacts/noosfera/public/images/collage-18.png"
+type = "image"
+title = "fire phoenix volcanic eruption"
+
+[[generated]]
+id = "7wfbkeO3WffAkKb2aQOlt"
+uri = "file://artifacts/noosfera/public/images/collage-19.png"
+type = "image"
+title = "mermaid underwater palace"
+
+[[generated]]
+id = "_s4f6HLd3nyi-trodCgtw"
+uri = "file://artifacts/noosfera/public/images/collage-20.png"
+type = "image"
+title = "white tiger ice markings arctic"
+
+[[generated]]
+id = "h5fAxIAlfHcYFxkxmOBlI"
+uri = "file://artifacts/noosfera/public/images/auth-R2-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "5Txug9Z62kBIDmuU2w_hF"
+uri = "file://artifacts/noosfera/public/images/auth-L3-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3g6wU2GtWyLbRnz715bDN"
+uri = "file://artifacts/noosfera/public/images/auth-L3-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Gf4oOe5WXtN0b_67ZFU7g"
+uri = "file://artifacts/noosfera/public/images/auth-L3-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2dxG0_0rPJAKThFoCMLLT"
+uri = "file://artifacts/noosfera/public/images/auth-L3-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "y-E9OCnWQYgGuabVVM0FO"
+uri = "file://artifacts/noosfera/public/images/auth-L3-5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "kwr_vGzl3cRoCA8QuMqYq"
+uri = "file://artifacts/noosfera/public/images/auth-L4-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "TeW7uTiwM0msyOlgcvV8U"
+uri = "file://artifacts/noosfera/public/images/auth-L4-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8fT_UCGKA_Ixdm7YyCoDu"
+uri = "file://artifacts/noosfera/public/images/auth-L4-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8OiglRuQO9dx3_eX7ppTe"
+uri = "file://artifacts/noosfera/public/images/auth-L4-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fHU6Yewb-4a7EliXP_DbN"
+uri = "file://artifacts/noosfera/public/images/dragon-pricing.png"
+type = "image"
+title = "purple dragon pricing"
+
+[[generated]]
+id = "YM2KZ-yp9yiS8dzEH0Nul"
+uri = "file://artifacts/noosfera/public/images/viking-warrior.png"
+type = "image"
+title = "viking-warrior-axe-runes"
+
+[[generated]]
+id = "ZecgvSq_CFr8EuO77b2b8"
+uri = "file://artifacts/noosfera/public/images/about-hero.png"
+type = "image"
+title = "about-hero-fantasy-landscape"
+
+[[generated]]
+id = "OLXAogxiAydtHdiHZ5G4x"
+uri = "file://artifacts/noosfera/public/images/about-mission.png"
+type = "image"
+title = "about-mission-neural"
+
+[[generated]]
+id = "qDBV5Ege03b1kaCLhUkMm"
+uri = "file://artifacts/noosfera/public/images/about-vision.png"
+type = "image"
+title = "about-vision-library"
+
+[[generated]]
+id = "whRoExfG0zo398y52Rm3N"
+uri = "file://artifacts/noosfera/public/images/egyptian-text-bg.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "BOwG4tNpglLQpSKYGIOzp"
+uri = "file://artifacts/noosfera/public/images/egypt-pyramids.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "akm580yHOz4WXAf_-Kj5J"
+uri = "file://artifacts/noosfera/public/images/pipeline-ai-battle.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "p6mE0I-z_ykXit0wNknro"
+uri = "file://artifacts/noosfera/public/images/pipeline-forest.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dywAm-d9xbQHlNTlyO8ZA"
+uri = "file://artifacts/noosfera/public/images/pipeline-castle.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "r9u8UVC3m5IfBixLftp1X"
+uri = "file://artifacts/noosfera/public/images/pipeline-ship.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "XgTsqynQ1V3d5JNiQZr7k"
+uri = "file://artifacts/noosfera/public/images/pipeline-pyramids.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7oPQJFZY_lx-GVwa2qLau"
+uri = "file://artifacts/noosfera/public/images/pipeline-ocean.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "L4-Lwit7kU-VSSgwtbHjt"
+uri = "file://artifacts/noosfera/public/images/hero-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qSqr3K_fdEZ_BcTabpnNk"
+uri = "file://artifacts/noosfera/public/images/hero-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QEqRrly1--NvXWs8fp3X1"
+uri = "file://artifacts/noosfera/public/images/hero-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "JmNvu1gVkNI1yhGJwsv9R"
+uri = "file://artifacts/noosfera/public/images/community-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fEjt8Ar4DW0XGfDH-Wnm2"
+uri = "file://artifacts/noosfera/public/images/community-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "IiA-ww5iRfVf54UdukoT4"
+uri = "file://artifacts/noosfera/public/images/community-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jFxIzbpufzCcwV-LbIrb7"
+uri = "file://artifacts/noosfera/public/images/community-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3LKFj1J-zK-q5x0GA2qh6"
+uri = "file://artifacts/noosfera/public/images/community-5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bKraVuNNbPAFbBGlZG0D3"
+uri = "file://artifacts/noosfera/public/images/community-6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "w35unVQii02HZxj5Mb7r2"
+uri = "file://artifacts/noosfera/public/images/hero-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Y2Ow7pnZQOVnh-PqmuS0k"
+uri = "file://artifacts/noosfera/public/images/hero-5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "VW2aTXC4Mjti6S20L9VDv"
+uri = "file://artifacts/noosfera/public/images/hero-6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qzf05r86uKcFGqCldsrve"
+uri = "file://attached_assets/generated_images/epic_roman_centurion_warrior_2900.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "08VgKtaHvbXUDJNKxx792"
+uri = "file://attached_assets/generated_images/epic_roman_centurion_warrior_c75a.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1fLatIQwHcGcOB4KqGBg-"
+uri = "file://attached_assets/generated_images/mythical_nine_headed_hydra_5697.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "JTPaoQxwn9D_Xp8JweStA"
+uri = "file://attached_assets/generated_images/fierce_spartan_warrior_bronze_d751.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "DKU-gFKCM1VZn9nc8Ztr2"
+uri = "file://attached_assets/generated_images/ancient_mystical_yggdrasil_world_9097.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8cWLNGSQqOZIMMKfS7dfe"
+uri = "file://attached_assets/generated_images/majestic_spirit_bear_cosmic_2595.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CnEwXEYJEDZUy5dwl3IiC"
+uri = "file://attached_assets/generated_images/magnificent_ethereal_unicorn_rainbow_29b6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "KqAmKGdeOl5BJL67qePt4"
+uri = "file://attached_assets/generated_images/powerful_dark_mystical_witch_1b1d.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qP8vV5nLH1Q_tckl9_CxQ"
+uri = "file://attached_assets/generated_images/massive_ancient_stone_troll_a7d3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ejrApOGmdiAJSSlmFhqv7"
+uri = "file://attached_assets/generated_images/majestic_ancient_city_at_0572.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "n-V47Ce5F-PlgZVyUy5aL"
+uri = "file://attached_assets/generated_images/epic_fleet_of_ancient_2525.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8VQgnlRBB8ptxMJYrMabe"
+uri = "file://attached_assets/generated_images/epic_ancient_battle_scene_2d8c.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dwF6yJVPJsTlcDVKyjqL9"
+uri = "file://attached_assets/generated_images/magnificent_art_studio_atelier_a07e.png"
+type = "image"
+title = "generated_image"

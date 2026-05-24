@@ -1,0 +1,559 @@
+import { useEffect, useState, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Star, ChevronRight, X, Send } from "lucide-react"
+
+const HIGHLIGHT_PHRASES = [
+  "algo verdaderamente increíble",
+  "nunca se repite",
+  "arte digital",
+  "verdaderamente increíble",
+  "increíble",
+  "increíbles",
+  "único",
+  "única",
+  "únicos",
+  "únicas",
+  "fantástico",
+  "fantástica",
+  "excelente",
+  "excelentes",
+  "asombroso",
+  "asombrosa",
+  "impresionante",
+  "impresionantes",
+  "perfecto",
+  "perfecta",
+  "genial",
+  "geniales",
+  "maravilloso",
+  "maravillosa",
+  "revolucionario",
+  "revolucionaria",
+  "innovador",
+  "innovadora",
+  "hermoso",
+  "hermosa",
+  "mejor",
+  "encanta",
+  "encantó",
+  "amor",
+  "magnífico",
+  "magnífica",
+]
+
+function highlightText(text: string): React.ReactNode {
+  const sorted = [...HIGHLIGHT_PHRASES].sort((a, b) => b.length - a.length)
+  const regex = new RegExp(`(${sorted.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi")
+  const parts = text.split(regex)
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <span key={i} className="text-purple-600 font-semibold">{part}</span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  )
+}
+
+const BASE_ITEMS = [
+  { src: "/images/nft-1.png",  title: "Forest Spirit" },
+  { src: "/images/nft-2.png",  title: "Neon Noir" },
+  { src: "/images/nft-3.png",  title: "Dark Abyss" },
+  { src: "/images/nft-4.png",  title: "Crane Dream" },
+  { src: "/images/nft-5.png",  title: "Cosmic Panda" },
+  { src: "/images/nft-6.png",  title: "Aurora Wolf" },
+  { src: "/images/nft-7.png",  title: "Fire Dragon" },
+  { src: "/images/nft-8.png",  title: "Deep Mermaid" },
+  { src: "/images/nft-9.png",  title: "Golden Samurai" },
+  { src: "/images/nft-10.png", title: "Phoenix Rise" },
+]
+
+const N          = BASE_ITEMS.length
+const INTERVAL   = 3000
+const PERSPECTIVE = 1100
+const VISIBLE    = 3
+
+const CARD_W = 200
+const CARD_H = 300
+const RADIUS = 20
+
+const BENEFITS = [
+  "Derechos comerciales incluidos",
+  "Regístrate en 30 segundos",
+  "Arte único generado por IA",
+]
+
+function mod(n: number, m: number) { return ((n % m) + m) % m }
+
+function getCardProps(offset: number) {
+  const abs = Math.abs(offset)
+  if (abs > VISIBLE) return null
+
+  const rotateY    = offset * 40
+  const translateX = offset * 160
+  const translateZ = abs === 0 ? 130 : -abs * 55
+  const opacity    = abs === 0 ? 1 : Math.max(0, 0.68 - abs * 0.16)
+  const zIndex     = 20 - abs
+
+  return { rotateY, translateX, translateZ, opacity, zIndex }
+}
+
+interface Review {
+  id: string
+  name: string
+  text: string
+  rating: number
+  initials: string
+}
+
+const DEFAULT_REVIEWS: Review[] = [
+  {
+    id: "default-1",
+    name: "María Camila",
+    text: "Noosfera es algo verdaderamente increíble, puedes crear retratos únicos, obras abstractas y arte digital que nunca se repite — todo desde tus propios datos cardíacos.",
+    rating: 5,
+    initials: "MC",
+  },
+]
+
+function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r: Review) => void }) {
+  const [rating, setRating] = useState(0)
+  const [hoverRating, setHoverRating] = useState(0)
+  const [name, setName] = useState("")
+  const [text, setText] = useState("")
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim() || !text.trim() || rating === 0) return
+    const initials = name.trim().split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+    onSubmit({ id: Date.now().toString(), name: name.trim(), text: text.trim(), rating, initials })
+    setSubmitted(true)
+    setTimeout(() => onClose(), 2200)
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0, y: 24 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.92, opacity: 0, y: 24 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-sm bg-white dark:bg-[#0d0118] rounded-3xl shadow-2xl overflow-hidden border border-transparent dark:border-purple-950">
+
+        <div className="relative px-6 pt-6 pb-4 text-center"
+          style={{ background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)" }}>
+          <button onClick={onClose}
+            className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-all"
+            style={{ background: "rgba(255,255,255,0.18)" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.28)" }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.18)" }}>
+            <X className="w-3.5 h-3.5 text-white" />
+          </button>
+          <p className="text-purple-200 text-[10px] font-bold uppercase tracking-widest mb-1">Comunidad</p>
+          <h3 className="text-white font-black text-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            Comparte tu experiencia
+          </h3>
+          <p className="text-purple-200 text-xs mt-1">Tu opinión ayuda a otros artistas a descubrir Noosfera</p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {submitted ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="px-6 py-8 text-center flex flex-col items-center gap-3">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                style={{ background: "linear-gradient(135deg, #7c3aed22 0%, #5b21b622 100%)", border: "2px solid #7c3aed33" }}>
+                🎉
+              </div>
+              <div>
+                <p className="font-black text-gray-900 text-base" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  ¡Gracias, {name}!
+                </p>
+                <p className="text-gray-500 text-sm mt-1">Tu reseña ha sido enviada con éxito.</p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              onSubmit={handleSubmit}
+              className="px-6 py-5 flex flex-col gap-4">
+
+              <div className="text-center">
+                <label className="text-sm font-semibold text-gray-700 block mb-2">
+                  ¿Cómo calificarías tu experiencia?
+                </label>
+                <div className="flex gap-1.5 justify-center">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="transition-transform hover:scale-110 active:scale-95">
+                      <Star
+                        className="w-7 h-7 transition-colors"
+                        style={{
+                          fill: star <= (hoverRating || rating) ? "#f59e0b" : "none",
+                          color: star <= (hoverRating || rating) ? "#f59e0b" : "#d1d5db",
+                        }} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-center" style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                <label className="text-sm font-semibold text-gray-700 text-center">Tu nombre</label>
+                <input
+                  type="text"
+                  placeholder="Ej. María García"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  required
+                  style={{
+                    padding: "11px 13px", borderRadius: 11, border: "1.5px solid #e5e7eb",
+                    fontSize: 13, outline: "none", background: "#fafafa", color: "#111",
+                    textAlign: "center", transition: "border-color 0.18s",
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = "#7c3aed" }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "#e5e7eb" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                <label className="text-sm font-semibold text-gray-700 text-center">Tu reseña</label>
+                <textarea
+                  placeholder="Cuéntanos sobre tu experiencia creando arte con Noosfera..."
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  required
+                  rows={3}
+                  style={{
+                    padding: "11px 13px", borderRadius: 11, border: "1.5px solid #e5e7eb",
+                    fontSize: 13, outline: "none", background: "#fafafa", color: "#111",
+                    resize: "none", fontFamily: "inherit", textAlign: "center",
+                    transition: "border-color 0.18s",
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = "#7c3aed" }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "#e5e7eb" }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!name.trim() || !text.trim() || rating === 0}
+                className="w-full py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all"
+                style={{
+                  background: (!name.trim() || !text.trim() || rating === 0) ? "#c4b5fd" : "#7c3aed",
+                  cursor: (!name.trim() || !text.trim() || rating === 0) ? "not-allowed" : "pointer",
+                }}
+                onMouseEnter={e => { if (name.trim() && text.trim() && rating > 0) e.currentTarget.style.background = "#6d28d9" }}
+                onMouseLeave={e => { if (name.trim() && text.trim() && rating > 0) e.currentTarget.style.background = "#7c3aed" }}>
+                <Send className="w-3.5 h-3.5" />
+                Enviar mi reseña
+              </button>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function TestimonialsCarousel({ reviews }: { reviews: Review[] }) {
+  const [current, setCurrent] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setCurrent(prev => (prev + 1) % reviews.length)
+    }, 4500)
+  }
+
+  useEffect(() => {
+    resetTimer()
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [reviews.length])
+
+  useEffect(() => {
+    setCurrent(0)
+  }, [reviews.length])
+
+  const review = reviews[current]
+
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="flex items-center gap-4 justify-center flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+            style={{ backgroundColor: "#7c3aed" }}>
+            {review.initials}
+          </div>
+          <div>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={review.id + "-name"}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.28 }}
+                className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
+                {review.name}
+              </motion.p>
+            </AnimatePresence>
+            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Usuario verificado</p>
+          </div>
+        </div>
+        <div className="flex gap-0.5">
+          {[...Array(review.rating)].map((_, i) => (
+            <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+          ))}
+        </div>
+      </div>
+
+      <div className="relative min-h-[80px] flex items-center justify-center w-full">
+        <AnimatePresence mode="wait">
+          <motion.blockquote
+            key={review.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.35 }}
+            className="text-gray-700 dark:text-gray-300 leading-relaxed text-center">
+            {highlightText(review.text)}
+          </motion.blockquote>
+        </AnimatePresence>
+      </div>
+
+      {reviews.length > 1 && (
+        <div className="flex items-center justify-center gap-1.5">
+          {reviews.map((_, i) => (
+            <div
+              key={i}
+              className="rounded-full transition-all duration-500"
+              style={{
+                width: i === current ? 20 : 7, height: 7,
+                backgroundColor: i === current ? "#7c3aed" : "#e5e7eb",
+              }} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function RecentCreations() {
+  const [active, setActive] = useState(0)
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [reviews, setReviews] = useState<Review[]>(DEFAULT_REVIEWS)
+
+  useEffect(() => {
+    const id = setInterval(() => setActive(prev => mod(prev + 1, N)), INTERVAL)
+    return () => clearInterval(id)
+  }, [])
+
+  const handleNewReview = (review: Review) => {
+    setReviews(prev => [...prev, review])
+  }
+
+  return (
+    <>
+      {/* ── 3D Cube Carousel ── */}
+      <section className="py-20 bg-white dark:bg-[#08000f] overflow-hidden select-none transition-colors duration-300">
+        <div className="container mx-auto px-6 mb-12 text-center">
+          <motion.p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500 mb-3"
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }} viewport={{ once: true }}>
+            Comunidad
+          </motion.p>
+          <motion.h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.08 }} viewport={{ once: true }}>
+            Creaciones Recientes
+          </motion.h2>
+        </div>
+
+        <div className="relative flex items-center justify-center"
+          style={{ height: CARD_H + 60, perspective: PERSPECTIVE }}>
+
+          {BASE_ITEMS.map((item, idx) => {
+            const offset = mod(idx - active + Math.floor(N / 2), N) - Math.floor(N / 2)
+            const props = getCardProps(offset)
+            if (!props) return null
+            const { rotateY, translateX, translateZ, opacity, zIndex } = props
+            const isActive = offset === 0
+
+            return (
+              <motion.div
+                key={item.src}
+                onClick={() => { if (!isActive) setActive(idx) }}
+                animate={{
+                  rotateY,
+                  x: translateX,
+                  z: translateZ,
+                  opacity,
+                  borderRadius: RADIUS,
+                }}
+                initial={false}
+                transition={{ type: "spring", stiffness: 240, damping: 26 }}
+                style={{
+                  position: "absolute",
+                  width: CARD_W,
+                  height: CARD_H,
+                  borderRadius: RADIUS,
+                  overflow: "hidden",
+                  zIndex,
+                  transformStyle: "preserve-3d",
+                  cursor: isActive ? "default" : "pointer",
+                  willChange: "transform, opacity",
+                }}>
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    filter: isActive ? "none" : "brightness(0.60) saturate(0.70)",
+                    transition: "filter 0.45s ease",
+                    display: "block",
+                    borderRadius: RADIUS,
+                  }} />
+                {isActive && (
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.58) 0%, transparent 52%)",
+                    borderRadius: RADIUS,
+                  }} />
+                )}
+                {isActive && (
+                  <p style={{
+                    position: "absolute", bottom: 14, left: 14,
+                    color: "#fff", fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
+                  }}>{item.title}</p>
+                )}
+              </motion.div>
+            )
+          })}
+        </div>
+
+        <div className="flex items-center justify-center gap-2 mt-8">
+          {BASE_ITEMS.map((_, idx) => (
+            <button key={idx} onClick={() => setActive(idx)}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: idx === active ? 28 : 8, height: 8,
+                backgroundColor: idx === active ? "#7c3aed" : "#e5e7eb",
+              }} />
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA Banner ── */}
+      <section className="py-16 border-t border-gray-100 dark:border-purple-950 dark:bg-[#08000f] transition-colors duration-300">
+        <div className="container mx-auto px-6 text-center max-w-3xl">
+          <motion.h2 className="text-2xl md:text-3xl font-black mb-3"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }} viewport={{ once: true }}>
+            <span className="text-purple-600">Únete a millones de personas</span>{" "}
+            <span className="text-gray-900 dark:text-white">en la creación de imágenes con IA.</span>
+          </motion.h2>
+          <motion.p className="text-gray-500 dark:text-gray-400 mb-10"
+            initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.08 }} viewport={{ once: true }}>
+            Comienza tu propio viaje creativo con Noosfera.
+          </motion.p>
+          <motion.div className="flex flex-wrap justify-center gap-8"
+            initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.14 }} viewport={{ once: true }}>
+            {BENEFITS.map(label => (
+              <span key={label} className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                <span className="text-purple-600 font-black text-base">✓</span>
+                {label}
+              </span>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Testimonial / Feature Section ── */}
+      <section className="overflow-hidden border-t border-gray-100 dark:border-purple-950 bg-white dark:bg-[#08000f] transition-colors duration-300">
+        <div className="flex flex-col lg:flex-row min-h-[480px]">
+
+          <motion.div
+            className="lg:w-1/2 flex items-center justify-center p-6 lg:p-10"
+            initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }} viewport={{ once: true }}>
+            <div style={{
+              width: "70%",
+              aspectRatio: "3/4",
+              borderRadius: "24px 4px 24px 4px",
+              overflow: "hidden",
+              border: "2px solid rgba(124,58,237,0.20)",
+              outline: "4px solid rgba(124,58,237,0.07)",
+            }}>
+              <img
+                src="/images/nft-castle-ai.png"
+                alt="Castillo fantástico generado con IA"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center center",
+                  display: "block",
+                }} />
+            </div>
+          </motion.div>
+
+          <motion.div className="lg:w-1/2 flex flex-col justify-center px-14 py-16 space-y-8"
+            initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }} viewport={{ once: true }}>
+
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight text-center"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Crea Arte Digital con IA
+            </h2>
+
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-center">
+              Conecta tus latidos y observa cómo nuestra IA transforma tus patrones cardíacos
+              en obras visuales únicas e irrepetibles.
+            </p>
+
+            <TestimonialsCarousel reviews={reviews} />
+
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-full font-semibold text-white text-sm transition-all hover:opacity-90 hover:scale-[1.02]"
+                style={{ backgroundColor: "#7c3aed" }}>
+                Agrega tu reseña
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <AnimatePresence>
+        {showReviewModal && (
+          <ReviewModal onClose={() => setShowReviewModal(false)} onSubmit={handleNewReview} />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
