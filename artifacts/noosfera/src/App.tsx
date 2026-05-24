@@ -50,7 +50,7 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <AuthProvider>
           <NoosferaProvider>
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
