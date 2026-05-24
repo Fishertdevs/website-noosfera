@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @workspace/noosfera run build",
+  "outputDirectory": "artifacts/noosfera/dist/public",
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm --filter @workspace/noosfera run dev"
+}
