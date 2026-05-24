@@ -751,25 +751,27 @@ const theme = NOOSFERA_THEMES[themeIndex]`,
         subtitle: "Descriptores de estilo y traducción de BPM a atmósfera visual",
         text: "Cada estilo tiene un descriptor de prompt específico para FLUX. El estado emocional derivado de los biométricos se traduce en un descriptor de atmósfera que ajusta iluminación, contraste y energía — términos que FLUX interpreta directamente en su proceso de difusión.",
         code: `const STYLE_DESCRIPTORS: Record<string, string> = {
-  abstract:      "vibrant abstract digital art with bold colors and geometric shapes,",
-  realistic:     "ultra-photorealistic, cinematic photography style,",
-  hyperrealistic:"hyper-detailed photorealistic with dramatic studio lighting,",
-  surreal:       "surrealist dream-like painting style with impossible landscapes,",
-  minimalist:    "minimalist clean artistic illustration,",
-  organic:       "organic flowing natural shapes, botanical art style,",
-  geometric:     "geometric low-poly polygon art style,",
-  fractal:       "fractal recursive mandelbrot art style, infinitely detailed,",
+  abstract:      "vibrant abstract digital art,",
+  realistic:     "ultra-photorealistic, cinematic style,",
+  hyperrealistic:"hyper-detailed photorealistic,",
+  surreal:       "surrealist dream-like painting,",
+  minimalist:    "minimalist clean illustration,",
+  organic:       "organic flowing natural shapes,",
+  geometric:     "geometric low-poly polygon art,",
+  fractal:       "fractal recursive mandelbrot art,",
 }
 
+// Estado emocional → atmósfera visual (afinado para FLUX)
 const moodMap: Record<string, string> = {
-  calm:    "peaceful and serene atmosphere, soft lighting",      // <70 BPM
-  normal:  "epic and dramatic atmosphere, dynamic lighting",    // 70-90 BPM
-  stressed:"intense and energetic atmosphere, bold contrast",   // 90-110 BPM
-  alert:   "powerful and awe-inspiring atmosphere, high energy",// >110 BPM
+  calm:    "peaceful, serene atmosphere, soft lighting",  // <70 BPM
+  normal:  "epic, dramatic atmosphere, dynamic lighting", // 70-90
+  stressed:"intense, energetic, bold contrast",           // 90-110
+  alert:   "powerful, awe-inspiring, high energy",        // >110
 }
 
 const artisticStyle = STYLE_DESCRIPTORS[style] ?? "vibrant digital art,"
-const mood = moodMap[emotionalState] ?? "epic and dramatic atmosphere, dynamic lighting"`,
+const mood =
+  moodMap[emotionalState] ?? "epic and dramatic atmosphere"`,
       },
     ],
   },
@@ -817,45 +819,48 @@ const mood = moodMap[emotionalState] ?? "epic and dramatic atmosphere, dynamic l
       {
         subtitle: "Algoritmo completo — texto literario en español sin costo de red",
         text: "El endpoint POST /generate-description genera texto literario con tres tablas de vocabulario indexadas por los biométricos. BPM promedio ÷ 25 → índice de intensidad (0-4). Rango de pulsos ÷ 10 → índice de variabilidad (0-3). Estilo elegido → marco artístico (8 entradas). Latencia: <1ms de CPU, 0ms de red.",
-        code: `function generateDescription(avg: number, range: number, title: string): string {
-  // Tabla 1 — INTENSIDAD VITAL (avg ÷ 25 → índice 0-4)
+        code: `function generateDescription(
+  avg: number, range: number, title: string
+): string {
+  // Tabla 1 — INTENSIDAD (avg ÷ 25 → idx 0-4)
   const intensidades = [
-    "una quietud interior que se traduce en formas etéreas y difusas",          // 0-24 BPM
-    "un estado de conciencia suspendida entre la calma y la expectativa",       // 25-49 BPM
-    "una energía vital moderada que fluye en patrones armoniosos y controlados",// 50-74 BPM
-    "una tensión creativa que impulsa la composición hacia lo dinámico",        // 75-99 BPM
-    "una intensidad emocional que fragmenta la forma en múltiples planos",      // 100+ BPM
+    "una quietud interior en formas etéreas",        // 0-24 BPM
+    "una conciencia suspendida entre calma y expectativa", // 25-49
+    "una energía que fluye en patrones armoniosos",  // 50-74
+    "una tensión que impulsa hacia lo dinámico",     // 75-99
+    "una intensidad que fragmenta la forma",         // 100+
   ]
-  // Tabla 2 — VARIABILIDAD RÍTMICA (range ÷ 10 → índice 0-3)
+  // Tabla 2 — VARIABILIDAD (range ÷ 10 → idx 0-3)
   const variabilidades = [
-    "con un ritmo interno estable que unifica cada elemento en perfecta coherencia",
-    "donde la oscilación medida entre estados genera una tensión visual equilibrada",
-    "en un pulso irregular que convierte el caos en belleza compositiva",
-    "articulando contradicciones internas que enriquecen la profundidad de la obra",
+    "con ritmo estable que unifica cada elemento",
+    "donde la oscilación genera tensión equilibrada",
+    "en pulso irregular que convierte el caos en belleza",
+    "articulando contradicciones que enriquecen la obra",
   ]
-  // Tabla 3 — MARCO ARTÍSTICO (8 entradas por estilo)
+  // Tabla 3 — MARCO ARTÍSTICO (8 estilos)
   const estilos: Record<string, string> = {
-    abstract:      "la abstracción geométrica como lenguaje del inconsciente",
-    realistic:     "el hiperrealismo como espejo del estado psicofisiológico",
-    hyperrealistic:"el detalle extremo como manifestación de la hiperconciencia",
-    surreal:       "el surrealismo onírico como territorio del subconsciente revelado",
-    minimalist:    "la síntesis formal como expresión de la mente en reposo",
-    organic:       "las formas orgánicas como eco del ritmo biológico interior",
-    geometric:     "la geometría pura como arquitectura del pensamiento ordenado",
-    fractal:       "la recursividad fractal como mapa de la complejidad emocional",
+    abstract:      "la abstracción como lenguaje del inconsciente",
+    realistic:     "el hiperrealismo como espejo biométrico",
+    hyperrealistic:"el detalle como manifestación de hiperconciencia",
+    surreal:       "el surrealismo como territorio del subconsciente",
+    minimalist:    "la síntesis formal de la mente en reposo",
+    organic:       "las formas orgánicas como eco del ritmo vital",
+    geometric:     "la geometría pura del pensamiento ordenado",
+    fractal:       "la recursividad fractal de la complejidad emocional",
   }
-  const iIdx  = Math.min(Math.floor(avg / 25),   intensidades.length - 1)
-  const vIdx  = Math.min(Math.floor(range / 10), variabilidades.length - 1)
-  const estilo = estilos[title] ?? "el lenguaje visual como extensión del estado interno"
-  return \`\${intensidades[iIdx]}, \${variabilidades[vIdx]}, explorando \${estilo}\`
+  const iIdx = Math.min(Math.floor(avg / 25), 4)
+  const vIdx = Math.min(Math.floor(range / 10), 3)
+  const estilo = estilos[title] ?? "el lenguaje visual del estado interno"
+  return \`\${intensidades[iIdx]}, \${variabilidades[vIdx]},
+explorando \${estilo}\`
 }
 
 router.post("/generate-description", async (req, res) => {
   const { pulses, title } = req.body
-  const arr   = pulses as number[]
-  const avg   = Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
+  const arr = pulses as number[]
+  const avg = Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
   const range = Math.max(...arr) - Math.min(...arr)
-  res.json({ description: generateDescription(avg, range, title ?? "abstract") })
+  res.json({ description: generateDescription(avg, range, title) })
 })`,
       },
     ],
