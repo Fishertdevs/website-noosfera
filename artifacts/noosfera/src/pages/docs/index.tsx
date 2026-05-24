@@ -993,19 +993,17 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
                 )}
                 <p className="text-sm text-gray-500 leading-relaxed mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
                 {item.code && (
-                  <div className="mt-3 mb-1">
-                    <div className="rounded-xl overflow-hidden" style={{ boxShadow: "0 0 0 1px #4c1d95, 0 4px 24px rgba(109,40,217,0.18)" }}>
-                      <div className="flex items-center gap-1.5 px-4 py-2" style={{ backgroundColor: "#1a0533" }}>
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#ff5f57" }} />
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#febc2e" }} />
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#28c840" }} />
-                        <span className="ml-3 text-[10px] text-purple-400" style={{ fontFamily: "'Fira Code', monospace" }}>noosfera.ts</span>
-                      </div>
-                      <pre className="text-xs leading-relaxed overflow-x-auto p-4"
-                        style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace", margin: 0 }}>
-                        <code>{item.code}</code>
-                      </pre>
+                  <div className="mt-3 mb-1 rounded-xl" style={{ boxShadow: "0 0 0 1px #4c1d95, 0 4px 24px rgba(109,40,217,0.18)" }}>
+                    <div className="flex items-center gap-1.5 px-4 py-2 rounded-t-xl" style={{ backgroundColor: "#1a0533" }}>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#ff5f57" }} />
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#febc2e" }} />
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#28c840" }} />
+                      <span className="ml-3 text-[10px] text-purple-400" style={{ fontFamily: "'Fira Code', monospace" }}>noosfera.ts</span>
                     </div>
+                    <pre className="text-xs leading-relaxed overflow-x-auto p-4 rounded-b-xl"
+                      style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace", margin: 0 }}>
+                      <code>{item.code}</code>
+                    </pre>
                   </div>
                 )}
                 {idx < arr.length - 1 && (
