@@ -204,16 +204,16 @@ export default function GenerationDashboard() {
     setIsGenerating(true)
     setGenerationProgress(0)
 
-    // Simular progreso
+    // Simular progreso - más rápido
     const progressInterval = setInterval(() => {
       setGenerationProgress((prev) => {
         if (prev >= 95) {
           clearInterval(progressInterval)
           return 95
         }
-        return prev + Math.random() * 10
+        return prev + Math.random() * 20
       })
-    }, 300)
+    }, 150)
 
     try {
       // Preparar configuración basada en el tipo de contenido
