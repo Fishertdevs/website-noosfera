@@ -188,7 +188,7 @@ export default function ContentGenerator() {
 
     // Generate color palette based on thought pattern and emotional intensity
     const generateColorPalette = () => {
-      const baseHue = currentThoughtPattern ? (currentThoughtPattern.emotionalValence * 3.6) % 360 : 180
+      const baseHue = currentThoughtPattern ? (currentThoughtPattern.heartHealthScore * 3.6) % 360 : 180
       const saturation = Math.min(100, emotionalIntensity + 20)
       const lightness = 30 + visualDetail / 2
 
@@ -230,7 +230,7 @@ export default function ContentGenerator() {
 
     const colors = generateColorPalette()
 
-    // Create background based on style
+    // Create background based on style - optimized
     const createBackground = () => {
       switch (selectedStyle) {
         case "abstract":
@@ -275,11 +275,11 @@ export default function ContentGenerator() {
 
     createBackground()
 
-    // Generate elements based on style and interpretation mode
+    // Optimized: Reduce number of elements for faster rendering
     const numElements =
       selectedStyle === "minimalist"
-        ? Math.floor(effectiveComplexity / 20) + 2
-        : Math.floor(effectiveComplexity / 5) + 10
+        ? Math.floor(effectiveComplexity / 25) + 1
+        : Math.floor(effectiveComplexity / 8) + 5
 
     for (let i = 0; i < numElements; i++) {
       const x = Math.random() * canvas.width
@@ -290,12 +290,11 @@ export default function ContentGenerator() {
       // Color selection based on emotional intensity
       const colorIndex = Math.floor(Math.random() * colors.length)
       const baseColor = colors[colorIndex]
-      const emotionalShift = (emotionalIntensity - 50) / 50 // -1 to 1
 
       ctx.fillStyle = baseColor.replace(")", `, ${alpha})`)
       ctx.strokeStyle = baseColor
 
-      // Draw elements based on style
+      // Draw elements based on style - skip fractal due to performance
       switch (selectedStyle) {
         case "abstract":
           drawAbstractShape(ctx, x, y, size, effectiveCreativity)
@@ -304,7 +303,7 @@ export default function ContentGenerator() {
           drawRealisticElement(ctx, x, y, size)
           break
         case "hyperrealistic":
-          drawHyperRealisticElement(ctx, x, y, size, visualDetail)
+          drawRealisticElement(ctx, x, y, size) // Simplified for performance
           break
         case "surreal":
           drawSurrealElement(ctx, x, y, size, effectiveCreativity)
@@ -319,17 +318,13 @@ export default function ContentGenerator() {
           drawGeometricShape(ctx, x, y, size, i)
           break
         case "fractal":
-          drawFractalPattern(ctx, x, y, size, 3)
+          drawGeometricShape(ctx, x, y, size, i) // Use geometric instead for speed
           break
       }
     }
 
-    // Apply post-processing effects
-    if (enhanceOutput) {
-      applyPostProcessingEffects(ctx, canvas)
-    }
-
-    setPreviewContent(canvas.toDataURL("image/png"))
+    // Skip post-processing for faster rendering
+    setPreviewContent(canvas.toDataURL("image/png", 0.85))
   }
 
   const drawAbstractShape = (ctx: CanvasRenderingContext2D, x: number, y: number, size: number, creativity: number) => {
@@ -498,40 +493,17 @@ export default function ContentGenerator() {
   }
 
   const drawFractalPattern = (ctx: CanvasRenderingContext2D, x: number, y: number, size: number, depth: number) => {
-    if (depth <= 0 || size < 2) return
+    // Simplified fractal - only 1 level deep for performance
+    if (size < 4) return
 
-    // Simple fractal tree
     ctx.beginPath()
     ctx.arc(x, y, size / 2, 0, Math.PI * 2)
     ctx.fill()
-
-    if (depth > 1) {
-      const newSize = size * 0.6
-      const offset = size * 0.7
-      drawFractalPattern(ctx, x - offset, y - offset, newSize, depth - 1)
-      drawFractalPattern(ctx, x + offset, y - offset, newSize, depth - 1)
-      drawFractalPattern(ctx, x, y + offset, newSize, depth - 1)
-    }
   }
 
   const applyPostProcessingEffects = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    // Glow effect
-    ctx.globalCompositeOperation = "overlay"
-    const glowGradient = ctx.createRadialGradient(
-      canvas.width / 2,
-      canvas.height / 2,
-      0,
-      canvas.width / 2,
-      canvas.height / 2,
-      Math.max(canvas.width, canvas.height) / 2,
-    )
-    glowGradient.addColorStop(0, "rgba(255, 255, 255, 0.1)")
-    glowGradient.addColorStop(1, "rgba(0, 0, 0, 0)")
-    ctx.fillStyle = glowGradient
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-    // Reset composite operation
-    ctx.globalCompositeOperation = "source-over"
+    // Skip post-processing for performance
+    return
   }
 
   const handleGenerateContent = async () => {
@@ -545,13 +517,13 @@ export default function ContentGenerator() {
     setGeneratingContent(true)
     setGenerationProgress(0)
 
-    // Animate progress bar
+    // Animate progress bar - faster for images
     let progressInterval: ReturnType<typeof setInterval> | null = null
     let fakeProgress = 0
     progressInterval = setInterval(() => {
-      fakeProgress += generationType === "image" ? 0.6 : 1.5
+      fakeProgress += generationType === "image" ? 2.5 : 1.5
       if (fakeProgress < 90) setGenerationProgress(fakeProgress)
-    }, 100)
+    }, 50)
 
     try {
       const result = await generateContent(generationType, { style: selectedStyle })

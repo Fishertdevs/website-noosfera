@@ -116,7 +116,7 @@ router.post("/generate-image", async (req, res) => {
   // Use Pollinations.AI — completely free, no API key, scales to any number of users
   // The URL is returned directly so each browser fetches its image in parallel
   const encodedPrompt = encodeURIComponent(prompt)
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${uniqueSeed}&nologo=true&cache=false`
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&model=turbo&seed=${uniqueSeed}&nologo=true&cache=false`
 
   res.json({ imageUrl, theme, prompt })
 })
