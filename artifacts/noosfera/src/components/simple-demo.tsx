@@ -358,14 +358,7 @@ export default function SimpleDemo() {
     const description = (descData.status === "fulfilled" && descData.value?.description)
       ? descData.value.description : ""
 
-    // Pre-cargar la imagen antes de mostrar el resultado
-    await new Promise<void>((resolve, reject) => {
-      const img = new Image()
-      img.crossOrigin = "anonymous"
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error("Error al cargar la imagen"))
-      img.src = imageUrl
-    })
+
 
     const avg = pulses.reduce((a, b) => a + b, 0) / pulses.length
     const result: GeneratedResult = {
