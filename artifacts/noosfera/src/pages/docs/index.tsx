@@ -718,6 +718,26 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
           </div>
         )}
 
+        {section.special === "script-ia" && (
+          <div className="space-y-3">
+            {section.items.map((item, idx) => (
+              <motion.div key={idx}
+                initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.08 }}
+                className="rounded-xl p-5 border border-purple-100 hover:border-purple-300 hover:shadow-sm transition-all bg-white">
+                <div className="flex items-start gap-3 mb-2">
+                  <span className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-black text-white"
+                    style={{ backgroundColor: "#7c3aed" }}>0{idx + 1}</span>
+                  <h3 className="text-sm font-bold text-gray-900"
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.subtitle}</h3>
+                </div>
+                <p className="text-sm text-gray-500 leading-relaxed pl-9"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
         {!section.special && (
           <div className="space-y-3">
             {section.items.map((item, idx) => (
