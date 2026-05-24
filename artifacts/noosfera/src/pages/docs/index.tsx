@@ -643,12 +643,147 @@ const timelineSections = [
     id: "script-ia", icon: Cpu, tag: "🧠 Script IA — Proceso Oficial", title: "Cómo Noosfera Genera Imágenes con IA",
     special: "script-ia",
     items: [
-      { subtitle: "Paso 1 — Captura de datos biométricos", text: "El usuario ingresa entre 3 y 5 pulsos cardíacos (BPM). El sistema calcula: promedio de BPM (intensidad vital), rango de variabilidad (máximo − mínimo), estado emocional derivado (calm / normal / stressed / alert) y puntuación de salud cardíaca (heartHealthScore 0–100). Estos 4 valores son los parámetros de entrada al motor de IA." },
-      { subtitle: "Paso 2 — Seed criptográfico único", text: "Se genera un entero criptográficamente aleatorio de 32 bits usando crypto.randomInt(0, 2_147_483_647) de Node.js. Esto garantiza que dos usuarios con exactamente los mismos datos biométricos nunca reciban la misma imagen. Con más de 2.147 millones de valores posibles, la probabilidad de colisión es matemáticamente despreciable." },
-      { subtitle: "Paso 3 — Selección del tema narrativo", text: "Noosfera tiene 25 temas narrativos de alta calidad artística: dragones en tormentas, ciudades ciberpunk, fondos marinos, galaxias, junglas bioluminiscentes y más. El tema se selecciona combinando el timestamp exacto del momento + el seed criptográfico: themeIndex = (Date.now() + seed) % 25. Así, dos peticiones simultáneas con mismos biométricos reciben temas distintos." },
-      { subtitle: "Paso 4 — Construcción del prompt artístico", text: "El prompt final combina: (1) descriptor de estilo artístico según elección del usuario (abstract, surreal, realistic, hyperrealistic, minimalist, organic, geometric, fractal), (2) el tema narrativo seleccionado, (3) el ambiente emocional derivado de los biométricos, y (4) el seed único embebido en el texto (unique:SEED) para prevenir que la CDN sirva imágenes cacheadas." },
-      { subtitle: "Paso 5 — Generación con FLUX vía Pollinations.AI", text: "La URL final se construye así: https://image.pollinations.ai/prompt/{encodedPrompt}?width=1024&height=1024&model=flux&seed={uniqueSeed}&nologo=true&cache=false. El servidor retorna esta URL en menos de 5ms — no descarga la imagen. El navegador del usuario la carga directamente desde Pollinations.AI, lo que permite miles de usuarios concurrentes sin carga extra en los servidores de Noosfera." },
-      { subtitle: "Paso 6 — Descripción artística algorítmica", text: "En paralelo a la imagen, se genera una descripción literaria en español 100% local (sin API externa) basada en los datos biométricos reales: la intensidad del BPM define el vocabulario emocional; la variabilidad del ritmo define el vocabulario compositivo; el estilo elegido define el marco artístico. El resultado suena como un texto de catálogo de galería contemporánea. Latencia: 0ms (sin red)." },
+      {
+        subtitle: "Paso 1 — Captura de datos biométricos",
+        text: "El usuario ingresa entre 3 y 5 pulsos cardíacos (BPM). El servidor Express recibe cuatro parámetros en el cuerpo de la petición POST /api/noosfera/generate-image: el estilo artístico elegido, el estado emocional derivado, el nivel de estrés calculado y la puntuación de salud cardíaca (0–100). Estos cuatro valores alimentan directamente el motor de construcción del prompt.",
+        code: `// artifacts/api-server/src/routes/noosfera.ts
+router.post("/generate-image", async (req, res) => {
+  const { style, emotionalState, stressLevel, heartHealthScore } = req.body
+  // Ejemplo real de payload:
+  // { style: "surreal", emotionalState: "calm",
+  //   stressLevel: 25, heartHealthScore: 82 }`,
+      },
+      {
+        subtitle: "Paso 2 — Seed criptográfico de 32 bits",
+        text: "Inmediatamente se importa el módulo nativo crypto de Node.js y se genera un entero aleatorio criptográficamente seguro en el rango 0 – 2 147 483 647. Esto garantiza que dos usuarios con exactamente los mismos datos biométricos NUNCA reciban la misma imagen. El seed se combina con Date.now() para seleccionar el tema narrativo: incluso dos peticiones simultáneas al mismo milisegundo producen temas distintos.",
+        code: `  // Seed criptográfico — rango completo de 32 bits
+  const { randomInt } = await import("crypto")
+  const uniqueSeed = randomInt(0, 2_147_483_647)
+  // Ejemplo: 1_847_392_104
+
+  // Índice del tema: timestamp + seed → máxima entropía
+  const themeIndex = (Date.now() + uniqueSeed) % NOOSFERA_THEMES.length`,
+      },
+      {
+        subtitle: "Paso 3 — Los 25 temas narrativos de alta calidad artística",
+        text: "Noosfera tiene 25 temas narrativos cuidadosamente seleccionados que cubren fantasía épica, naturaleza, ciencia ficción y arte urbano. El tema resultante no es aleatorio puro: está determinado matemáticamente por la combinación del momento exacto de la petición y el seed criptográfico, lo que hace que cada obra sea rastreable y reproducible bajo las mismas condiciones exactas.",
+        code: `const NOOSFERA_THEMES = [
+  "a majestic dragon soaring through storm clouds with lightning",
+  "an epic medieval battle with knights and sorcerers on horseback",
+  "a futuristic spaceship emerging from a glowing nebula in deep space",
+  "an enchanted ancient forest with glowing magical creatures and fireflies",
+  "a massive sailing ship on stormy seas at sunset with dramatic waves",
+  "a pack of wolves running through a snow-covered pine forest at dusk",
+  "a phoenix rising from golden flames in a mystical landscape",
+  "an underwater ancient city with bioluminescent sea creatures",
+  "a warrior mage casting brilliant spells in an ancient stone temple",
+  "a pride of lions in an African savanna at golden hour",
+  "a crystal cave with mythical creatures and glowing gems",
+  "a fierce battle between fire dragons and ice griffins in the sky",
+  "a mystical forest with fairies and ancient tree spirits at night",
+  "a family of elephants in a lush green jungle landscape",
+  "space explorers discovering an alien world with towering crystal formations",
+  "a giant sea serpent emerging from stormy ocean depths near a lighthouse",
+  "an armada of pirate ships in an epic naval battle at night",
+  "a fierce tiger stalking through dense tropical jungle foliage",
+  "a medieval castle on a cliff surrounded by a magical aurora",
+  "a cyberpunk city at night with neon lights and flying vehicles",
+  "a herd of wild horses galloping across an open plain at sunrise",
+  "an ancient temple guarded by stone golems in a jungle",
+  "a polar bear and her cubs on an ice floe under northern lights",
+  "a vast fantasy battlefield with armies of elves and dark knights",
+  "a deep space station orbiting a ringed gas giant planet",
+]
+const theme = NOOSFERA_THEMES[themeIndex]`,
+      },
+      {
+        subtitle: "Paso 4 — Los 8 estilos artísticos y el mapa emocional",
+        text: "Cada uno de los 8 estilos disponibles tiene un descriptor de prompt específico diseñado para guiar al modelo FLUX hacia un resultado visual preciso. Paralelamente, el estado emocional derivado de los biométricos se traduce en un descriptor de atmósfera que define la iluminación, el contraste y la energía visual de la obra.",
+        code: `const STYLE_DESCRIPTORS: Record<string, string> = {
+  abstract:      "vibrant abstract digital art with bold colors and geometric shapes,",
+  realistic:     "ultra-photorealistic, cinematic photography style,",
+  hyperrealistic:"hyper-detailed photorealistic with dramatic studio lighting,",
+  surreal:       "surrealist dream-like painting style with impossible landscapes,",
+  minimalist:    "minimalist clean artistic illustration,",
+  organic:       "organic flowing natural shapes, botanical art style,",
+  geometric:     "geometric low-poly polygon art style,",
+  fractal:       "fractal recursive mandelbrot art style, infinitely detailed,",
+}
+
+const moodMap: Record<string, string> = {
+  calm:    "peaceful and serene atmosphere, soft lighting",
+  normal:  "epic and dramatic atmosphere, dynamic lighting",
+  stressed:"intense and energetic atmosphere, bold contrast",
+  alert:   "powerful and awe-inspiring atmosphere, high energy",
+}
+
+const artisticStyle = STYLE_DESCRIPTORS[style] || "vibrant digital art,"
+const mood = moodMap[emotionalState] || "epic and dramatic atmosphere, dynamic lighting"`,
+      },
+      {
+        subtitle: "Paso 5 — Construcción del prompt final y URL de Pollinations.AI",
+        text: "El prompt final se ensambla combinando el descriptor de estilo, el tema narrativo, el ambiente emocional y el seed embebido como texto (unique:SEED). Este último elemento es crítico: fuerza a la CDN de Pollinations.AI a tratar cada petición como única y nunca servir una imagen cacheada. La URL resultante se retorna al cliente en menos de 5ms — el servidor no descarga la imagen, el navegador la carga directamente desde Pollinations.AI, eliminando cualquier carga en la infraestructura de Noosfera.",
+        code: `  // El seed se embebe en el texto del prompt para forzar imagen nueva siempre
+  const prompt = \`\${artisticStyle} \${theme}, \${mood}, highly detailed, \` +
+    \`professional digital art, 8k resolution, masterpiece quality, \` +
+    \`vivid saturated colors, unique:\${uniqueSeed}\`
+
+  // Construcción de la URL — modelo FLUX, 1024×1024, sin caché, sin logo
+  const encodedPrompt = encodeURIComponent(prompt)
+  const imageUrl =
+    \`https://image.pollinations.ai/prompt/\${encodedPrompt}\` +
+    \`?width=1024&height=1024&model=flux&seed=\${uniqueSeed}&nologo=true&cache=false\`
+
+  // El servidor retorna la URL — NO descarga la imagen
+  // Latencia de respuesta: < 5ms
+  res.json({ imageUrl, theme, prompt })
+})`,
+      },
+      {
+        subtitle: "Paso 6 — Descripción artística algorítmica (0ms, sin API externa)",
+        text: "En paralelo al endpoint de imagen, el endpoint POST /generate-description produce una descripción literaria en español 100% local — sin ninguna llamada a API externa. El algoritmo mapea el promedio de BPM a un vocabulario de intensidad emocional (5 niveles), el rango de variabilidad a un vocabulario compositivo (4 niveles), y el estilo elegido a un marco artístico específico. El resultado suena como texto de catálogo de galería contemporánea. Latencia: 0ms de red.",
+        code: `// POST /api/noosfera/generate-description
+function generateDescription(avg: number, range: number, title: string): string {
+  const intensidades = [
+    "una quietud interior que se traduce en formas etéreas y difusas",
+    "un estado de conciencia suspendida entre la calma y la expectativa",
+    "una energía vital moderada que fluye en patrones armoniosos y controlados",
+    "una tensión creativa que impulsa la composición hacia lo dinámico",
+    "una intensidad emocional que fragmenta la forma en múltiples planos de fuerza",
+  ]
+  const variabilidades = [
+    "con un ritmo interno estable que unifica cada elemento en perfecta coherencia",
+    "donde la oscilación medida entre estados genera una tensión visual equilibrada",
+    "en un pulso irregular que convierte el caos en belleza compositiva",
+    "articulando contradicciones internas que enriquecen la profundidad de la obra",
+  ]
+  const estilos: Record<string, string> = {
+    abstract:      "la abstracción geométrica como lenguaje del inconsciente",
+    realistic:     "el hiperrealismo como espejo del estado psicofisiológico",
+    hyperrealistic:"el detalle extremo como manifestación de la hiperconciencia",
+    surreal:       "el surrealismo onírico como territorio del subconsciente revelado",
+    minimalist:    "la síntesis formal como expresión de la mente en reposo",
+    organic:       "las formas orgánicas como eco del ritmo biológico interior",
+    geometric:     "la geometría pura como arquitectura del pensamiento ordenado",
+    fractal:       "la recursividad fractal como mapa de la complejidad emocional",
+  }
+
+  // avg 0-100 → índice 0-4 | range 0-40+ → índice 0-3
+  const iIdx = Math.min(Math.floor(avg / 25), intensidades.length - 1)
+  const vIdx = Math.min(Math.floor(range / 10), variabilidades.length - 1)
+  const estilo = estilos[title] ?? "el lenguaje visual como extensión del estado interno"
+
+  return \`\${intensidades[iIdx]}, \${variabilidades[vIdx]}, explorando \${estilo}\`
+}
+
+router.post("/generate-description", async (req, res) => {
+  const { pulses, emotionalState, title } = req.body
+  const arr = pulses as number[]
+  const avg   = Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
+  const range = Math.max(...arr) - Math.min(...arr)
+  res.json({ description: generateDescription(avg, range, title ?? "abstract") })
+})`,
+      },
     ],
   },
 ]
@@ -719,20 +854,24 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
         )}
 
         {section.special === "script-ia" && (
-          <div className="space-y-3">
-            {section.items.map((item, idx) => (
+          <div className="space-y-8">
+            {(section.items as Array<{ subtitle: string; text: string; code?: string }>).map((item, idx) => (
               <motion.div key={idx}
                 initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.08 }}
-                className="rounded-xl p-5 border border-purple-100 hover:border-purple-300 hover:shadow-sm transition-all bg-white">
-                <div className="flex items-start gap-3 mb-2">
-                  <span className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-black text-white"
-                    style={{ backgroundColor: "#7c3aed" }}>0{idx + 1}</span>
-                  <h3 className="text-sm font-bold text-gray-900"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.subtitle}</h3>
-                </div>
-                <p className="text-sm text-gray-500 leading-relaxed pl-9"
+                viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.06 }}>
+                <h3 className="text-sm font-bold text-gray-900 mb-1"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <span className="text-purple-500 mr-2">#{String(idx + 1).padStart(2, "0")}</span>
+                  {item.subtitle}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed mb-3"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
+                {item.code && (
+                  <pre className="text-xs leading-relaxed overflow-x-auto rounded-lg p-4"
+                    style={{ backgroundColor: "#0f0f1a", color: "#c4b5fd", fontFamily: "'Fira Code', 'Cascadia Code', monospace" }}>
+                    <code>{item.code}</code>
+                  </pre>
+                )}
               </motion.div>
             ))}
           </div>
