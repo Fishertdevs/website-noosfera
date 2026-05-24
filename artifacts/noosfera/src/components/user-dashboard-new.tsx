@@ -1,6 +1,7 @@
 
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import { Brain, Sparkles, LogOut, User, RefreshCw, Download, X, Check, ImageIcon, Crown, Heart, Wand2, Share2, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -52,6 +53,8 @@ const artStyles = [
 export default function UserDashboardNew() {
   const { user, logout, completeTutorial } = useAuth()
   const [, navigate] = useLocation()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
   const [step, setStep] = useState<AppStep>("input")
   const [pulses, setPulses] = useState<number[]>([])
   const [currentPulseInput, setCurrentPulseInput] = useState("")
@@ -349,7 +352,7 @@ export default function UserDashboardNew() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 dark:bg-none dark:bg-[#08000f] transition-colors duration-300">
 
       {/* ── TUTORIAL / BIENVENIDA OVERLAY ── */}
       <AnimatePresence>
@@ -372,7 +375,7 @@ export default function UserDashboardNew() {
               exit={{ scale: 0.92, opacity: 0, y: -16 }}
               transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                background: "#fff",
+                background: isDark ? "#0d0118" : "#fff",
                 borderRadius: 24,
                 padding: "36px 32px",
                 maxWidth: 420,
@@ -397,7 +400,7 @@ export default function UserDashboardNew() {
                   </div>
                   <h2 style={{
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 900,
-                    fontSize: 26, color: "#111", margin: "0 0 6px",
+                    fontSize: 26, color: isDark ? "#fff" : "#111", margin: "0 0 6px",
                   }}>
                     ¡Hola, {user?.name?.split(" ")[0]}! Bienvenido
                   </h2>
@@ -419,7 +422,7 @@ export default function UserDashboardNew() {
                   }} />
                   <h2 style={{
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 900,
-                    fontSize: 20, color: "#111", margin: "0 0 10px",
+                    fontSize: 20, color: isDark ? "#fff" : "#111", margin: "0 0 10px",
                   }}>
                     {tutorialSteps[tutorialStep - 1].title}
                   </h2>
@@ -477,7 +480,7 @@ export default function UserDashboardNew() {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
+      <header className="bg-white/80 dark:bg-[#0d0118]/90 backdrop-blur-sm border-b border-gray-100 dark:border-purple-950 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -540,7 +543,7 @@ export default function UserDashboardNew() {
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-emerald-50/50 border-b border-emerald-100">
+      <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border-b border-emerald-100 dark:border-emerald-950">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
             <div className="flex items-center gap-2">
@@ -584,13 +587,13 @@ export default function UserDashboardNew() {
               className="max-w-md mx-auto"
             >
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   Hola, <span className="text-emerald-500">{user?.name?.split(" ")[0]}</span>
                 </h1>
-                <p className="text-gray-600">Crea tu siguiente obra de arte cardiaco</p>
+                <p className="text-gray-600 dark:text-gray-400">Crea tu siguiente obra de arte cardiaco</p>
               </div>
 
-              <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100">
+              <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur shadow-xl border-emerald-100 dark:border-purple-950">
                 <CardHeader className="text-center pb-4">
                   <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-3">
                     <Brain className="h-7 w-7 text-white" />
@@ -601,7 +604,7 @@ export default function UserDashboardNew() {
                 <CardContent className="space-y-4">
                   {/* Inline Pulse Input */}
                   <div 
-                    className="min-h-[56px] p-3 border-2 border-gray-200 rounded-xl bg-white focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all cursor-text"
+                    className="min-h-[56px] p-3 border-2 border-gray-200 dark:border-purple-950 rounded-xl bg-white dark:bg-[#0d0118] focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all cursor-text"
                     onClick={() => inputRef.current?.focus()}
                   >
                     <div className="flex flex-wrap items-center gap-2">
@@ -705,7 +708,7 @@ export default function UserDashboardNew() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="max-w-md mx-auto text-center"
             >
-              <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100">
+              <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur shadow-xl border-emerald-100 dark:border-purple-950">
                 <CardContent className="py-12">
                   <motion.div
                     animate={{ rotate: 360 }}
@@ -714,8 +717,8 @@ export default function UserDashboardNew() {
                   >
                     <Brain className="h-10 w-10 text-white" />
                   </motion.div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Generando tu arte...</h3>
-                  <p className="text-gray-500 mb-6">Interpretando tus patrones cardiacos</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Generando tu arte...</h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">Interpretando tus patrones cardiacos</p>
                   <div className="space-y-2">
                     <Progress value={generationProgress} className="h-2" />
                     <p className="text-sm text-gray-400">{generationProgress}%</p>
@@ -735,19 +738,19 @@ export default function UserDashboardNew() {
               className="max-w-3xl mx-auto"
             >
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-1">Tu Arte Digital</h2>
-                <p className="text-gray-600 text-sm">Pulsos: {currentResult.pulses.join(", ")} BPM</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Tu Arte Digital</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Pulsos: {currentResult.pulses.join(", ")} BPM</p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <Card className="bg-white/90 backdrop-blur shadow-xl border-emerald-100 overflow-hidden">
+                <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur shadow-xl border-emerald-100 dark:border-purple-950 overflow-hidden">
                   <CardContent className="p-0">
                     <div className="aspect-square relative">
                       <img src={currentResult.imageUrl} alt={currentResult.title} className="w-full h-full object-cover" />
                     </div>
                     <div className="p-4 flex items-center justify-between">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">{currentResult.title}</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{currentResult.title}</h3>
                         <p className="text-sm text-emerald-600">{currentResult.emotionalState}</p>
                       </div>
                       <Button 
@@ -764,13 +767,13 @@ export default function UserDashboardNew() {
                 </Card>
 
                 <div className="space-y-4">
-                  <Card className="bg-white/90 backdrop-blur border-emerald-100">
+                  <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur border-emerald-100 dark:border-purple-950">
                     <CardContent className="p-4">
-                      <p className="text-gray-600 text-sm leading-relaxed">{currentResult.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{currentResult.description}</p>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-white/90 backdrop-blur border-emerald-100">
+                  <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur border-emerald-100 dark:border-purple-950">
                     <CardContent className="p-4">
                       <div className="flex justify-around">
                         <CircularProgress value={currentResult.energyLevel} label="Energia" color="text-emerald-500" />
@@ -802,15 +805,15 @@ export default function UserDashboardNew() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="max-w-md mx-auto text-center"
             >
-              <Card className="bg-white/90 backdrop-blur shadow-xl border-amber-200">
+              <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur shadow-xl border-amber-200 dark:border-purple-950">
                 <CardContent className="py-12 px-6">
                   <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
                     <ImageIcon className="h-8 w-8 text-amber-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     Limite diario alcanzado
                   </h2>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
                     Has utilizado tus {dailyLimit} imagenes de hoy.
                     {user?.plan === "free" && " Actualiza a Premium para obtener mas imagenes diarias."}
                   </p>
@@ -843,8 +846,8 @@ export default function UserDashboardNew() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Mi Galeria</h2>
-                  <p className="text-gray-600 text-sm">{gallery.length} obras creadas</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Mi Galeria</h2>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">{gallery.length} obras creadas</p>
                 </div>
                 <Button onClick={() => setStep("input")} className="bg-emerald-600 hover:bg-emerald-700">
                   <Sparkles className="mr-2 h-4 w-4" />
@@ -853,11 +856,11 @@ export default function UserDashboardNew() {
               </div>
 
               {gallery.length === 0 ? (
-                <Card className="bg-white/90 backdrop-blur border-emerald-100">
+                <Card className="bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur border-emerald-100 dark:border-purple-950">
                   <CardContent className="py-12 text-center">
                     <Brain className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Tu galeria esta vacia</h3>
-                    <p className="text-gray-500 mb-4">Crea tu primera obra de arte cardiaco</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Tu galeria esta vacia</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">Crea tu primera obra de arte cardiaco</p>
                     <Button onClick={() => setStep("input")} className="bg-emerald-600 hover:bg-emerald-700">
                       Comenzar
                     </Button>
@@ -872,7 +875,7 @@ export default function UserDashboardNew() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="group"
                     >
-                      <Card className="overflow-hidden bg-white/90 backdrop-blur border-emerald-100 hover:shadow-lg transition-shadow">
+                      <Card className="overflow-hidden bg-white/90 dark:bg-[#0d0118]/95 backdrop-blur border-emerald-100 dark:border-purple-950 hover:shadow-lg transition-shadow">
                         <div className="aspect-square relative">
                           <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -887,7 +890,7 @@ export default function UserDashboardNew() {
                           </div>
                         </div>
                         <div className="p-3">
-                          <h4 className="font-medium text-gray-900 text-sm truncate">{art.title}</h4>
+                          <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">{art.title}</h4>
                           <p className="text-xs text-gray-500">{art.pulses.join(", ")} BPM</p>
                         </div>
                       </Card>

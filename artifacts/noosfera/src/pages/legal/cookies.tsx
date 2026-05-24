@@ -19,7 +19,7 @@ function FadeSection({ children }: { children: React.ReactNode }) {
 export default function CookiesPage() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }) }, [])
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] transition-colors duration-300">
       <DarkNav />
 
       <main className="container mx-auto px-6 py-12 max-w-3xl">
@@ -28,8 +28,8 @@ export default function CookiesPage() {
           ← Volver
         </button>
 
-        <div className="text-center mb-10 pb-8 border-b border-gray-100">
-          <h1 className="text-4xl font-black text-gray-900 mb-2"
+        <div className="text-center mb-10 pb-8 border-b border-gray-100 dark:border-purple-950">
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Política de Cookies
           </h1>
@@ -38,7 +38,7 @@ export default function CookiesPage() {
           </p>
         </div>
 
-        <div className="space-y-8 text-gray-600 leading-relaxed">
+        <div className="space-y-8 text-gray-600 dark:text-gray-400 leading-relaxed">
           <FadeSection>
             <p className="text-center text-base text-gray-500 leading-relaxed">
               En Noosfera, utilizamos cookies y tecnologías similares para mejorar tu experiencia de navegación.
@@ -48,7 +48,7 @@ export default function CookiesPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>1. Qué son las Cookies</h2>
               <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Nos permiten recordar tus preferencias y mejorar tu experiencia de usuario.</p>
             </div>
@@ -56,7 +56,7 @@ export default function CookiesPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-4"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-4"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>2. Tipos de Cookies que Utilizamos</h2>
               <div className="space-y-5">
                 {[
@@ -76,8 +76,8 @@ export default function CookiesPage() {
                     items: ["Páginas visitadas y tiempo de permanencia", "Fuentes de tráfico", "Rendimiento del sitio"],
                   },
                 ].map(({ name, desc, items }) => (
-                  <div key={name} className="rounded-xl p-5 border border-gray-100 bg-gray-50">
-                    <h3 className="font-bold text-gray-900 mb-2">{name}</h3>
+                  <div key={name} className="rounded-xl p-5 border border-gray-100 dark:border-purple-950 bg-gray-50 dark:bg-[#0d0118]">
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2">{name}</h3>
                     <p className="text-sm mb-3">{desc}</p>
                     <ul className="space-y-1.5">
                       {items.map(i => (
@@ -94,7 +94,7 @@ export default function CookiesPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>3. Gestión de Cookies</h2>
               <p className="mb-3">Puedes gestionar tus preferencias de cookies en cualquier momento a través de:</p>
               <ul className="space-y-2 pl-4">
@@ -107,15 +107,15 @@ export default function CookiesPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>4. Duración de las Cookies</h2>
               <p>Las cookies pueden ser de sesión (se eliminan al cerrar el navegador) o persistentes (permanecen hasta su fecha de expiración o hasta que las elimines manualmente).</p>
             </div>
           </FadeSection>
 
           <FadeSection>
-            <div className="rounded-2xl p-6" style={{ backgroundColor: "#f5f3ff" }}>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+            <div className="rounded-2xl p-6 dark:bg-purple-950/20" style={{ backgroundColor: "#f5f3ff" }}>
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>5. Contacto</h2>
               <p>Si tienes preguntas sobre nuestra política de cookies, contáctanos en:</p>
               <p className="mt-2">

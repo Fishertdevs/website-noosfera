@@ -1,6 +1,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff, ArrowRight, Sparkles, UserPlus } from "lucide-react"
 import { useLocation, useSearch, Link } from "wouter"
@@ -29,6 +30,8 @@ function AuthContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loginData, setLoginData] = useState({ email: "", password: "" })
   const [registerData, setRegisterData] = useState({ name: "", email: "", password: "", confirmPassword: "" })
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
 
   useEffect(() => {
     const params = new URLSearchParams(search)
@@ -65,12 +68,12 @@ function AuthContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#08000f] transition-colors duration-300">
       {/* Navigation header */}
-      <header className="w-full px-6 py-4 z-50 bg-white border-b border-gray-100 sticky top-0">
+      <header className="w-full px-6 py-4 z-50 bg-white dark:bg-[#0d0118] border-b border-gray-100 dark:border-purple-950 sticky top-0">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/"
-            className="text-xl font-black text-gray-900 tracking-tight"
+            className="text-xl font-black text-gray-900 dark:text-white tracking-tight"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Noosfera
           </Link>
@@ -82,7 +85,7 @@ function AuthContent() {
               { href: "/docs", label: "Documentación" },
             ].map(({ href, label }) => (
               <Link key={href} href={href}
-                className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 {label}
               </Link>
             ))}
@@ -99,7 +102,7 @@ function AuthContent() {
       {/* Auth hero area */}
       <div
         className="flex-1 flex flex-col items-center justify-center px-4 py-6"
-        style={{ position: "relative", minHeight: 520, background: "#ffffff", overflow: "hidden" }}>
+        style={{ position: "relative", minHeight: 520, background: isDark ? "#08000f" : "#ffffff", overflow: "hidden" }}>
 
         {/* ── LEFT collage panel — 3 unique columns ── */}
         <div className="hidden md:block" style={{
@@ -145,7 +148,7 @@ function AuthContent() {
         <div className="hidden md:block" style={{
           position: "absolute", left: "50%", transform: "translateX(-50%)",
           top: 0, bottom: 0, width: 340,
-          background: "#ffffff", zIndex: 0, pointerEvents: "none",
+          background: isDark ? "#08000f" : "#ffffff", zIndex: 0, pointerEvents: "none",
         }} />
 
         {/* ── RIGHT collage panel — 3 unique columns ── */}
@@ -196,7 +199,7 @@ function AuthContent() {
           style={{
             position: "relative", zIndex: 1,
             width: "100%", maxWidth: 268,
-            background: "#fff",
+            background: isDark ? "#0d0118" : "#fff",
             borderRadius: 16,
             overflow: "hidden",
             border: "2px solid #7c3aed",
@@ -229,7 +232,7 @@ function AuthContent() {
 
             {/* Headline */}
             <div style={{ textAlign: "center" }}>
-              <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: 13, color: "#111", margin: 0, lineHeight: 1.3 }}>
+              <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: 13, color: isDark ? "#fff" : "#111", margin: 0, lineHeight: 1.3 }}>
                 {activeTab === "login"
                   ? "Inicia sesión para explorar el arte cardíaco con IA"
                   : "Crea tu cuenta y empieza a crear"}

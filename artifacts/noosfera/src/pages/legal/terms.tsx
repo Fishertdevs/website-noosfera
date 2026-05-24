@@ -19,7 +19,7 @@ function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay
 export default function TermsPage() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }) }, [])
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] transition-colors duration-300">
       <DarkNav />
 
       <main className="container mx-auto px-6 py-12 max-w-3xl">
@@ -28,8 +28,8 @@ export default function TermsPage() {
           ← Volver
         </button>
 
-        <div className="text-center mb-10 pb-8 border-b border-gray-100">
-          <h1 className="text-4xl font-black text-gray-900 mb-2"
+        <div className="text-center mb-10 pb-8 border-b border-gray-100 dark:border-purple-950">
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Términos y Condiciones
           </h1>
@@ -38,7 +38,7 @@ export default function TermsPage() {
           </p>
         </div>
 
-        <div className="space-y-8 text-gray-600 leading-relaxed">
+        <div className="space-y-8 text-gray-600 dark:text-gray-400 leading-relaxed">
           <FadeSection>
             <p className="text-center text-base text-gray-500 leading-relaxed">
               Bienvenido a Noosfera. Al acceder y utilizar este sistema, aceptas los siguientes términos y
@@ -58,7 +58,7 @@ export default function TermsPage() {
           ].map(({ title, content }) => (
             <FadeSection key={title}>
               <div>
-                <h2 className="text-lg font-black text-gray-900 mb-3"
+                <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}>{title}</h2>
                 <p>{content}</p>
               </div>
@@ -67,7 +67,7 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>3. Registro y Cuentas de Usuario</h2>
               <ul className="space-y-2 pl-4">
                 {["Debes tener al menos 18 años para utilizar este servicio", "Eres responsable de mantener la seguridad de tu cuenta", "La información proporcionada debe ser precisa y actualizada", "No debes compartir tus credenciales de acceso"].map(i => (
@@ -79,7 +79,7 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>4. Uso del Servicio</h2>
               <ul className="space-y-2 pl-4">
                 {["El servicio debe utilizarse de manera ética y legal", "No debes intentar acceder a datos de otros usuarios", "No debes utilizar el servicio para fines maliciosos", "Debes seguir las pautas de uso seguro del dispositivo de monitoreo cardíaco"].map(i => (
@@ -91,7 +91,7 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>5. Propiedad Intelectual</h2>
               <p>El contenido generado a través de Noosfera está sujeto a derechos de propiedad intelectual. Los usuarios mantienen los derechos sobre el contenido que generan, mientras que Noosfera retiene los derechos sobre la tecnología y el sistema.</p>
             </div>
@@ -99,7 +99,7 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>6. NFTs y Monetización</h2>
               <p className="mb-3">Los usuarios pueden convertir sus patrones cardíacos en NFTs y monetizarlos. Al crear un NFT:</p>
               <ul className="space-y-2 pl-4">
@@ -112,7 +112,7 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>7. Limitación de Responsabilidad</h2>
               <p className="mb-3">Noosfera no se hace responsable de:</p>
               <ul className="space-y-2 pl-4">
@@ -125,15 +125,15 @@ export default function TermsPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>8. Ley Aplicable</h2>
               <p>Estos términos se rigen por las leyes de la República de Colombia y cualquier disputa será resuelta en los tribunales colombianos.</p>
             </div>
           </FadeSection>
 
           <FadeSection>
-            <div className="rounded-2xl p-6" style={{ backgroundColor: "#f5f3ff" }}>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+            <div className="rounded-2xl p-6 dark:bg-purple-950/20" style={{ backgroundColor: "#f5f3ff" }}>
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>9. Contacto</h2>
               <p>Si tienes preguntas sobre estos términos, contáctanos en:</p>
               <p className="mt-2">

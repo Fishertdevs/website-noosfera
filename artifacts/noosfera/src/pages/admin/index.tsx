@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
+import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Users, Shield, LogOut, RefreshCw, ImageIcon,
@@ -131,8 +132,10 @@ function KpiNewToday({ value, weekData }: { value: number; weekData: number[] })
    CARD WRAPPER
 ───────────────────────────────────────── */
 function ChartCard({ title, info, children, subtitle, titleColor }: { title: string; info: string; children: React.ReactNode; subtitle?: string; titleColor?: string }) {
+  const { resolvedTheme } = useTheme()
+  const isDarkCard = resolvedTheme === "dark"
   return (
-    <div style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, padding: "18px 20px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column" }}>
+    <div style={{ background: isDarkCard ? "#0d0118" : "#fff", border: isDarkCard ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, padding: "18px 20px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: subtitle ? 2 : 14 }}>
         <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 14, fontWeight: 700, color: titleColor || C1, textAlign: "center" }}>{title}</h3>
         <InfoTip text={info} />
@@ -329,7 +332,7 @@ function ImagePreview({ img, onClose }: { img: GeneratedImage; onClose: () => vo
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <motion.div initial={{ scale: 0.88 }} animate={{ scale: 1 }} exit={{ scale: 0.88 }} onClick={e => e.stopPropagation()}
-        style={{ background: "#fff", borderRadius: 16, overflow: "hidden", maxWidth: 480, width: "100%" }}>
+        style={{ background: isDarkCard ? "#0d0118" : "#fff", borderRadius: 16, overflow: "hidden", maxWidth: 480, width: "100%" }}>
         <img src={img.image_url} alt="Arte" style={{ width: "100%", display: "block" }} />
         <div style={{ padding: "12px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <p style={{ margin: 0, fontSize: 11, color: "#555", fontFamily: DM }}>{new Date(img.generation_timestamp).toLocaleString()}</p>
@@ -353,6 +356,8 @@ export default function AdminDashboard() {
   const [lastUpdate, setLastUpdate] = useState(new Date())
   const [previewImg, setPreviewImg] = useState<GeneratedImage | null>(null)
   const greeting = useMemo(() => getGreeting(), [])
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
 
   const fetchData = useCallback(() => {
     const us = localDB.getUsers()
@@ -414,7 +419,7 @@ export default function AdminDashboard() {
   }, [stats, images])
 
   if (!isAdmin && !loading) return (
-    <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100vh", background: isDark ? "#08000f" : "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center", padding: 40 }}>
         <Shield style={{ width: 44, height: 44, color: "#ef4444", margin: "0 auto 12px" }} />
         <p style={{ color: "#ef4444", fontFamily: DM, marginBottom: 16 }}>Acceso denegado.</p>
@@ -424,7 +429,7 @@ export default function AdminDashboard() {
   )
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100vh", background: isDark ? "#08000f" : "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 40, height: 40, border: `3px solid ${PL}`, borderTop: `3px solid ${C1}`, borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
@@ -434,7 +439,7 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff", fontFamily: DM, display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", background: isDark ? "#08000f" : "#ffffff", fontFamily: DM, display: "flex", flexDirection: "column" }}>
       <style>{`
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
         @keyframes spin{to{transform:rotate(360deg)}}
@@ -445,7 +450,7 @@ export default function AdminDashboard() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <header style={{ background: "#fff", borderBottom: "1px solid #000", position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 8px rgba(0,0,0,0.08)" }}>
+      <header style={{ background: isDark ? "#0d0118" : "#fff", borderBottom: isDark ? "1px solid #3b0764" : "1px solid #000", position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 8px rgba(0,0,0,0.08)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ width: 150 }} />
           <h1 style={{ margin: 0, fontFamily: PLAYFAIR, fontWeight: 700, fontSize: 20, color: C1, textAlign: "center" }}>
@@ -466,8 +471,8 @@ export default function AdminDashboard() {
 
       {/* ── GREETING ── */}
       <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-        style={{ background: "#faf8ff", borderBottom: "1px solid #ede9fe", padding: "13px 24px", textAlign: "center" }}>
-        <p style={{ margin: 0, fontFamily: DM, fontSize: 15, color: "#111" }}>
+        style={{ background: isDark ? "#0d0118" : "#faf8ff", borderBottom: isDark ? "1px solid #3b0764" : "1px solid #ede9fe", padding: "13px 24px", textAlign: "center" }}>
+        <p style={{ margin: 0, fontFamily: DM, fontSize: 15, color: isDark ? "#e2e8f0" : "#111" }}>
           <span style={{ fontFamily: PLAYFAIR, fontWeight: 700, fontSize: 17, color: C1 }}>Bienvenido, Admin</span>
           {" "}— {greeting}, bienvenido al panel de control de Noösfera.
         </p>
@@ -480,7 +485,7 @@ export default function AdminDashboard() {
 
           {/* Card 1 — Total Usuarios */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-            style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
+            style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 13, fontWeight: 700, color: C1 }}>Total Usuarios</h3>
               <InfoTip text="Número total de cuentas registradas en la plataforma." />
@@ -490,7 +495,7 @@ export default function AdminDashboard() {
 
           {/* Card 2 — Activos */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}
-            style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
+            style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 13, fontWeight: 700, color: C2 }}>Activos</h3>
               <InfoTip text="Usuarios con cuenta activa sobre el total registrado." />
@@ -500,7 +505,7 @@ export default function AdminDashboard() {
 
           {/* Card 3 — Nuevos Hoy */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}
-            style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
+            style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 13, fontWeight: 700, color: C3 }}>Nuevos Hoy</h3>
               <InfoTip text="Usuarios registrados hoy. Las barras muestran los últimos 7 días." />
@@ -510,7 +515,7 @@ export default function AdminDashboard() {
 
           {/* Card 4 — Imágenes */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}
-            style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
+            style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, padding: "18px 16px 14px", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 13, fontWeight: 700, color: C4 }}>Imágenes</h3>
               <InfoTip text="Total de obras de arte generadas por IA." />
@@ -602,8 +607,8 @@ export default function AdminDashboard() {
         {/* ── USERS + IMAGES ── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
 
-          <div style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-            <div style={{ padding: "15px 20px 11px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, position: "relative" }}>
+          <div style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div style={{ padding: "15px 20px 11px", borderBottom: isDark ? "1px solid #3b0764" : "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, position: "relative" }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 15, fontWeight: 700, color: C1, textAlign: "center" }}>Usuarios Registrados</h3>
               <InfoTip text="Clic en un usuario para desplegar gestión inline: activar/desactivar o eliminar con confirmación integrada." />
               <div style={{ position: "absolute", right: 16, display: "flex", alignItems: "center", gap: 4 }}>
@@ -619,13 +624,13 @@ export default function AdminDashboard() {
                 </div>
               ) : users.map(user => <UserRow key={user.id} user={user} onToggle={handleToggle} onDelete={handleDelete} />)}
             </div>
-            <div style={{ padding: "7px 20px", borderTop: "1px solid #e5e7eb", textAlign: "center" }}>
-              <p style={{ margin: 0, fontSize: 10, color: "#555", fontFamily: DM }}>Clic en un usuario para gestionar</p>
+            <div style={{ padding: "7px 20px", borderTop: isDark ? "1px solid #3b0764" : "1px solid #e5e7eb", textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 10, color: isDark ? "#9ca3af" : "#555", fontFamily: DM }}>Clic en un usuario para gestionar</p>
             </div>
           </div>
 
-          <div style={{ background: "#fff", border: "1px solid #000", borderRadius: 14, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-            <div style={{ padding: "15px 20px 11px", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+          <div style={{ background: isDark ? "#0d0118" : "#fff", border: isDark ? "1px solid #3b0764" : "1px solid #000", borderRadius: 14, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div style={{ padding: "15px 20px 11px", borderBottom: isDark ? "1px solid #3b0764" : "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               <h3 style={{ margin: 0, fontFamily: PLAYFAIR, fontSize: 15, fontWeight: 700, color: C1, textAlign: "center" }}>Imágenes Generadas</h3>
               <InfoTip text="Galería global de todas las imágenes generadas por IA. Clic para ver a tamaño completo." />
               <span style={{ padding: "2px 9px", borderRadius: 99, fontSize: 11, fontWeight: 700, background: PL, color: C1, fontFamily: DM }}>{images.length}</span>
@@ -654,7 +659,7 @@ export default function AdminDashboard() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer style={{ borderTop: "1px solid #000", background: "#fff", padding: "14px 24px", textAlign: "center" }}>
+      <footer style={{ borderTop: isDark ? "1px solid #3b0764" : "1px solid #000", background: isDark ? "#0d0118" : "#fff", padding: "14px 24px", textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           <img src="/favicon-brain.png" alt="Noosfera" style={{ width: 36, height: 36, objectFit: "contain" }} />
           <p style={{ margin: 0, fontSize: 13, color: "#555", fontFamily: DM }}>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Brain, Sparkles, RefreshCw, X, Check, ArrowLeft,
@@ -178,6 +179,8 @@ export default function SimpleDemo() {
   const [, navigate] = useLocation()
   const { user, logout, completeTutorial } = useAuth()
   const isRealUser = !!(user && user.email !== "demo@noosfera.com")
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
   const effectiveLimit = isRealUser ? (user?.plan === "premium" ? 100 : 15) : DAILY_LIMIT
   const [attemptsRemaining, setAttemptsRemaining] = useState(effectiveLimit)
   const [tutorialStep, setTutorialStep] = useState(0)
@@ -379,7 +382,7 @@ export default function SimpleDemo() {
   }
 
   if (!isLoaded) return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#08000f]">
       <div className="w-7 h-7 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
     </div>
   )
@@ -419,7 +422,7 @@ export default function SimpleDemo() {
   ]
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white" style={font}>
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-[#08000f] transition-colors duration-300" style={font}>
 
       {/* ── TUTORIAL BIENVENIDA (solo usuarios reales nuevos) ── */}
       <AnimatePresence>
@@ -434,7 +437,7 @@ export default function SimpleDemo() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: -16 }}
               transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white rounded-3xl w-full max-w-xs overflow-hidden"
+              className="bg-white dark:bg-[#0d0118] rounded-3xl w-full max-w-xs overflow-hidden"
               style={{ border: "2px solid #7c3aed", ...font }}>
 
               {/* Hero image — horizontal crop */}
@@ -496,7 +499,7 @@ export default function SimpleDemo() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => {}} />
             <motion.div
-              className="relative bg-white rounded-3xl max-w-xs w-full z-10 overflow-hidden"
+              className="relative bg-white dark:bg-[#0d0118] rounded-3xl max-w-xs w-full z-10 overflow-hidden"
               style={{ border: "2px solid #7c3aed", ...font }}
               initial={{ scale: 0.9, y: 16 }} animate={{ scale: 1, y: 0 }}>
 
@@ -524,7 +527,7 @@ export default function SimpleDemo() {
 
               {/* Content */}
               <div className="p-5">
-                <p className="text-xs text-gray-500 text-center mb-3">Antes de comenzar, ten en cuenta:</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center mb-3">Antes de comenzar, ten en cuenta:</p>
                 <div className="space-y-2 mb-5">
                   {[
                     "Los datos del demo no son persistentes y se perderán al reiniciar el navegador.",
@@ -532,7 +535,7 @@ export default function SimpleDemo() {
                     "Las imágenes descargadas incluyen marca de agua de Noosfera.",
                     "El uso se registra por dispositivo, incluso en modo incógnito.",
                   ].map((t, i) => (
-                    <div key={i} className="flex gap-2 text-xs text-gray-600">
+                    <div key={i} className="flex gap-2 text-xs text-gray-600 dark:text-gray-400">
                       <div className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-0.5"
                         style={{ backgroundColor: "#f5f3ff" }}>
                         <Check className="h-2.5 w-2.5" style={{ color: "#7c3aed" }} />
@@ -561,7 +564,7 @@ export default function SimpleDemo() {
           <motion.div className="fixed inset-0 z-40 flex items-center justify-center p-4"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={showModal === "input" ? closeModal : undefined} />
-            <motion.div className="relative bg-white rounded-3xl w-full max-w-sm z-10 overflow-hidden"
+            <motion.div className="relative bg-white dark:bg-[#0d0118] rounded-3xl w-full max-w-sm z-10 overflow-hidden"
               style={{ border: "2px solid #7c3aed" }}
               initial={{ scale: 0.93, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.93, y: 10 }}>
 
@@ -842,7 +845,7 @@ export default function SimpleDemo() {
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMintModal(false)} />
-            <motion.div className="relative bg-white rounded-3xl max-w-xs w-full z-10 overflow-hidden"
+            <motion.div className="relative bg-white dark:bg-[#0d0118] rounded-3xl max-w-xs w-full z-10 overflow-hidden"
               style={{ border: "2px solid #7c3aed" }}
               initial={{ scale: 0.9, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9 }}>
               <div style={{ position: "relative", height: 72 }}>
@@ -894,7 +897,7 @@ export default function SimpleDemo() {
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowTokenModal(false)} />
-            <motion.div className="relative bg-white rounded-3xl max-w-xs w-full z-10 overflow-hidden"
+            <motion.div className="relative bg-white dark:bg-[#0d0118] rounded-3xl max-w-xs w-full z-10 overflow-hidden"
               style={{ border: "2px solid #7c3aed" }}
               initial={{ scale: 0.9, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9 }}>
               <div style={{ position: "relative", height: 72 }}>
@@ -942,16 +945,16 @@ export default function SimpleDemo() {
           <motion.aside
             initial={{ width: 0, opacity: 0 }} animate={{ width: 220, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }} transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex-shrink-0 bg-white border-r border-gray-100 flex flex-col overflow-hidden"
+            className="flex-shrink-0 bg-white dark:bg-[#0d0118] border-r border-gray-100 dark:border-purple-950 flex flex-col overflow-hidden"
             style={{ minHeight: "100vh" }}>
-            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-purple-950">
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 flex-shrink-0" style={{ color: "#7c3aed" }} />
-                <span className="font-black text-gray-900 text-base tracking-tight" style={font}>
+                <span className="font-black text-gray-900 dark:text-white text-base tracking-tight" style={font}>
                   {isRealUser ? `Hola, ${user?.name?.split(" ")[0]}` : "Noosfera Demo"}
                 </span>
               </div>
-              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded hover:bg-gray-100 text-gray-400 transition-colors">
+              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-purple-950/40 text-gray-400 transition-colors">
                 <ChevronLeft className="h-4 w-4" />
               </button>
             </div>
@@ -964,7 +967,7 @@ export default function SimpleDemo() {
               ] as const).map(item => (
                 <button key={item.id} onClick={() => setActiveNav(item.id)}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
-                  style={{ ...(activeNav === item.id ? { backgroundColor: "#f5f3ff", color: "#7c3aed" } : { color: "#6b7280" }), ...font }}>
+                  style={{ ...(activeNav === item.id ? { backgroundColor: isDark ? "#1a0533" : "#f5f3ff", color: "#7c3aed" } : { color: isDark ? "#9ca3af" : "#6b7280" }), ...font }}>
                   <item.icon className="h-4 w-4 flex-shrink-0" />
                   {item.label}
                 </button>
@@ -973,7 +976,7 @@ export default function SimpleDemo() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-2 mb-2" style={font}>Cuenta</p>
                 <button onClick={() => setActiveNav("ajustes")}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
-                  style={{ ...(activeNav === "ajustes" ? { backgroundColor: "#f5f3ff", color: "#7c3aed" } : { color: "#6b7280" }), ...font }}>
+                  style={{ ...(activeNav === "ajustes" ? { backgroundColor: isDark ? "#1a0533" : "#f5f3ff", color: "#7c3aed" } : { color: isDark ? "#9ca3af" : "#6b7280" }), ...font }}>
                   <Settings className="h-4 w-4 flex-shrink-0" />
                   Ajustes
                 </button>
@@ -1027,16 +1030,16 @@ export default function SimpleDemo() {
       {/* ── MAIN ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-white dark:bg-[#0d0118] border-b border-gray-100 dark:border-purple-950 px-4 py-3 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
             {!sidebarOpen && (
               <>
-                <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+                <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-purple-950/40 text-gray-400 transition-colors">
                   <ChevronRight className="h-4 w-4" />
                 </button>
                 <div className="flex items-center gap-2">
                   <Brain className="h-5 w-5" style={{ color: "#7c3aed" }} />
-                  <span className="font-black text-gray-900 text-sm" style={font}>Noösfera</span>
+                  <span className="font-black text-gray-900 dark:text-white text-sm" style={font}>Noösfera</span>
                 </div>
               </>
             )}
@@ -1064,26 +1067,26 @@ export default function SimpleDemo() {
           {activeNav === "inicio" && (
             <div>
               {/* Hero banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-purple-50/30" style={{ minHeight: "290px" }}>
+              <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-purple-50/30 dark:from-[#0d0118] dark:to-[#08000f]" style={{ minHeight: "290px" }}>
                 <HeroSidePanel side="left" />
                 <HeroSidePanel side="right" />
                 <div className="relative z-10 flex flex-col items-center justify-center text-center py-14 px-56">
                   {isRealUser ? (
                     <>
                       <p className="text-sm font-semibold mb-1" style={{ color: "#7c3aed", ...font }}>{getTimeGreeting()}, {user?.name?.split(" ")[0]}</p>
-                      <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2 leading-tight" style={font}>
+                      <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2 leading-tight" style={font}>
                         ¡Qué genial tenerte de nuevo!
                       </h1>
-                      <p className="text-sm text-gray-500 mb-6 max-w-xs" style={font}>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs" style={font}>
                         ¿Qué arte deseas hacer hoy?
                       </p>
                     </>
                   ) : (
                     <>
-                      <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-3 leading-tight" style={font}>
+                      <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-3 leading-tight" style={font}>
                         Transforma tus <span style={{ color: "#7c3aed" }}>latidos</span> en arte
                       </h1>
-                      <p className="text-sm text-gray-500 mb-6 max-w-xs" style={font}>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs" style={font}>
                         Ingresa tus pulsos cardíacos y nuestra IA los convierte en una obra digital única
                       </p>
                     </>
@@ -1099,7 +1102,7 @@ export default function SimpleDemo() {
               {/* My creations (if any) */}
               {myCreations.length > 0 && (
                 <div className="px-6 pt-5 pb-2">
-                  <h3 className="font-black text-gray-800 text-sm mb-3" style={font}>Mis generaciones</h3>
+                  <h3 className="font-black text-gray-800 dark:text-gray-200 text-sm mb-3" style={font}>Mis generaciones</h3>
                   <div className="flex gap-3 overflow-x-auto pb-1">
                     {myCreations.map((c, i) => (
                       <div key={i} className="flex-shrink-0 rounded-xl overflow-hidden border border-gray-100 shadow-sm cursor-pointer"
@@ -1115,7 +1118,7 @@ export default function SimpleDemo() {
               <div className="px-6 py-5">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h2 className="font-black text-gray-900 text-base" style={font}>Lo que nuestra comunidad ha creado</h2>
+                    <h2 className="font-black text-gray-900 dark:text-white text-base" style={font}>Lo que nuestra comunidad ha creado</h2>
                     <p className="text-xs text-gray-400 mt-0.5" style={font}>Arte biométrico generado por miembros de Noosfera</p>
                   </div>
                   <button onClick={() => setActiveNav("comunidad")} className="text-sm font-semibold flex items-center gap-0.5" style={{ color: "#7c3aed", ...font }}>
@@ -1148,7 +1151,7 @@ export default function SimpleDemo() {
             <div className="px-5 py-6">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="font-black text-gray-900 text-xl" style={font}>Mi Galería</h2>
+                  <h2 className="font-black text-gray-900 dark:text-white text-xl" style={font}>Mi Galería</h2>
                   <p className="text-sm text-gray-400 mt-0.5" style={font}>{myCreations.length} obra{myCreations.length !== 1 ? "s" : ""} creada{myCreations.length !== 1 ? "s" : ""}</p>
                 </div>
                 <button onClick={openInput}
@@ -1161,7 +1164,7 @@ export default function SimpleDemo() {
 
               {myCreations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <h3 className="font-black text-gray-900 text-base mb-2" style={font}>Tu galería está vacía</h3>
+                  <h3 className="font-black text-gray-900 dark:text-white text-base mb-2" style={font}>Tu galería está vacía</h3>
                   <p className="text-sm text-gray-400 max-w-xs" style={font}>Usa el botón Crear Nueva para generar tu primera obra de arte a partir de tus latidos</p>
                 </div>
               ) : (
@@ -1172,8 +1175,8 @@ export default function SimpleDemo() {
                       <motion.div key={art.tokenId || i}
                         initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.05 }}
-                        className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm group relative"
-                        style={{ backgroundColor: "#fff" }}>
+                        className="rounded-2xl overflow-hidden border border-gray-100 dark:border-purple-950 shadow-sm group relative"
+                        style={{ backgroundColor: isDark ? "#0d0118" : "#fff" }}>
                         <div className="relative cursor-pointer" onClick={() => { setGeneratedResult(art); setShowModal("result") }}>
                           <img src={art.imageUrl} alt={art.title} className="w-full object-cover block" style={{ height: "160px" }} />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
@@ -1217,7 +1220,7 @@ export default function SimpleDemo() {
               {isRealUser ? (
                 <>
                   {/* Tabs */}
-                  <div className="flex gap-1 p-1 rounded-xl mb-6" style={{ backgroundColor: "#f3f4f6" }}>
+                  <div className="flex gap-1 p-1 rounded-xl mb-6" style={{ backgroundColor: isDark ? "#1a0533" : "#f3f4f6" }}>
                     {([
                       { id: "cuenta", label: "Cuenta" },
                       { id: "notificaciones", label: "Avisos" },
@@ -1226,7 +1229,7 @@ export default function SimpleDemo() {
                     ] as const).map(tab => (
                       <button key={tab.id} onClick={() => { setSettingsTab(tab.id); if (tab.id !== "cuenta") { setShowPlanModal(false); setPaymentSuccess(false) } }}
                         className="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
-                        style={{ backgroundColor: settingsTab === tab.id ? "#fff" : "transparent", color: settingsTab === tab.id ? "#7c3aed" : "#6b7280", boxShadow: settingsTab === tab.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none", border: "none", ...font }}>
+                        style={{ backgroundColor: settingsTab === tab.id ? (isDark ? "#0d0118" : "#fff") : "transparent", color: settingsTab === tab.id ? "#7c3aed" : (isDark ? "#9ca3af" : "#6b7280"), boxShadow: settingsTab === tab.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none", border: "none", ...font }}>
                         {tab.label}
                       </button>
                     ))}
@@ -1235,7 +1238,7 @@ export default function SimpleDemo() {
                   {/* ── TAB: CUENTA ── */}
                   {settingsTab === "cuenta" && (
                     <>
-                      <div className="rounded-2xl border border-gray-100 shadow-sm mb-4 bg-white overflow-hidden">
+                      <div className="rounded-2xl border border-gray-100 dark:border-purple-950 shadow-sm mb-4 bg-white dark:bg-[#0d0118] overflow-hidden">
                         <div className="flex items-stretch">
                           {/* Left: identity */}
                           <div className="flex items-center gap-3 p-5 flex-shrink-0">
@@ -1244,7 +1247,7 @@ export default function SimpleDemo() {
                               {user?.name?.charAt(0) || "U"}
                             </div>
                             <div>
-                              <p className="font-black text-gray-900 text-sm" style={font}>{user?.name}</p>
+                              <p className="font-black text-gray-900 dark:text-white text-sm" style={font}>{user?.name}</p>
                               <p className="text-xs text-gray-400 mb-1.5" style={font}>{user?.email}</p>
                               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full w-fit text-xs font-bold"
                                 style={{ backgroundColor: user?.plan === "premium" ? "#fef3c7" : "#f5f3ff", color: user?.plan === "premium" ? "#92400e" : "#7c3aed" }}>
@@ -1268,11 +1271,11 @@ export default function SimpleDemo() {
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-500" style={font}>Marca de agua</span>
-                              <span className="text-xs font-bold text-gray-900" style={font}>{user?.plan === "premium" ? "Sin marca" : "Incluida"}</span>
+                              <span className="text-xs font-bold text-gray-900 dark:text-gray-200" style={font}>{user?.plan === "premium" ? "Sin marca" : "Incluida"}</span>
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-500" style={font}>Obras creadas</span>
-                              <span className="text-xs font-bold text-gray-900" style={font}>{myCreations.length}</span>
+                              <span className="text-xs font-bold text-gray-900 dark:text-gray-200" style={font}>{myCreations.length}</span>
                             </div>
                           </div>
                         </div>
@@ -1325,7 +1328,7 @@ export default function SimpleDemo() {
                               </div>
                             </div>
                           ) : (
-                            <div className="rounded-2xl border border-gray-100 shadow-sm mb-4 bg-white overflow-hidden">
+                            <div className="rounded-2xl border border-gray-100 dark:border-purple-950 shadow-sm mb-4 bg-white dark:bg-[#0d0118] overflow-hidden">
                               {/* Inline payment header */}
                               <div className="flex items-center justify-between px-6 py-4" style={{ background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)" }}>
                                 <div className="flex items-center gap-2">
@@ -1346,7 +1349,7 @@ export default function SimpleDemo() {
                                   ] as const).map(plan => (
                                     <button key={plan.id} onClick={() => setSelectedPlanId(plan.id)}
                                       className="rounded-2xl p-4 text-left transition-all"
-                                      style={{ border: selectedPlanId === plan.id ? "2px solid #7c3aed" : "2px solid #e5e7eb", backgroundColor: selectedPlanId === plan.id ? "#faf5ff" : "#f9fafb" }}>
+                                      style={{ border: selectedPlanId === plan.id ? "2px solid #7c3aed" : isDark ? "2px solid #3b0764" : "2px solid #e5e7eb", backgroundColor: selectedPlanId === plan.id ? (isDark ? "#1a0533" : "#faf5ff") : (isDark ? "#0d0118" : "#f9fafb") }}>
                                       {plan.id === "premium" && <div className="text-[9px] font-black mb-1" style={{ color: "#7c3aed", ...font }}>RECOMENDADO</div>}
                                       <p className="font-black text-gray-900 text-sm" style={font}>{plan.name}</p>
                                       <p className="text-[10px] text-gray-400 mb-2" style={font}>{plan.desc}</p>
@@ -1366,7 +1369,7 @@ export default function SimpleDemo() {
                                 </div>
 
                                 {/* Payment form */}
-                                <div className="rounded-2xl p-5 border border-gray-100 mb-4">
+                                <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 mb-4">
                                   <div className="flex items-center gap-2 mb-4">
                                     <CreditCard className="h-4 w-4" style={{ color: "#7c3aed" }} />
                                     <p className="font-black text-sm text-gray-700" style={font}>Informacion de pago</p>
@@ -1458,8 +1461,8 @@ export default function SimpleDemo() {
                         </>
                       )}
 
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
-                        <h3 className="font-black text-sm text-gray-700 mb-3" style={font}>Sesion</h3>
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
+                        <h3 className="font-black text-sm text-gray-700 dark:text-gray-300 mb-3" style={font}>Sesion</h3>
                         <button onClick={logout}
                           className="w-full py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-80"
                           style={{ backgroundColor: "#fef2f2", color: "#dc2626", border: "none", ...font }}>
@@ -1472,10 +1475,10 @@ export default function SimpleDemo() {
                   {/* ── TAB: NOTIFICACIONES ── */}
                   {settingsTab === "notificaciones" && (
                     <div className="space-y-4">
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
                         <div className="flex items-center gap-2 mb-4">
                           <Bell className="h-4 w-4" style={{ color: "#7c3aed" }} />
-                          <h3 className="font-black text-sm text-gray-700" style={font}>Notificaciones</h3>
+                          <h3 className="font-black text-sm text-gray-700 dark:text-gray-300" style={font}>Notificaciones</h3>
                         </div>
                         <div className="space-y-4">
                           {([
@@ -1485,7 +1488,7 @@ export default function SimpleDemo() {
                           ] as const).map(item => (
                             <div key={item.key} className="flex items-start justify-between gap-4">
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-800" style={font}>{item.label}</p>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200" style={font}>{item.label}</p>
                                 <p className="text-xs text-gray-400 mt-0.5" style={font}>{item.desc}</p>
                               </div>
                               <button onClick={() => setNotifSettings(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
@@ -1498,7 +1501,7 @@ export default function SimpleDemo() {
                           ))}
                         </div>
                       </div>
-                      <div className="rounded-2xl p-4 border border-purple-100 bg-purple-50">
+                      <div className="rounded-2xl p-4 border border-purple-100 dark:border-purple-950 bg-purple-50 dark:bg-purple-950/30">
                         <p className="text-xs text-purple-700 font-semibold text-center" style={font}>
                           💡 Las notificaciones te avisan cuando tu límite diario se renueva
                         </p>
@@ -1509,10 +1512,10 @@ export default function SimpleDemo() {
                   {/* ── TAB: PRIVACIDAD ── */}
                   {settingsTab === "privacidad" && (
                     <div className="space-y-4">
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
                         <div className="flex items-center gap-2 mb-4">
                           <Globe className="h-4 w-4" style={{ color: "#7c3aed" }} />
-                          <h3 className="font-black text-sm text-gray-700" style={font}>Visibilidad</h3>
+                          <h3 className="font-black text-sm text-gray-700 dark:text-gray-300" style={font}>Visibilidad</h3>
                         </div>
                         <div className="space-y-4">
                           {([
@@ -1521,7 +1524,7 @@ export default function SimpleDemo() {
                           ] as const).map(item => (
                             <div key={item.key} className="flex items-start justify-between gap-4">
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-800" style={font}>{item.label}</p>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200" style={font}>{item.label}</p>
                                 <p className="text-xs text-gray-400 mt-0.5" style={font}>{item.desc}</p>
                               </div>
                               <button onClick={() => setPrivacySettings(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
@@ -1534,10 +1537,10 @@ export default function SimpleDemo() {
                           ))}
                         </div>
                       </div>
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
                         <div className="flex items-center gap-2 mb-3">
                           <Palette className="h-4 w-4" style={{ color: "#7c3aed" }} />
-                          <h3 className="font-black text-sm text-gray-700" style={font}>Datos y privacidad</h3>
+                          <h3 className="font-black text-sm text-gray-700 dark:text-gray-300" style={font}>Datos y privacidad</h3>
                         </div>
                         <p className="text-xs text-gray-500 mb-3" style={font}>
                           Tus datos biométricos son procesados localmente y nunca se almacenan en nuestros servidores sin tu consentimiento explícito.
@@ -1553,10 +1556,10 @@ export default function SimpleDemo() {
                   {/* ── TAB: SEGURIDAD ── */}
                   {settingsTab === "seguridad" && (
                     <div className="space-y-4">
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
                         <div className="flex items-center gap-2 mb-4">
                           <Lock className="h-4 w-4" style={{ color: "#7c3aed" }} />
-                          <h3 className="font-black text-sm text-gray-700" style={font}>Contraseña</h3>
+                          <h3 className="font-black text-sm text-gray-700 dark:text-gray-300" style={font}>Contraseña</h3>
                         </div>
                         <div className="space-y-3">
                           <div>
@@ -1583,14 +1586,14 @@ export default function SimpleDemo() {
                           </button>
                         </div>
                       </div>
-                      <div className="rounded-2xl p-5 border border-gray-100 shadow-sm bg-white">
-                        <h3 className="font-black text-sm text-gray-700 mb-3" style={font}>Sesiones activas</h3>
-                        <div className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: "#f9fafb" }}>
+                      <div className="rounded-2xl p-5 border border-gray-100 dark:border-purple-950 shadow-sm bg-white dark:bg-[#0d0118]">
+                        <h3 className="font-black text-sm text-gray-700 dark:text-gray-300 mb-3" style={font}>Sesiones activas</h3>
+                        <div className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: isDark ? "#1a0533" : "#f9fafb" }}>
                           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f5f3ff" }}>
                             <Globe className="h-4 w-4" style={{ color: "#7c3aed" }} />
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs font-bold text-gray-800" style={font}>Sesión actual · Navegador web</p>
+                            <p className="text-xs font-bold text-gray-800 dark:text-gray-200" style={font}>Sesión actual · Navegador web</p>
                             <p className="text-[10px] text-gray-400" style={font}>Activa ahora · Esta sesión</p>
                           </div>
                           <div className="w-2 h-2 rounded-full bg-green-400" />
@@ -1604,7 +1607,7 @@ export default function SimpleDemo() {
                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: "#f5f3ff" }}>
                     <Settings className="h-8 w-8" style={{ color: "#7c3aed" }} />
                   </div>
-                  <h3 className="font-black text-gray-900 text-base mb-2" style={font}>Crea una cuenta</h3>
+                  <h3 className="font-black text-gray-900 dark:text-white text-base mb-2" style={font}>Crea una cuenta</h3>
                   <p className="text-sm text-gray-400 mb-5 max-w-xs" style={font}>Regístrate para acceder a ajustes y opciones de plan</p>
                   <button onClick={() => navigate("/auth/register")}
                     className="px-6 py-2.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-all"
@@ -1621,7 +1624,7 @@ export default function SimpleDemo() {
             <div className="px-5 py-6">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="font-black text-gray-900 text-xl" style={font}>Comunidad Noosfera</h2>
+                  <h2 className="font-black text-gray-900 dark:text-white text-xl" style={font}>Comunidad Noosfera</h2>
                   <p className="text-sm text-gray-400 mt-0.5" style={font}>Arte biométrico generado por nuestra comunidad global</p>
                 </div>
                 {isRealUser && (
@@ -1636,7 +1639,7 @@ export default function SimpleDemo() {
 
               {communityUploads.length > 0 && (
                 <div className="mb-5">
-                  <h3 className="font-black text-gray-800 text-sm mb-3 px-1" style={font}>Mis publicaciones</h3>
+                  <h3 className="font-black text-gray-800 dark:text-gray-200 text-sm mb-3 px-1" style={font}>Mis publicaciones</h3>
                   <div className="flex gap-3 overflow-x-auto pb-2">
                     {communityUploads.map((art, i) => (
                       <div key={i} className="flex-shrink-0 rounded-xl overflow-hidden border-2 shadow-sm relative cursor-pointer"
@@ -1725,7 +1728,7 @@ export default function SimpleDemo() {
             <motion.div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setCommunityDetail(null)} />
-              <motion.div className="relative w-full max-w-sm rounded-t-3xl sm:rounded-3xl overflow-hidden bg-white shadow-2xl"
+              <motion.div className="relative w-full max-w-sm rounded-t-3xl sm:rounded-3xl overflow-hidden bg-white dark:bg-[#0d0118] shadow-2xl"
                 initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}>
                 <div className="relative">
                   <img src={communityDetail.src} alt={communityDetail.label} className="w-full h-64 object-cover block" />
@@ -1738,7 +1741,7 @@ export default function SimpleDemo() {
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-black text-gray-900 text-base" style={font}>{communityDetail.label}</h3>
+                      <h3 className="font-black text-gray-900 dark:text-white text-base" style={font}>{communityDetail.label}</h3>
                       <p className="text-xs text-gray-400 mt-0.5" style={font}>Arte biométrico · Noosfera</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -1775,9 +1778,9 @@ export default function SimpleDemo() {
                           style={{ background: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)" }}>
                           {c.name.charAt(0)}
                         </div>
-                        <div className="flex-1 px-3 py-2 rounded-xl" style={{ backgroundColor: "#f9fafb" }}>
-                          <p className="text-[10px] font-black text-gray-700 mb-0.5" style={font}>{c.name}</p>
-                          <p className="text-xs text-gray-600" style={font}>{c.comment}</p>
+                        <div className="flex-1 px-3 py-2 rounded-xl" style={{ backgroundColor: isDark ? "#1a0533" : "#f9fafb" }}>
+                          <p className="text-[10px] font-black text-gray-700 dark:text-gray-300 mb-0.5" style={font}>{c.name}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400" style={font}>{c.comment}</p>
                         </div>
                       </div>
                     ))}

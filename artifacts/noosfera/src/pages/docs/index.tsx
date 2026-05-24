@@ -900,7 +900,7 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
           <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-purple-500">
             {section.tag}
           </span>
-          <h2 className="text-xl font-black text-gray-900 mt-0.5 leading-snug"
+          <h2 className="text-xl font-black text-gray-900 dark:text-white mt-0.5 leading-snug"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {section.title}
           </h2>
@@ -918,14 +918,14 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
               <motion.div key={idx}
                 initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.08 }}
-                className="rounded-xl p-5 border border-gray-100 hover:border-purple-100 hover:shadow-sm transition-all bg-white">
+                className="rounded-xl p-5 border border-gray-100 dark:border-purple-950 hover:border-purple-100 hover:shadow-sm transition-all bg-white dark:bg-[#0d0118]">
                 <div className="flex items-start gap-3 mb-2">
                   <span className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-black text-purple-600"
                     style={{ backgroundColor: "#f5f3ff" }}>{idx + 1}</span>
-                  <h3 className="text-sm font-bold text-gray-900"
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.subtitle}</h3>
                 </div>
-                <p className="text-sm text-gray-500 leading-relaxed pl-8"
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed pl-8"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
               </motion.div>
             ))}
@@ -955,7 +955,7 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
                     <span className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-black text-white mt-0.5"
                       style={{ backgroundColor: step.color }}>{step.n}</span>
                     <div>
-                      <p className="text-sm font-bold text-gray-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{step.label}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>{step.label}</p>
                       <p className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: "'Fira Code', monospace" }}>{step.sub}</p>
                     </div>
                   </motion.div>
@@ -966,7 +966,7 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
               ))}
             </div>
             {/* Latency summary */}
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-purple-950">
               <p className="text-[11px] font-bold uppercase tracking-widest text-purple-500 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Latencia del proceso</p>
               <div className="grid grid-cols-3 gap-2 text-center">
                 {[
@@ -992,11 +992,11 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
                 initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.06 }}>
                 {item.subtitle && (
-                  <h3 className="text-sm font-bold text-gray-900 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {item.subtitle}
                   </h3>
                 )}
-                <p className="text-sm text-gray-500 leading-relaxed mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.text}</p>
                 {item.code && (
                   <div className="mt-3 mb-1 rounded-xl" style={{ boxShadow: "0 0 0 1px #4c1d95, 0 4px 24px rgba(109,40,217,0.18)" }}>
                     <div className="flex items-center gap-1.5 px-4 py-2 rounded-t-xl" style={{ backgroundColor: "#1a0533" }}>
@@ -1029,7 +1029,7 @@ function TimelineEntry({ section, index, noLine }: { section: typeof timelineSec
               <motion.div key={idx}
                 initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-40px" }} transition={{ duration: 0.3, delay: idx * 0.08 }}
-                className="rounded-xl p-5 border border-gray-100 hover:border-purple-100 hover:shadow-sm transition-all bg-white">
+                className="rounded-xl p-5 border border-gray-100 dark:border-purple-950 hover:border-purple-100 hover:shadow-sm transition-all bg-white dark:bg-[#0d0118]">
                 <div className="flex items-start gap-3 mb-2">
                   <span className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-black text-purple-600"
                     style={{ backgroundColor: "#f5f3ff" }}>{idx + 1}</span>
@@ -1052,22 +1052,22 @@ export default function DocsPage() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }) }, [])
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] text-gray-900 dark:text-white transition-colors duration-300">
       <DarkNav activeLink="docs" />
 
-      <section className="pt-28 pb-12 bg-white border-b border-gray-100">
+      <section className="pt-28 pb-12 bg-white dark:bg-[#08000f] border-b border-gray-100 dark:border-purple-950">
         <div className="px-6 md:px-12 text-center">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-4">
             Documentación Técnica
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-4"
+            className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-4"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Arquitectura y Desarrollo de Noosfera
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-gray-500 max-w-xl text-sm leading-relaxed mx-auto"
+            className="text-gray-500 dark:text-gray-400 max-w-xl text-sm leading-relaxed mx-auto"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Pipeline técnico completo: desde el latido del usuario hasta la obra digital certificada en blockchain.
           </motion.p>

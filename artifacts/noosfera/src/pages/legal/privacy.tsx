@@ -19,7 +19,7 @@ function FadeSection({ children }: { children: React.ReactNode }) {
 export default function PrivacyPage() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }) }, [])
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#08000f] transition-colors duration-300">
       <DarkNav />
 
       <main className="container mx-auto px-6 py-12 max-w-3xl">
@@ -28,8 +28,8 @@ export default function PrivacyPage() {
           ← Volver
         </button>
 
-        <div className="text-center mb-10 pb-8 border-b border-gray-100">
-          <h1 className="text-4xl font-black text-gray-900 mb-2"
+        <div className="text-center mb-10 pb-8 border-b border-gray-100 dark:border-purple-950">
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Política de Privacidad
           </h1>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        <div className="space-y-8 text-gray-600 leading-relaxed">
+        <div className="space-y-8 text-gray-600 dark:text-gray-400 leading-relaxed">
           <FadeSection>
             <p className="text-center text-base text-gray-500 leading-relaxed">
               En Noosfera, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta política describe cómo
@@ -48,15 +48,15 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-4"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-4"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>1. Información que Recopilamos</h2>
-              <h3 className="font-bold text-gray-800 mb-2">1.1 Información Personal</h3>
+              <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2">1.1 Información Personal</h3>
               <ul className="space-y-2 pl-4 mb-4">
                 {["Nombre y apellidos", "Dirección de correo electrónico", "Fecha de nacimiento", "Información de perfil"].map(i => (
                   <li key={i} className="flex items-start gap-2"><span className="text-purple-500 mt-1">•</span>{i}</li>
                 ))}
               </ul>
-              <h3 className="font-bold text-gray-800 mb-2">1.2 Datos Cardíacos</h3>
+              <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2">1.2 Datos Cardíacos</h3>
               <ul className="space-y-2 pl-4">
                 {["Patrones de ritmo cardíaco", "Datos de variabilidad cardíaca", "Métricas de frecuencia cardíaca", "Registros de sesiones de monitoreo"].map(i => (
                   <li key={i} className="flex items-start gap-2"><span className="text-purple-500 mt-1">•</span>{i}</li>
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>2. Uso de la Información</h2>
               <p className="mb-3">Utilizamos la información recopilada para:</p>
               <ul className="space-y-2 pl-4">
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>3. Protección de Datos</h2>
               <p className="mb-3">Implementamos medidas de seguridad robustas:</p>
               <ul className="space-y-2 pl-4">
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>4. Tus Derechos</h2>
               <p className="mb-3">Como usuario, tienes derecho a:</p>
               <ul className="space-y-2 pl-4">
@@ -106,7 +106,7 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>5. Retención de Datos</h2>
               <p>Mantenemos tu información mientras tu cuenta esté activa o sea necesario para proporcionar servicios. Puedes solicitar la eliminación de tu cuenta y datos en cualquier momento.</p>
             </div>
@@ -114,15 +114,15 @@ export default function PrivacyPage() {
 
           <FadeSection>
             <div>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>6. Menores de Edad</h2>
               <p>Nuestros servicios no están dirigidos a menores de 18 años. No recopilamos intencionalmente información de menores.</p>
             </div>
           </FadeSection>
 
           <FadeSection>
-            <div className="rounded-2xl p-6" style={{ backgroundColor: "#f5f3ff" }}>
-              <h2 className="text-lg font-black text-gray-900 mb-3"
+            <div className="rounded-2xl p-6 dark:bg-purple-950/20" style={{ backgroundColor: "#f5f3ff" }}>
+              <h2 className="text-lg font-black text-gray-900 dark:text-white mb-3"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}>7. Contacto</h2>
               <p>Si tienes preguntas sobre nuestra política de privacidad, contáctanos en:</p>
               <p className="mt-2">
